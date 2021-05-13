@@ -73,7 +73,7 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'flagrange': np.array([[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],
                                               [-5.5,14.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],
                                               [-5.5,14.5],[-5.5,14.5],[-5.5,14.5]]),
-                       'orig_spw_map': {25:0, 27:1, 29:2, 31:3, 33:4, 35:5, 37:6},  # mapping of old spws to new spws (needed for cont.dat to work)
+                       'orig_spw_map': {25:0, 31:1, 29:2, 27:3, 33:4, 35:5, 37:6},  # mapping of old spws to new spws (needed for cont.dat to work)
                        'cont_spws':  np.array([0,1,2,3,4,5,6]),  #spws to use for continuum
                        'cont_avg_width':  np.array([480,480,480,480,60,60,60]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
@@ -181,7 +181,7 @@ for i in data_params.keys():
 
 for i in data_params.keys():
        #################### MANUALLY SET THIS ######################
-       data_params[i]['common_dir']='J2000 11h06m46.36315s -077d22m32.822948s'
+       data_params[i]['common_dir']='J2000 15h43m02.23327s -034d09m06.943163s'
 
 ### save updated data params to a pickle
 
@@ -216,7 +216,7 @@ for i in data_params.keys():
        for suffix in ['image','mask','mode','psf','pb','residual','sumwt']:
           os.system('rm -rf '+prefix+'_'+i+'_initcont_shift.'+suffix)
        image_each_obs_shift(data_params[i]['vis_avg_shift'], prefix, scales=scales, 
-                   nsigma=5.0, sidelobethreshold=2.5, interactive=False,parallel=parallel)
+                   nsigma=5.0, sidelobethreshold=2.0, interactive=False,parallel=parallel)
 
 for i in data_params.keys():
       print(i)     
