@@ -560,7 +560,7 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
 
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
-def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,parallel=False,nterms=2,cyclefactor=3):
+def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,cyclefactor=3):
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
     See the CASA 6.1.1 documentation for tclean to get the definitions of all the parameters
@@ -1288,7 +1288,7 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
                   noisemasks=['',''],parallel=False,SB_contspws='',
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
-                  sidelobethreshold=2.5):
+                  sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5):
    
    if remove_all_following_iterations:   ### Remove all following selfcal files after the iteration being run
       os.system("rm -rf *p{{{0:d}..99}}*".format(iteration))
@@ -1338,7 +1338,8 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
    #create single image using all visibilities; model column always writes with parallel=False
    os.system('rm -rf '+prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'*')
    tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration),scales=scales, nsigma=nsigma,
-                  savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold)
+                  savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
+                  noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold)
    estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.image.tt0', disk_mask=noisemasks[0], 
              noise_mask=noisemasks[1])
 
