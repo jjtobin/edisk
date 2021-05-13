@@ -1286,22 +1286,13 @@ def get_station_numbers(msfile, antenna_name):
 
 def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p',prevselfcalmode=None,nsigma=50.0,solint='inf',
                   noisemasks=['',''],parallel=False,SB_contspws='',
-                  SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],SB_refant='',LB_refant='',
+                  SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True):
    
    if remove_all_following_iterations:   ### Remove all following selfcal files after the iteration being run
       os.system("rm -rf *p{{{0:d}..99}}*".format(iteration))
    if prevselfcalmode==None:
       prevselfcalmode=selfcalmode
-   if mode=='SB+LB':
-      if LB_refant=='':
-         print('Specify LB_refant!')
-         return
-
-   if (mode=='SB+LB') or (mode=='SB-only'):
-      if SB_refant=='':
-         print('Specify SB_refant!')
-         return
  
    if (mode == 'LB+SB') and (scales==None):
       scales=[0,5,30]
@@ -1362,12 +1353,12 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
       if selfcalmode=='p':
          gaincal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
-                    gaintype='T', spw=SB_contspws,refant=SB_refant, calmode=selfcalmode, solint=solint, 
+                    gaintype='T', spw=SB_contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
                     minsnr=2.0, minblperant=4,combine='spw')
       elif selfcalmode=='ap':
          gaincal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
-                    gaintype='T', spw=SB_contspws,refant=SB_refant, calmode=selfcalmode, solint=solint, 
+                    gaintype='T', spw=SB_contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
                     minsnr=2.0, minblperant=4,combine='spw',solnorm=True)
       # Add caltable to the dictionary for use later
       data_params[i]['selfcal_tables'].append(data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
