@@ -1287,7 +1287,8 @@ def get_station_numbers(msfile, antenna_name):
 def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p',prevselfcalmode=None,nsigma=50.0,solint='inf',
                   noisemasks=['',''],parallel=False,SB_contspws='',
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
-                  cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True):
+                  cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
+                  sidelobethreshold=2.5):
    
    if remove_all_following_iterations:   ### Remove all following selfcal files after the iteration being run
       os.system("rm -rf *p{{{0:d}..99}}*".format(iteration))
@@ -1337,7 +1338,7 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
    #create single image using all visibilities; model column always writes with parallel=False
    os.system('rm -rf '+prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'*')
    tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration),scales=scales, nsigma=nsigma,
-                  savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize)
+                  savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold)
    estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.image.tt0', disk_mask=noisemasks[0], 
              noise_mask=noisemasks[1])
 

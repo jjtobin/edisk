@@ -318,9 +318,11 @@ with open(prefix+'.pickle', 'wb') as handle:
 ################ SELF-CALIBRATION PREPARATION #################
 ###############################################################
 
+
+### determine best reference antennas based on geometry and flagging
 if not skip_plots:
    for i in data_params.keys():
-      data_params[i]["refant"] = rank_refants(data_params[i]["vis"])
+      data_params[i]["refant"] = rank_refants(data_params[i]["vis_avg_shift_rescaled"])
 
 '''Find reference antenna, pick 2 near array center'''
 '''
@@ -348,6 +350,8 @@ if not skip_plots:
 SB_spwmap=[0,0,0,0,0,0,0]
 SB_contspws = '' 
 
+
+### Make a list of EBs to image
 vislist=[]
 for i in data_params.keys():
       if ('LB' in i): # skip over LB EBs if in SB-only mode
@@ -355,15 +359,14 @@ for i in data_params.keys():
       vislist.append(data_params[i]['vis_avg_shift_rescaled'])
 
 
-""" Merge the SB executions back into a single MS (even if only one SB MS to begin with) """
-
-
 """ Set up a clean mask """
-mask_ra  = '11:06:46.359' 
-mask_dec = '-77.22.32.83756'
+
+mask_ra  =  data_params[i]['common_dir'].split()[1].replace('h',':').replace('m',':').replace('s','')
+mask_dec = data_params[i]['common_dir'].split()[2].replace('d','.').replace('m','.').replace('s','')
 mask_pa  = 90.0 	# position angle of mask in degrees
 mask_maj = 1.01	# semimajor axis of mask in arcsec
 mask_min = 1.0 	# semiminor axis of mask in arcsec
+
 common_mask = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
               (mask_ra, mask_dec, mask_maj, mask_min, mask_pa)
 """ Define a noise annulus, measure the peak SNR in map """
@@ -381,12 +384,12 @@ tclean_wrapper(vis=vislist, imagename=prefix+'_dirty',
 estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask, 
              noise_mask=noise_annulus)
 
-#Ced110IRS4_dirty.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 88.43 mJy
-#Peak intensity of source: 30.05 mJy/beam
-#rms: 2.58e-01 mJy/beam
-#Peak SNR: 116.68
+#IRAS15398_dirty.image.tt0
+#Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
+#Flux inside disk mask: 38.57 mJy
+#Peak intensity of source: 7.72 mJy/beam
+#rms: 9.29e-02 mJy/beam
+#Peak SNR: 83.04
 
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
@@ -400,7 +403,7 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=50.0,solint='inf',
+self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap)
 
