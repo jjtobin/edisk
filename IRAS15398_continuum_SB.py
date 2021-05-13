@@ -370,8 +370,8 @@ mask_min = 1.0 	# semiminor axis of mask in arcsec
 common_mask = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
               (mask_ra, mask_dec, mask_maj, mask_min, mask_pa)
 """ Define a noise annulus, measure the peak SNR in map """
-noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
-                (mask_ra, mask_dec, 2.0*mask_maj) 
+noise_annulus = "annulus[[%s, %s],['%.2farcsec', '16.0arcsec']]" % \
+                (mask_ra, mask_dec, 8.0*mask_maj) 
 
 
 ###############################################################
@@ -384,12 +384,13 @@ tclean_wrapper(vis=vislist, imagename=prefix+'_dirty',
 estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask, 
              noise_mask=noise_annulus)
 
+
 #IRAS15398_dirty.image.tt0
 #Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
 #Flux inside disk mask: 38.57 mJy
 #Peak intensity of source: 7.72 mJy/beam
-#rms: 9.29e-02 mJy/beam
-#Peak SNR: 83.04
+#rms: 6.61e-02 mJy/beam
+#Peak SNR: 116.70
 
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
@@ -403,9 +404,10 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='inf',
+self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=30.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
+               noisethreshold=3.0)
 
 
 ### Plot gain corrections, loop through each
@@ -417,15 +419,17 @@ if not skip_plots:
 
 #IRAS15398_SB-only_p0.image.tt0
 #Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
-#Flux inside disk mask: 31.46 mJy
+#Flux inside disk mask: 30.75 mJy
 #Peak intensity of source: 7.74 mJy/beam
-#rms: 7.56e-02 mJy/beam
-#Peak SNR: 102.34
+#rms: 5.46e-02 mJy/beam
+#Peak SNR: 141.72
+
 
 iteration=1
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=15.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
+               noisethreshold=3.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -435,15 +439,16 @@ if not skip_plots:
 
 #IRAS15398_SB-only_p1.image.tt0
 #Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
-#Flux inside disk mask: 30.92 mJy
+#Flux inside disk mask: 30.88 mJy
 #Peak intensity of source: 8.06 mJy/beam
-#rms: 7.10e-02 mJy/beam
-#Peak SNR: 113.60
+#rms: 5.23e-02 mJy/beam
+#Peak SNR: 153.97
 
 iteration=2
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='6s',
+self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
+               noisethreshold=3.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -454,15 +459,16 @@ if not skip_plots:
 
 #IRAS15398_SB-only_p2.image.tt0
 #Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
-#Flux inside disk mask: 26.54 mJy
+#Flux inside disk mask: 24.01 mJy
 #Peak intensity of source: 8.06 mJy/beam
-#rms: 6.69e-02 mJy/beam
-#Peak SNR: 120.50
+#rms: 4.06e-02 mJy/beam
+#Peak SNR: 198.61
 
 iteration=3
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
+self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='18s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
+               noisethreshold=3.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -470,64 +476,27 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-#Ced110IRS4_SB-only_p3.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 84.84 mJy
-#Peak intensity of source: 43.52 mJy/beam
-#rms: 3.55e-02 mJy/beam
-#Peak SNR: 1227.21
 
+
+#IRAS15398_SB-only_p3.image.tt0
+#Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
+#Flux inside disk mask: 23.96 mJy
+#Peak intensity of source: 8.05 mJy/beam
+#rms: 4.03e-02 mJy/beam
+#Peak SNR: 199.61
 
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
-
 iteration=4
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
+self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
-
-if not skip_plots:
-   for i in data_params.keys():
-       plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_SB-only_ap'+str(iteration)+'.g'), xaxis='time',
-              yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
-       input("Press Enter key to advance to next MS/Caltable...")
-
-#Ced110IRS4_SB-only_p4.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 84.85 mJy
-#Peak intensity of source: 43.53 mJy/beam
-#rms: 3.54e-02 mJy/beam
-#Peak SNR: 1229.56
-
-iteration=5
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='30s',
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
-
-if not skip_plots:
-   for i in data_params.keys():
-       plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_SB-only_ap'+str(iteration)+'.g'), xaxis='time',
-              yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
-       input("Press Enter key tto advance to next MS/Caltable...")
-
-#Ced110IRS4_SB-only_ap5.image.tt0
-#Beam 0.449 arcsec x 0.260 arcsec (11.40 deg)
-#Flux inside disk mask: 84.54 mJy
-#Peak intensity of source: 43.76 mJy/beam
-#rms: 3.35e-02 mJy/beam
-#Peak SNR: 1304.93
-
-### Make the final image, will not run another self-calibration
-iteration=6
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='18s',
-               noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               SB_refant=SB_refant,LB_refant='',parallel=parallel,finalimageonly=True)
-
-#Ced110IRS4_SB-only_ap6.image.tt0
-#Beam 0.450 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 84.50 mJy
-#Peak intensity of source: 43.85 mJy/beam
-#rms: 3.35e-02 mJy/beam
-#Peak SNR: 1308.68
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
+               noisethreshold=3.0,finalimageonly=True)
+#IRAS15398_SB-only_p4.image.tt0
+#Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
+#Flux inside disk mask: 23.88 mJy
+#Peak intensity of source: 8.07 mJy/beam
+#rms: 4.01e-02 mJy/beam
+#Peak SNR: 201.31
 
 ###############################################################
 ################# SPLIT OFF FINAL CONT DATA ###################
@@ -535,6 +504,7 @@ self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode
 
 vislist=[]
 for i in data_params.keys():
+   os.system('rm -rf '+prefix+'_'+i+'_continuum.ms '+prefix+'_'+i+'_continuum.ms.tgz')
    split(vis=data_params[i]['vis_avg_selfcal'], outputvis=prefix+'_'+i+'_continuum.ms',
       datacolumn='data')
    data_params[i]['vis_final']=prefix+'_'+i+'_continuum.ms'
@@ -557,7 +527,7 @@ scales = SB_scales
 imagename=prefix+'_SB_continuum_robust_2.0'
 os.system('rm -rf '+imagename+'*')
 tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
+               scales=scales, nsigma=1.5, noisethreshold=3.0,
                robust=2.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
 imagename=imagename+'.image.tt0'
 exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
@@ -565,7 +535,7 @@ exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
 imagename=prefix+'_SB_continuum_robust_1.0'
 os.system('rm -rf '+imagename+'*')
 tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
+               scales=scales, nsigma=1.5, noisethreshold=3.0,
                robust=1.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
 imagename=imagename+'.image.tt0'
 exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
@@ -573,7 +543,7 @@ exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
 imagename=prefix+'_SB_continuum_robust_0.5'
 os.system('rm -rf '+imagename+'*')
 tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
+               scales=scales, nsigma=2.0, noisethreshold=3.0,
                robust=0.5,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
 imagename=imagename+'.image.tt0'
 exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
