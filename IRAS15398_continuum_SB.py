@@ -527,7 +527,7 @@ scales = SB_scales
 imagename=prefix+'_SB_continuum_robust_2.0'
 os.system('rm -rf '+imagename+'*')
 tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=1.5, noisethreshold=3.0,
+               scales=scales, nsigma=1.0, noisethreshold=2.0,
                robust=2.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
 imagename=imagename+'.image.tt0'
 exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
@@ -535,7 +535,7 @@ exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
 imagename=prefix+'_SB_continuum_robust_1.0'
 os.system('rm -rf '+imagename+'*')
 tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=1.5, noisethreshold=3.0,
+               scales=scales, nsigma=1.0, noisethreshold=2.0,
                robust=1.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
 imagename=imagename+'.image.tt0'
 exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
@@ -543,7 +543,7 @@ exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
 imagename=prefix+'_SB_continuum_robust_0.5'
 os.system('rm -rf '+imagename+'*')
 tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=2.0, noisethreshold=3.0,
+               scales=scales, nsigma=1.25, noisethreshold=2.0,
                robust=0.5,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
 imagename=imagename+'.image.tt0'
 exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
