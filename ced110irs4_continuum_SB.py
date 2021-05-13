@@ -529,6 +529,7 @@ self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode
 
 vislist=[]
 for i in data_params.keys():
+   os.system("rm -rf "+prefix+"_"+i+'_continuum.ms')
    split(vis=data_params[i]['vis_avg_selfcal'], outputvis=prefix+'_'+i+'_continuum.ms',
       datacolumn='data')
    data_params[i]['vis_final']=prefix+'_'+i+'_continuum.ms'
