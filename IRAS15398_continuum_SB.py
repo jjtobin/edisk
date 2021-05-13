@@ -147,7 +147,6 @@ for i in data_params.keys():
 ############## INITIAL IMAGING FOR ALIGNMENT ##################
 ###############################################################
 
-
 ### Image each dataset individually to get source position in each image
 ### Images are saved in the format prefix+'_name_initcont_exec#.ms'
 outertaper='2000klambda' # taper if necessary to align using larger-scale uv data, small-scale may have subtle shifts from phase noise
@@ -171,7 +170,7 @@ for i in data_params.keys():
 
 
 ### Check phase center fits in viewer, tf centers appear too shifted from the Gaussian fit, 
-### manually set the phase center dictionary entry by eye
+### manually set the phase center dictionary entry from a bye eye fit to continuum peaks
 
 
 """ The emission centers are slightly misaligned.  So we split out the 
