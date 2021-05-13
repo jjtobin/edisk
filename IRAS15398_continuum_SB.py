@@ -405,7 +405,7 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 iteration=0
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
 
 
 ### Plot gain corrections, loop through each
@@ -415,17 +415,17 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-### Make note of key metrics of image in each round
-#Ced110IRS4_SB-only_p0.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 83.51 mJy
-#Peak intensity of source: 30.41 mJy/beam
-#rms: 1.69e-01 mJy/beam
-#Peak SNR: 180.34
+#IRAS15398_SB-only_p0.image.tt0
+#Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
+#Flux inside disk mask: 31.46 mJy
+#Peak intensity of source: 7.74 mJy/beam
+#rms: 7.56e-02 mJy/beam
+#Peak SNR: 102.34
+
 iteration=1
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=25.0,solint='30s',
+self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=15.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -433,16 +433,17 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-#Ced110IRS4_SB-only_p1.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 84.55 mJy
-#Peak intensity of source: 37.08 mJy/beam
-#rms: 4.84e-02 mJy/beam
-#Peak SNR: 766.55
+#IRAS15398_SB-only_p1.image.tt0
+#Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
+#Flux inside disk mask: 30.92 mJy
+#Peak intensity of source: 8.06 mJy/beam
+#rms: 7.10e-02 mJy/beam
+#Peak SNR: 113.60
+
 iteration=2
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='6s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -450,17 +451,18 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-#Ced110IRS4_SB-only_p2.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 84.11 mJy
-#Peak intensity of source: 41.78 mJy/beam
-#rms: 3.65e-02 mJy/beam
-#Peak SNR: 1143.40
+
+#IRAS15398_SB-only_p2.image.tt0
+#Beam 0.202 arcsec x 0.178 arcsec (-82.03 deg)
+#Flux inside disk mask: 26.54 mJy
+#Peak intensity of source: 8.06 mJy/beam
+#rms: 6.69e-02 mJy/beam
+#Peak SNR: 120.50
 
 iteration=3
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -481,7 +483,7 @@ if not skip_plots:
 iteration=4
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -497,9 +499,9 @@ if not skip_plots:
 #Peak SNR: 1229.56
 
 iteration=5
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='18s',
+self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
