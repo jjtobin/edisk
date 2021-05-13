@@ -1323,6 +1323,9 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
          data_params[i]['selfcal_tables']=[]
          data_params[i]['selfcal_spwmap']=[]
       elif iteration > 0:
+         if len(data_params[i]['selfcal_tables']) > iteration:  ### remove selfcal table entries when redoing self-cal stages
+            data_params[i]['selfcal_tables'] = data_params[i]['selfcal_tables'][0:iteration]
+            data_params[i]['selfcal_spwmap'] = data_params[i]['selfcal_spwmap'][0:iteration]
          print('Input MS: ',data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+prevselfcalmode+str(iteration-1)+'.ms'))
          os.system('rm -rf '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+selfcalmode+str(iteration)+'.ms'))
          split(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+prevselfcalmode+str(iteration-1)+'.ms'),
