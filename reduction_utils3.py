@@ -560,7 +560,7 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
 
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
-def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,cyclefactor=3):
+def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,cyclefactor=3,uvrange=''):
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
     See the CASA 6.1.1 documentation for tclean to get the definitions of all the parameters
@@ -613,6 +613,7 @@ def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsig
            sidelobethreshold=sidelobethreshold,
            smoothfactor=smoothfactor,
            nterms = nterms,
+           uvrange=uvrange,
            parallel=parallel)
      #this step is a workaround a bug in tclean that doesn't always save the model during multiscale clean. See the "Known Issues" section for CASA 5.1.1 on NRAO's website
     if savemodel=='modelcolumn':
@@ -642,6 +643,7 @@ def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsig
                  calcres = False,
                  calcpsf = False,
                  nterms = nterms,
+                 uvrange=uvrange,
                  parallel=False)
     
 def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,parallel=False,cyclefactor=3):
