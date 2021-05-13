@@ -30,7 +30,7 @@ execfile('../reduction_utils3.py', globals())
 ###############################################################
 
 ### Use MPI CASA for faster imaging (start casa with mpicasa -n XX CASA; where XX is the number of processes >= 2)
-parallel=True  
+parallel=True
 
 ### if True, can run script non-interactively if later parameters properly set
 skip_plots = False	
@@ -104,25 +104,15 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 ### Get channels to exclude for continuum fitting (same as the ones 
 ### we flagged for doing making continuum MS)
-flagchannels_string=''
 for i in data_params.keys():
-   if flagchannels_string != '':      
-      flagchannels_string += ','+get_flagchannels(data_params[i], prefix)
-   else:
-      flagchannels_string += get_flagchannels(data_params[i], prefix)
+   flagchannels_string = get_flagchannels(data_params[i], prefix)
    print(flagchannels_string)
 
-### Get spws for argument list to uvcontsub
-spws_string=''
-for i in data_params.keys():
-   if spws_string != '':      
-      spws_string += ','+get_contsub_spws_indivdual_ms(data_params[i], prefix,only_cont_spws=True)
-   else:
-      spws_string += get_contsub_spws_indivdual_ms(data_params[i], prefix,only_cont_spws=True)
+   ### Get spws for argument list to uvcontsub
+   spws_string = get_contsub_spws_indivdual_ms(data_params[i], prefix,only_cont_spws=True)
    print(spws_string)
 
-### Run uvcontsub on combined, self-cal applied dataset; THIS WILL TAKE MANY HOURS PER EB
-for i in data_params.keys():
+   ### Run uvcontsub on combined, self-cal applied dataset; THIS WILL TAKE MANY HOURS PER EB
    contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True)
    os.system('mv '+data_params[i]['vis_selfcal'].replace('.selfcal','.selfcal.contsub')+' '+prefix+'_'+i+'_spectral_line.ms')
    data_params[i]['vis_contsub']=prefix+'_'+i+'_spectral_line.ms'
