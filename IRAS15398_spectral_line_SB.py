@@ -179,7 +179,7 @@ linespw='6'
 
 imagename = prefix+'_SB_12CO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             threshold='0.005Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
                              noisethreshold=2.5,parallel=parallel)
 
 imagename = prefix+'_SB_12CO_robust_0.0'

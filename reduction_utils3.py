@@ -683,7 +683,7 @@ def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, 
         else:
             print("Error: need to set cellsize manually")
 
-    for ext in ['.image*', '.mask', '.model*', '.pb*', '.psf*', '.residual*', '.sumwt*']:
+    for ext in ['.image*', '.mask', '.model*', '.pb*', '.psf*', '.residual*', '.sumwt*', '.workdirectory*']:
         os.system('rm -rf '+ imagename + ext)
     tclean(vis= vis, 
            imagename = imagename, 
