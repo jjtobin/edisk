@@ -113,6 +113,7 @@ for i in data_params.keys():
 
    ### Run uvcontsub on combined, self-cal applied dataset; THIS WILL TAKE MANY HOURS PER EB
    contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True)
+   os.system('rm -rf '+prefix+'_'+i+'_spectral_line.ms')  ### remove existing spectral line MS if present
    os.system('mv '+data_params[i]['vis_selfcal'].replace('.selfcal','.selfcal.contsub')+' '+prefix+'_'+i+'_spectral_line.ms')
    data_params[i]['vis_contsub']=prefix+'_'+i+'_spectral_line.ms'
 
@@ -125,6 +126,7 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 for i in data_params.keys():
    if 'SB' in i:
+      os.system('rm -rf '+data_params[i]['vis_contsub']+'.tar.gz')
       os.system('tar czf '+data_params[i]['vis_contsub']+'.tar.gz '+data_params[i]['vis_contsub'])
 
 ###############################################################
@@ -147,20 +149,12 @@ nchan = 120
 linefreq='219.56035410GHz'
 linespw='3'
 
-imagename = prefix+'_SB_C18O'
-tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
 
-imagename = prefix+'_SB_C18O_robust_-0.5'
+imagename = prefix+'_SB_C18O_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=-0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.5,parallel=parallel)
 
-imagename = prefix+'_SB_C18O_robust_0.0'
-tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.0, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
 
 ### 13CO images
 chanstart = '-5.5km/s'
@@ -169,14 +163,12 @@ nchan = 120
 linefreq='220.39868420GHz'
 linespw='1'
 
-imagename = prefix+'_SB_13CO'
+
+imagename = prefix+'_SB_13CO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
-imagename = prefix+'_SB_13CO_robust_-0.5'
-tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=-0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.5,parallel=parallel)
+
 
 ### 12CO images
 chanstart = '-100.0km/s'
@@ -185,11 +177,15 @@ nchan = 315
 linefreq='230.538GHz'
 linespw='6'
 
-imagename = prefix+'_SB_12CO'
+imagename = prefix+'_SB_12CO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.5,parallel=parallel)
 
+imagename = prefix+'_SB_12CO_robust_0.0'
+tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
+                             nsigma=3.0,imsize=2600,cellsize='0.015arcsec',robust=0.0, sidelobethreshold=2.0,
+                             noisethreshold=2.5,parallel=parallel)
 ### SO Images
 chanstart = '-5.5km/s'
 chanwidth = '0.167km/s'
@@ -197,10 +193,10 @@ nchan = 120
 linefreq='219.94944200GHz'
 linespw='2'
 
-imagename = prefix+'_SB_12CO'
+imagename = prefix+'_SB_SO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 ### H2CO 3(2,1)-2(2,0) Images
 chanstart = '-5.5km/s'
@@ -209,10 +205,10 @@ nchan = 120
 linefreq='218.76006600GHz'
 linespw='0'
 
-imagename = prefix+'_SB_H2CO_3_21-2_20_218.76GHz'
+imagename = prefix+'_SB_H2CO_3_21-2_20_218.76GHz_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 
 ### H2CO 3(0,3)-2(0,2) Images
@@ -222,10 +218,10 @@ nchan = 23
 linefreq='218.22219200GHz'
 linespw='4'
 
-imagename = prefix+'_SB_H2CO_3_03-2_02_218.22GHz'
+imagename = prefix+'_SB_H2CO_3_03-2_02_218.22GHz_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
                              nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             noisethreshold=3.0,parallel=parallel)
 
 parallel=True
 chanstart = '-10km/s'
@@ -233,10 +229,10 @@ chanwidth = '1.34km/s'
 nchan = 23
 H2CO_spw='4'
 
-imagename = prefix+'_SB_H2CO_218.47'
+imagename = prefix+'_SB_H2CO_3_03-2_02_218.47GHz_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 
 ### H2CO 3(2,2)-2(2,1) Images
@@ -247,10 +243,10 @@ nchan = 23
 linefreq='218.47563200GHz'
 linespw='4'
 
-imagename = prefix+'_SB_H2CO_218.47'
+imagename = prefix+'_SB_H2CO_3_03-2_02_218.47GHz_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 ### c-C3H2 217.82 GHz Images
 chanstart = '-10km/s'
@@ -259,10 +255,10 @@ nchan = 23
 linefreq='217.82215GHz'
 linespw='4'
 
-imagename = prefix+'_SB_c-C3H2_217.82'
+imagename = prefix+'_SB_c-C3H2_217.82_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 
 ### c-C3H2 217.94 GHz Images
@@ -272,10 +268,10 @@ nchan = 23
 linefreq='217.94005GHz'
 linespw='4'
 
-imagename = prefix+'_SB_cC3H2_217.94'
+imagename = prefix+'_SB_cC3H2_217.94_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 
 ### c-C3H2 218.16 GHz Images
@@ -285,10 +281,10 @@ nchan = 23
 linefreq='218.16044GHz'
 linespw='4'
 
-imagename = prefix+'_SB_cC3H2_218.16'
+imagename = prefix+'_SB_cC3H2_218.16_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 
 ### DCN Images
@@ -298,10 +294,10 @@ nchan = 23
 linefreq='217.2386GHz'
 linespw='4'
 
-imagename = prefix+'_SB_DCN'
+imagename = prefix+'_SB_DCN_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 ### CH3OH Images
 chanstart = '-10km/s'
@@ -310,10 +306,10 @@ nchan = 23
 linefreq='218.44006300GHz'
 linespw='4'
 
-imagename = prefix+'_SB_CH3OH'
+imagename = prefix+'_SB_CH3OH_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 ### SiO Images
 parallel=True
@@ -323,10 +319,10 @@ nchan = 150
 linefreq='217.10498000GHz'
 linespw='4'
 
-imagename = prefix+'_SB_SiO'
+imagename = prefix+'_SB_SiO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=4.0,parallel=parallel)
+                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=3.0,parallel=parallel)
 
 
 
