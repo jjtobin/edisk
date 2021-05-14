@@ -716,6 +716,7 @@ def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, 
            restoringbeam='common',
            threshold=threshold,
            uvrange=uvrange,
+           restfreq=restfreq,
            parallel=parallel)
 
 def image_each_obs(ms_dict, prefix, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.3, niter = 50000, cycleniter = 300,sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,uvtaper='',parallel=False):

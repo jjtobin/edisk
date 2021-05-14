@@ -184,7 +184,7 @@ tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefre
 
 imagename = prefix+'_SB_12CO_robust_0.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=2600,cellsize='0.015arcsec',robust=0.0, sidelobethreshold=2.0,
+                             threshold='0.005Jy',imsize=2600,cellsize='0.015arcsec',robust=0.0, sidelobethreshold=2.0,
                              noisethreshold=2.5,parallel=parallel)
 ### SO Images
 chanstart = '-5.5km/s'
