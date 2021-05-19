@@ -560,7 +560,8 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
 
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
-def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,cyclefactor=3,uvrange=''):
+def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,
+cyclefactor=3,uvrange='',threshold='0.0Jy'):
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
     See the CASA 6.1.1 documentation for tclean to get the definitions of all the parameters
@@ -571,6 +572,8 @@ def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsig
        usemask='auto-multithresh'
     else:
        usemask='user'
+    if threshold != '0.0Jy':
+       nsigma=0.0
 
     if imsize is None:
         if 'LB' in vis or 'combined' in vis or 'continuum' in vis:
@@ -614,6 +617,7 @@ def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsig
            smoothfactor=smoothfactor,
            nterms = nterms,
            uvrange=uvrange,
+           threshold=threshold,
            parallel=parallel)
      #this step is a workaround a bug in tclean that doesn't always save the model during multiscale clean. See the "Known Issues" section for CASA 5.1.1 on NRAO's website
     if savemodel=='modelcolumn':
@@ -644,9 +648,10 @@ def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsig
                  calcpsf = False,
                  nterms = nterms,
                  uvrange=uvrange,
+                 threshold=threshold,
                  parallel=False)
     
-def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,parallel=False,cyclefactor=3):
+def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange=''):
 
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
@@ -658,6 +663,9 @@ def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, 
        usemask='auto-multithresh'
     else:
        usemask='user'
+    if threshold != '0.0Jy':
+       nsigma=0.0
+
 
     if imsize is None:
         if 'LB' in vis or 'combined' in vis or 'continuum' in vis:
@@ -675,7 +683,7 @@ def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, 
         else:
             print("Error: need to set cellsize manually")
 
-    for ext in ['.image*', '.mask', '.model*', '.pb*', '.psf*', '.residual*', '.sumwt*']:
+    for ext in ['.image*', '.mask', '.model*', '.pb*', '.psf*', '.residual*', '.sumwt*', '.workdirectory*']:
         os.system('rm -rf '+ imagename + ext)
     tclean(vis= vis, 
            imagename = imagename, 
@@ -704,8 +712,13 @@ def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, 
            mask=mask,
            usemask=usemask,
            sidelobethreshold=sidelobethreshold,
+           lownoisethreshold=lownoisethreshold,
+           noisethreshold=noisethreshold,
            smoothfactor=smoothfactor,
            restoringbeam='common',
+           threshold=threshold,
+           uvrange=uvrange,
+           restfreq=restfreq,
            parallel=parallel)
 
 def image_each_obs(ms_dict, prefix, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.3, niter = 50000, cycleniter = 300,sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,uvtaper='',parallel=False):
