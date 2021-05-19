@@ -1467,7 +1467,7 @@ def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcs
       print(vis,'Relative to Natural Weighting = ', sens[2])  
       sensitivities[counter]=sens[1]*scalefactor
       counter+=1
-   estsens=np.sum(sensitivities)/float(len(vislist))
+   estsens=np.sum(sensitivities)/float(counter)/(float(counter))**0.5
    return estsens
 
 
