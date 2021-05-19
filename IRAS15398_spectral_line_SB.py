@@ -152,8 +152,8 @@ linespw='3'
 
 imagename = prefix+'_SB_C18O_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             threshold='0.010Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=2.5,parallel=parallel)
+                             threshold='0.006Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 ### 13CO images
@@ -166,8 +166,8 @@ linespw='1'
 
 imagename = prefix+'_SB_13CO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             threshold='0.010Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=2.5,parallel=parallel)
+                             threshold='0.006Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 ### 12CO images
@@ -180,12 +180,12 @@ linespw='6'
 imagename = prefix+'_SB_12CO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
                              threshold='0.005Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=2.5,parallel=parallel)
+                             noisethreshold=3.0,lownoisethreshold=1.0,parallel=parallel)
 
 imagename = prefix+'_SB_12CO_robust_0.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
                              threshold='0.005Jy',imsize=2600,cellsize='0.015arcsec',robust=0.0, sidelobethreshold=2.0,
-                             noisethreshold=2.5,parallel=parallel)
+                             noisethreshold=3.0,lownoisethreshold=1.0,parallel=parallel)
 ### SO Images
 chanstart = '-5.5km/s'
 chanwidth = '0.167km/s'
@@ -195,8 +195,8 @@ linespw='2'
 
 imagename = prefix+'_SB_SO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.005Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 ### H2CO 3(2,1)-2(2,0) Images
 chanstart = '-5.5km/s'
@@ -207,8 +207,8 @@ linespw='0'
 
 imagename = prefix+'_SB_H2CO_3_21-2_20_218.76GHz_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.005Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 ### H2CO 3(0,3)-2(0,2) Images
@@ -220,19 +220,8 @@ linespw='4'
 
 imagename = prefix+'_SB_H2CO_3_03-2_02_218.22GHz_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
-
-parallel=True
-chanstart = '-10km/s'
-chanwidth = '1.34km/s'
-nchan = 23
-H2CO_spw='4'
-
-imagename = prefix+'_SB_H2CO_3_03-2_02_218.47GHz_robust_2.0'
-tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.003Jy',imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 ### H2CO 3(2,2)-2(2,1) Images
@@ -246,7 +235,7 @@ linespw='4'
 imagename = prefix+'_SB_H2CO_3_03-2_02_218.47GHz_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
                              nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 ### c-C3H2 217.82 GHz Images
 chanstart = '-10km/s'
@@ -257,8 +246,8 @@ linespw='4'
 
 imagename = prefix+'_SB_c-C3H2_217.82_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.003Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 ### c-C3H2 217.94 GHz Images
@@ -270,8 +259,8 @@ linespw='4'
 
 imagename = prefix+'_SB_cC3H2_217.94_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.003Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 ### c-C3H2 218.16 GHz Images
@@ -283,8 +272,8 @@ linespw='4'
 
 imagename = prefix+'_SB_cC3H2_218.16_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.003Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 ### DCN Images
@@ -296,8 +285,8 @@ linespw='4'
 
 imagename = prefix+'_SB_DCN_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.003Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 ### CH3OH Images
 chanstart = '-10km/s'
@@ -308,8 +297,8 @@ linespw='4'
 
 imagename = prefix+'_SB_CH3OH_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.003Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 ### SiO Images
 parallel=True
@@ -321,8 +310,8 @@ linespw='4'
 
 imagename = prefix+'_SB_SiO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
-                             nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,parallel=parallel)
+                             threshold='0.003Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 
 
@@ -336,7 +325,9 @@ os.system('mkdir initial_images')
 os.system('mv *initcont*.image *contp*.image *contap*.image initial_images')
 
 
-imagelist=glob.glob('*.image*')
+### Remove fits files and pbcor files from previous iterations. 
+os.system("rm -rf *.pbcor* *.fits") 
+imagelist=glob.glob('*.image') + glob.glob('*.image.tt0') 
 for image in imagelist:
    impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True)
