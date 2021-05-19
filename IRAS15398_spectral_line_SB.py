@@ -321,6 +321,7 @@ import glob
 os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
 
 ### put selfcalibration intermediate images somewhere safe
+os.system('rm -rf initial_images')
 os.system('mkdir initial_images')
 os.system('mv *initcont*.image *contp*.image *contap*.image initial_images')
 os.system('mv *initcont*.mask *contp*.mask *contap*.mask initial_images')
