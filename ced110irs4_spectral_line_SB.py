@@ -132,7 +132,6 @@ for i in data_params.keys():
 ############ RUN A FINAL SPECTRAL LINE IMAGE SET ##############
 ###############################################################
 
-parallel=True     # only set to True if running with mpicasa
 prefix='Ced110IRS4'
 
 ### generate list of MS files to image
@@ -228,7 +227,6 @@ tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefre
                              nsigma=3.0,imsize=1600,cellsize='0.025arcsec',robust=0.5, sidelobethreshold=2.0,
                              noisethreshold=4.0,parallel=parallel)
 
-parallel=True
 chanstart = '-10km/s'
 chanwidth = '1.34km/s'
 nchan = 23
@@ -241,7 +239,6 @@ tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefre
 
 
 ### H2CO 3(2,2)-2(2,1) Images
-parallel=True
 chanstart = '-10km/s'
 chanwidth = '1.34km/s'
 nchan = 23
@@ -317,7 +314,6 @@ tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefre
                              noisethreshold=4.0,parallel=parallel)
 
 ### SiO Images
-parallel=True
 chanstart = '-100km/s'
 chanwidth = '1.34km/s'
 nchan = 150
