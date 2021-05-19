@@ -49,6 +49,18 @@ LB_path = WD_path+'LB/'
 SB_scales = [0, 5] #[0, 5, 10, 20]
 LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 
+### automasking parameters for very extended emission
+sidelobethreshold=2.0
+noisethreshold=2.0
+lownoisethreshold=1.0 
+
+### automasking parameters for compact emission
+sidelobethreshold=2.0
+noisethreshold=4.0
+lownoisethreshold=1.5 
+
+
+
 #read in final data_params from continuum to ensure we get the phase centers for each MS
 with open(prefix+'.pickle', 'rb') as handle:
     data_params = pickle.load(handle)
@@ -180,12 +192,12 @@ linespw='6'
 imagename = prefix+'_SB_12CO_robust_2.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
                              threshold='0.005Jy',imsize=1600,cellsize='0.025arcsec',robust=2.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,lownoisethreshold=1.0,parallel=parallel)
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 
 imagename = prefix+'_SB_12CO_robust_0.0'
 tclean_spectral_line_wrapper(vislist,imagename,chanstart,chanwidth,nchan,linefreq,linespw,SB_scales,
                              threshold='0.005Jy',imsize=2600,cellsize='0.015arcsec',robust=0.0, sidelobethreshold=2.0,
-                             noisethreshold=3.0,lownoisethreshold=1.0,parallel=parallel)
+                             noisethreshold=2.0,lownoisethreshold=1.0,parallel=parallel)
 ### SO Images
 chanstart = '-5.5km/s'
 chanwidth = '0.167km/s'
@@ -333,11 +345,11 @@ imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
    impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True)
-   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True)
+   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
 imagelist=glob.glob('*.mask')
 for image in imagelist:
-   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True)
+   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
 ### Remove intermediate selfcal MSfiles
 os.system("rm -rf *p{0..99}.ms")
