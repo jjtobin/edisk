@@ -340,8 +340,10 @@ os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workd
 os.system('mkdir initial_images')
 os.system('mv *initcont*.image *contp*.image *contap*.image initial_images')
 
+### Remove fits files and pbcor files from previous iterations.
+os.system("rm -rf *.pbcor* *.fits")
 
-imagelist=glob.glob('*.image*')
+imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
    impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True)
