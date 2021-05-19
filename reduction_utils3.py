@@ -1461,8 +1461,8 @@ def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcs
       im.defineimage(mode=specmode,stokes='I',spw=spw,cellx=cellsize,celly=cellsize,nx=imsize,ny=imsize)  
       im.weight(type='briggs',robust=robust)  
       sens=im.apparentsens()
-      print(data_params[key]['vis_final'],'Briggs Sensitivity = ', sens[1])
-      print(data_params[key]['vis_final'],'Relative to Natural Weighting = ', sens[2])  
+      print(vis,'Briggs Sensitivity = ', sens[1])
+      print(vis,'Relative to Natural Weighting = ', sens[2])  
       sensitivities[counter]=sens[1]
       counter+=1
    estsens=np.sum(sensitivities)/float(len(vislist))
