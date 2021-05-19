@@ -1446,10 +1446,12 @@ def rank_refants(vis):
 def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcsec',imsize=1600,robust=0.5):
    sensitivities=np.zeros(len(data_params.keys()))
    counter=0
+   scalefactor=1.0
    for key in data_params.keys():
       if specmode=='mfs':
          spw=data_params[key]['cont_spws'].tolist()
          vis=data_params[key]['vis_final']
+         scalefactor=2.5
       spwstring=''.join(str(spwnum)+',' for spwnum in spw)[:-1]
       if specmode=='cube':
          print('Using Cube Mode')
@@ -1463,7 +1465,7 @@ def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcs
       sens=im.apparentsens()
       print(vis,'Briggs Sensitivity = ', sens[1])
       print(vis,'Relative to Natural Weighting = ', sens[2])  
-      sensitivities[counter]=sens[1]
+      sensitivities[counter]=sens[1]*scalefactor
       counter+=1
    estsens=np.sum(sensitivities)/float(len(vislist))
    return estsens
