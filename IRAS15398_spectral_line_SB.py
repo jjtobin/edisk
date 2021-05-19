@@ -323,16 +323,20 @@ os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workd
 ### put selfcalibration intermediate images somewhere safe
 os.system('mkdir initial_images')
 os.system('mv *initcont*.image *contp*.image *contap*.image initial_images')
-
+os.system('mv *initcont*.mask *contp*.mask *contap*.mask initial_images')
 
 ### Remove fits files and pbcor files from previous iterations. 
 os.system("rm -rf *.pbcor* *.fits") 
-imagelist=glob.glob('*.image') + glob.glob('*.image.tt0') 
+
+imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
    impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True)
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True)
 
+imagelist=glob.glob('*.mask')
+for image in imagelist:
+   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True)
 
 ### Remove intermediate selfcal MSfiles
 os.system("rm -rf *p{0..99}.ms")
@@ -341,12 +345,9 @@ os.system('rm -rf *rescaled.ms')
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *initcont*.ms')
 
-
-
-
-
-os.system('rm -rf initial_images/*.ms initial_images/*.residual* initial_images/*.psf* initial_images/*.model* initial_images/*.mask initial_images/*dirty* initial_images/*.sumwt* initial_images/*.gridwt*' )
-os.system('rm -rf *.fits.fits')
+### Make a directory to put the final products
+os.system('rm -rf export')
+os.system('mkdir export')
 os.system('cp *.fits export/')
 os.system('cp *.ms* export/')
 
