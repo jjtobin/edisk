@@ -114,6 +114,7 @@ for i in data_params.keys():
 
    ### Run uvcontsub on combined, self-cal applied dataset; THIS WILL TAKE MANY HOURS PER EB
    contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True)
+   os.system('rm -rf '+prefix+'_'+i+'_spectral_line.ms')  ### remove existing spectral line MS if present
    os.system('mv '+data_params[i]['vis_selfcal'].replace('.selfcal','.selfcal.contsub')+' '+prefix+'_'+i+'_spectral_line.ms')
    data_params[i]['vis_contsub']=prefix+'_'+i+'_spectral_line.ms'
 
@@ -126,6 +127,7 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 for i in data_params.keys():
    if 'SB' in i:
+      os.system('rm -rf '+data_params[i]['vis_contsub']+'.tar.gz')
       os.system('tar czf '+data_params[i]['vis_contsub']+'.tar.gz '+data_params[i]['vis_contsub'])
 
 ###############################################################
@@ -333,18 +335,23 @@ import glob
 os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
 
 ### put selfcalibration intermediate images somewhere safe
+os.system('rm -rf initial_images')
 os.system('mkdir initial_images')
 os.system('mv *initcont*.image *contp*.image *contap*.image initial_images')
+os.system('mv *initcont*.mask *contp*.mask *contap*.mask initial_images')
 
-### Remove fits files and pbcor files from previous iterations.
-os.system("rm -rf *.pbcor* *.fits")
+### Remove fits files and pbcor files from previous iterations. 
+os.system("rm -rf *.pbcor* *.fits") 
 
 imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
    impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
-   exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True)
-   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True)
+   exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True,dropdeg=True)
+   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
+imagelist=glob.glob('*.mask')
+for image in imagelist:
+   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
 ### Remove intermediate selfcal MSfiles
 os.system("rm -rf *p{0..99}.ms")
@@ -353,12 +360,9 @@ os.system('rm -rf *rescaled.ms')
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *initcont*.ms')
 
-
-
-
-
-os.system('rm -rf initial_images/*.ms initial_images/*.residual* initial_images/*.psf* initial_images/*.model* initial_images/*.mask initial_images/*dirty* initial_images/*.sumwt* initial_images/*.gridwt*' )
-os.system('rm -rf *.fits.fits')
+### Make a directory to put the final products
+os.system('rm -rf export')
+os.system('mkdir export')
 os.system('cp *.fits export/')
 os.system('cp *.ms* export/')
 
