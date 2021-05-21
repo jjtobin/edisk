@@ -545,71 +545,19 @@ with open(prefix+'.pickle', 'wb') as handle:
 ################## RUN A FINAL IMAGE SET ######################
 ###############################################################
 
-
 scales = SB_scales
 
+for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
+    imagename=prefix+'_SB_continuum_robust_'+str(robust)
+    os.system('rm -rf '+imagename+'*')
 
-imagename=prefix+'_SB_continuum_robust_2.0'
-os.system('rm -rf '+imagename+'*')
-tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
-               robust=2.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-imagename=imagename+'.image.tt0'
-exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
+    sigma = get_sensitivity(data_parms, specmode='mfs')
 
-imagename=prefix+'_SB_continuum_robust_1.0'
-os.system('rm -rf '+imagename+'*')
-tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
-               robust=1.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-imagename=imagename+'.image.tt0'
-exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
+    tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
+            smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
+            noisethreshold=3.0, robust=robust, parallel=parallel, 
+            cellsize='0.025arcsec', imsize=1600)
 
-imagename=prefix+'_SB_continuum_robust_0.5'
-os.system('rm -rf '+imagename+'*')
-tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
-               robust=0.5,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-imagename=imagename+'.image.tt0'
-exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
-
-imagename=prefix+'_SB_continuum_robust_0.0'
-os.system('rm -rf '+imagename+'*')
-tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
-               robust=0.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-imagename=imagename+'.image.tt0'
-exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
-
-imagename=prefix+'_SB_continuum_robust_-0.5'
-os.system('rm -rf '+imagename+'*')
-tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
-               robust=-0.5,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-imagename=imagename+'.image.tt0'
-exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
-
-imagename=prefix+'_SB_continuum_robust_-1.0'
-os.system('rm -rf '+imagename+'*')
-tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
-               robust=-1.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-imagename=imagename+'.image.tt0'
-exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
-
-
-imagename=prefix+'_SB_continuum_robust_-2.0'
-os.system('rm -rf '+imagename+'*')
-tclean_wrapper(vis=vislist, imagename=imagename,sidelobethreshold=2.0,smoothfactor=1.5,  
-               scales=scales, nsigma=3.0, noisethreshold=3.0,
-               robust=-2.0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-imagename=imagename+'.image.tt0'
-exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
-
-
-
-
-
-
-
+    imagename=imagename+'.image.tt0'
+    exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
 
