@@ -199,7 +199,7 @@ for line in image_list:
     for robust in image_list[line]["robust"]:
         imagename = prefix+f'_SB_'+line+'_robust_'+str(robust)
 
-        sigma = get_sensitivity(data_parms, specmode='cube', \
+        sigma = get_sensitivity(data_params, specmode='cube', \
                 spw=[image_list[line]["linespw"]], chan=450)
 
         tclean_spectral_line_wrapper(vislist, imagename,

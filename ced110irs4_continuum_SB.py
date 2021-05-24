@@ -551,7 +551,7 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
     imagename=prefix+'_SB_continuum_robust_'+str(robust)
     os.system('rm -rf '+imagename+'*')
 
-    sigma = get_sensitivity(data_parms, specmode='mfs')
+    sigma = get_sensitivity(data_params, specmode='mfs')
 
     tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
