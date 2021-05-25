@@ -536,7 +536,26 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
     imagename=imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
 
+###############################################################
+########################### CLEANUP ###########################
+###############################################################
 
+### Remove extra image products
+os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
+
+### put selfcalibration intermediate images somewhere safe
+os.system('rm -rf initial_images')
+os.system('mkdir initial_images')
+os.system('mv *initcont*.image *_p*.image* *_ap*.image* initial_images')
+os.system('mv *initcont*.mask *_p*.mask *_ap*.mask initial_images')
+os.system('rm -rf *p*.alpha* *p*.pb.tt0')
+
+### Remove intermediate selfcal MSfiles
+os.system("rm -rf *p{0..99}.ms")
+### Remove rescaled selfcal MSfiles
+os.system('rm -rf *rescaled.ms')
+### Remove rescaled selfcal MSfiles
+os.system('rm -rf *initcont*.ms')
 
 
 
