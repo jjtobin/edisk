@@ -13,7 +13,7 @@ reducer: J. Tobin
 """
 
 ### Import statements
-sys.path.append('/home/casa/contrib/AIV/science/analysis_scripts/')
+#sys.path.append('/home/casa/contrib/AIV/science/analysis_scripts/')
 import analysisUtils as au
 import analysisUtils as aU
 import string
@@ -317,9 +317,11 @@ with open(prefix+'.pickle', 'wb') as handle:
 ################ SELF-CALIBRATION PREPARATION #################
 ###############################################################
 
+
+### determine best reference antennas based on geometry and flagging
 if not skip_plots:
    for i in data_params.keys():
-      data_params[i]["refant"] = rank_refants(data_params[i]["vis"])
+      data_params[i]["refant"] = rank_refants(data_params[i]["vis_avg_shift_rescaled"])
 
 '''Find reference antenna, pick 2 near array center'''
 '''
@@ -347,6 +349,8 @@ if not skip_plots:
 SB_spwmap=[0,0,0,0,0,0,0]
 SB_contspws = '' 
 
+
+### Make a list of EBs to image
 vislist=[]
 for i in data_params.keys():
       if ('LB' in i): # skip over LB EBs if in SB-only mode
@@ -354,15 +358,14 @@ for i in data_params.keys():
       vislist.append(data_params[i]['vis_avg_shift_rescaled'])
 
 
-""" Merge the SB executions back into a single MS (even if only one SB MS to begin with) """
-
-
 """ Set up a clean mask """
-mask_ra  = '11:06:46.359' 
-mask_dec = '-77.22.32.83756'
+
+mask_ra  =  data_params[i]['common_dir'].split()[1].replace('h',':').replace('m',':').replace('s','')
+mask_dec = data_params[i]['common_dir'].split()[2].replace('d','.').replace('m','.').replace('s','')
 mask_pa  = 90.0 	# position angle of mask in degrees
 mask_maj = 1.01	# semimajor axis of mask in arcsec
 mask_min = 1.0 	# semiminor axis of mask in arcsec
+
 common_mask = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
               (mask_ra, mask_dec, mask_maj, mask_min, mask_pa)
 """ Define a noise annulus, measure the peak SNR in map """
@@ -529,7 +532,7 @@ self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode
 
 vislist=[]
 for i in data_params.keys():
-   os.system("rm -rf "+prefix+"_"+i+'_continuum.ms')
+   os.system('rm -rf '+prefix+'_'+i+'_continuum.ms '+prefix+'_'+i+'_continuum.ms.tgz')
    split(vis=data_params[i]['vis_avg_selfcal'], outputvis=prefix+'_'+i+'_continuum.ms',
       datacolumn='data')
    data_params[i]['vis_final']=prefix+'_'+i+'_continuum.ms'
@@ -560,4 +563,33 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
 
     imagename=imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
+
+###############################################################
+########################### CLEANUP ###########################
+###############################################################
+
+### Remove extra image products
+os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
+
+### put selfcalibration intermediate images somewhere safe
+os.system('rm -rf initial_images')
+os.system('mkdir initial_images')
+os.system('mv *initcont*.image *_p*.image* *_ap*.image* initial_images')
+os.system('mv *initcont*.mask *_p*.mask *_ap*.mask initial_images')
+os.system('rm -rf *p*.alpha* *p*.pb.tt0')
+
+### Remove intermediate selfcal MSfiles
+os.system("rm -rf *p{0..99}.ms")
+os.system("rm -rf *p{0..99}.ms.flagversions")
+### Remove rescaled selfcal MSfiles
+os.system('rm -rf *rescaled.ms')
+os.system('rm -rf *rescaled.ms.flagversions')
+### Remove rescaled selfcal MSfiles
+os.system('rm -rf *initcont*.ms')
+os.system('rm -rf *initcont*.ms.flagversions')
+
+
+
+
+
 
