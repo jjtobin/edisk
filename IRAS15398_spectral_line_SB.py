@@ -53,12 +53,12 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 sidelobethreshold=2.0
 noisethreshold=2.0
 lownoisethreshold=1.0 
-
+smoothfactor=2.0
 ### automasking parameters for compact emission (uncomment to use)
 #sidelobethreshold=2.0
 #noisethreshold=4.0
 #lownoisethreshold=1.5 
-
+#smoothfactor=1.0
 
 
 #read in final data_params from continuum to ensure we get the phase centers for each MS
@@ -103,7 +103,7 @@ for i in data_params.keys():
    split(vis=data_params[i]['vis_shift_rescaled'],outputvis=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
    data_params[i]['vis_selfcal']=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal')
    ### cleanup
-   os.system('rm -rf '+data_params[i]['vis_shift_rescaled']+' '+data_params[i]['vis_shift'])
+   os.system('rm -rf '+data_params[i]['vis_shift_rescaled']+' '+data_params[i]['vis_shift']+' '+data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal'))
 
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -138,8 +138,8 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 for i in data_params.keys():
    if 'SB' in i:
-      os.system('rm -rf '+data_params[i]['vis_contsub']+'.tar.gz')
-      os.system('tar czf '+data_params[i]['vis_contsub']+'.tar.gz '+data_params[i]['vis_contsub'])
+      os.system('rm -rf '+data_params[i]['vis_contsub']+'.tgz')
+      os.system('tar czf '+data_params[i]['vis_contsub']+'.tgz '+data_params[i]['vis_contsub'])
 
 ###############################################################
 ############ RUN A FINAL SPECTRAL LINE IMAGE SET ##############
@@ -221,7 +221,7 @@ for line in image_list:
                 image_list[line]["linespw"], SB_scales, threshold=3.0*sigma,
                 imsize=1600, cellsize='0.025arcsec',robust=robust, 
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-                lownoisethreshold=lownoisethreshold,parallel=parallel)
+                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel)
 
 
 ###############################################################
@@ -247,12 +247,12 @@ for image in imagelist:
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
 ### Remove rescaled selfcal MSfiles
-os.system('rm -rf *rescaled.ms')
+os.system('rm -rf *rescaled.ms.*')
 
 ### Make a directory to put the final products
 os.system('rm -rf export')
 os.system('mkdir export')
 os.system('cp *.fits export/')
-os.system('cp *.ms* export/')
+os.system('cp *.tgz export/')
 
 

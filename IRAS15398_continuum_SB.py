@@ -552,11 +552,13 @@ os.system('rm -rf *p*.alpha* *p*.pb.tt0')
 
 ### Remove intermediate selfcal MSfiles
 os.system("rm -rf *p{0..99}.ms")
+os.system("rm -rf *p{0..99}.ms.flagversions")
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *rescaled.ms')
+os.system('rm -rf *rescaled.ms.flagversions')
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *initcont*.ms')
-
+os.system('rm -rf *initcont*.ms.flagversions')
 
 
 
