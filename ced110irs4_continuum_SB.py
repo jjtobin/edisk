@@ -34,7 +34,7 @@ execfile('../reduction_utils3.py', globals())
 parallel=True  
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
@@ -319,9 +319,8 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 
 ### determine best reference antennas based on geometry and flagging
-if not skip_plots:
-   for i in data_params.keys():
-      data_params[i]["refant"] = rank_refants(data_params[i]["vis_avg_shift_rescaled"])
+for i in data_params.keys():
+   data_params[i]["refant"] = rank_refants(data_params[i]["vis_avg_shift_rescaled"])
 
 '''Find reference antenna, pick 2 near array center'''
 '''

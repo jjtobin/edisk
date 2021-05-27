@@ -37,11 +37,11 @@ skip_plots = False
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = 'IRAS15398'
+field   = 'IRAS15398-3559'
 prefix  = 'IRAS15398' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/IRAS15398/'
+WD_path = '/lustre/cv/projects/edisk/IRAS15398-6.2/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
