@@ -1,7 +1,7 @@
 """
-This script was written for CASA 6.1.1-15
-Script originally based on DSHARP reduction procedures
-Heavily modified for use by eDisk project
+eDisk data reduction script
+This script was written for CASA 6.1.1/6.2
+Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
 SB1: 2019.A.00034.S uid://A001/X1527/X3dd (2021-05-06)

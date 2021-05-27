@@ -9,7 +9,7 @@ SB1: 2019.1.00261.L
 LB1: 
      
 
-reducer: J. Tobin
+reducer: J. Tobin/P. Sheehan
 """
 
 ### Import statements

@@ -1,5 +1,8 @@
 """
 Functions useful for data reduction
+Derived from DSHARP reduction utils
+modified for eDisk project
+
 """
 import os
 import matplotlib.pyplot as plt

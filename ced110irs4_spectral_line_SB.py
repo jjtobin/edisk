@@ -8,7 +8,7 @@ SB1: 2019.1.00261.L
      (1 execution blocks)
 LB1:
 
-reducer: J. Tobin
+reducer: J. Tobin/P. Sheehan
 """
 
 """ Starting matter """
