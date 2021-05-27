@@ -33,7 +33,7 @@ execfile('../reduction_utils3.py', globals())
 parallel=True  
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
