@@ -52,6 +52,8 @@ SB_scales = [0, 5] #[0, 5, 10, 20]
 LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 
 ### Add additional dictionary entries if need, i.e., SB2, SB3, LB1, LB2, etc. for each execution
+### Note that C18O and 13CO have different spws in the DDT vis LP os the spw ordering
+### is different for data that were originally part of the DDT than the LP
 ### DDT 2019.A.00034.S SB data need 'spws': '25,31,29,27,33,35,37'
 ### LP  2019.1.00261.L SB data need 'spws': '25,27,29,31,33,35,37'
 pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xeb6c00_X22e.ms',
