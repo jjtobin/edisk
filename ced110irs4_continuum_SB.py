@@ -517,7 +517,7 @@ if not skip_plots:
 iteration=6
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='18s',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               SB_refant=SB_refant,LB_refant='',parallel=parallel,finalimageonly=True)
+               parallel=parallel,finalimageonly=True)
 
 #Ced110IRS4_SB-only_ap6.image.tt0
 #Beam 0.450 arcsec x 0.259 arcsec (11.47 deg)
