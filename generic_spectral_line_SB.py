@@ -4,16 +4,15 @@ This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
-SB1: 2019.1.00261.L
-     (1 execution blocks)
-LB1:
+SB1: 
 
-reducer: J. Tobin
+LB1: 
+
+reducer: 
 """
 
 """ Starting matter """
-#Commented because analysis utils included with eDisk CASA distro
-#sys.path.append('/home/casa/contrib/AIV/science/analysis_scripts/') 
+#sys.path.append('/home/casa/contrib/AIV/science/analysis_scripts/') #CHANGE THIS TO YOUR PATH TO THE SCRIPTS!
 import analysisUtils as au
 import analysisUtils as aU
 import string
@@ -34,16 +33,16 @@ execfile('../reduction_utils3.py', globals())
 parallel=True
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = True	
+skip_plots = False	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = 'Ced110IRS4'
-prefix  = 'Ced110IRS4' 
+field   = 'fieldName'
+prefix  = 'filename prefix' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/Ced110IRS4/'
+WD_path = '/lustre/cv/projects/edisk/sourceDirectory/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
