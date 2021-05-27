@@ -43,7 +43,7 @@ field   = 'Ced110IRS4'
 prefix  = 'Ced110IRS4' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/Ced110IRS4-try5/'
+WD_path = '/lustre/cv/projects/edisk/Ced110IRS4/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
