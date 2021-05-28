@@ -21,7 +21,7 @@ import glob
 import numpy as np
 import sys
 import pickle
-execfile('../reduction_utils3.py', globals())
+execfile('../edisk/reduction_utils3.py', globals())
 
 
 ###############################################################
@@ -104,7 +104,7 @@ for i in data_params.keys():
    split(vis=data_params[i]['vis_shift_rescaled'],outputvis=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
    data_params[i]['vis_selfcal']=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal')
    ### cleanup
-   os.system('rm -rf '+data_params[i]['vis_shift_rescaled']+' '+data_params[i]['vis_shift']+' '+data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal'))
+   os.system('rm -rf '+data_params[i]['vis_shift_rescaled']+' '+data_params[i]['vis_shift'])
 
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -128,6 +128,7 @@ for i in data_params.keys():
    contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True)
    os.system('rm -rf '+prefix+'_'+i+'_spectral_line.ms')  ### remove existing spectral line MS if present
    os.system('mv '+data_params[i]['vis_selfcal'].replace('.selfcal','.selfcal.contsub')+' '+prefix+'_'+i+'_spectral_line.ms')
+   os.system('rm -rf '+data_params[i]['vis_selfcal'])
    data_params[i]['vis_contsub']=prefix+'_'+i+'_spectral_line.ms'
 
 with open(prefix+'.pickle', 'wb') as handle:
