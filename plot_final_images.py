@@ -37,116 +37,123 @@ class Transform:
 
 robust_list = [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]
 
-# Generate a figure to put the plots in.
+# The list of tick values to use.
 
-fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(16,8.25))
+ticks_list = [numpy.array([-10.0,-5.0,0.0,5.0,10.0]), \
+        numpy.array([-2.0,-1.0,0.0,1.0,2.0])]
 
-# Now, loop through and plot.
+# Loop through and plot.
 
-for i, ax in enumerate(axes.flatten()):
-    if i >= len(robust_list):
-        ax.set_axis_off()
-        continue
+for ticks in ticks_list:
+    # Generate a figure to put the plots in.
 
-    # Get the appropriate robust value
+    fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(16,8.25))
 
-    robust = robust_list[i]
+    # Loop over robust parameter in the axes.
 
-    # Load the continuum image.
+    for i, ax in enumerate(axes.flatten()):
+        if i >= len(robust_list):
+            ax.set_axis_off()
+            continue
 
-    try:
-        data, header = fits.getdata("{0:s}_SB_continuum_robust_{1:3.1f}.image."
-                "tt0.fits".format(source, robust), header=True)
-    except:
-        ax.set_axis_off()
-        continue
+        # Get the appropriate robust value
 
-    image = data[0,0,:,:]
+        robust = robust_list[i]
 
-    # Get the center of the source(s).
+        # Load the continuum image.
 
-    x0, y0 = 0., 0.
+        try:
+            data, header = fits.getdata("{0:s}_SB_continuum_robust_{1:3.1f}."
+                    "image.tt0.fits".format(source, robust), header=True)
+        except:
+            ax.set_axis_off()
+            continue
 
-    # Plot the image.
+        image = data[0,0,:,:]
 
-    ticks = numpy.array([-2.0,-1.0,0.,1.0,2.0])
+        # Get the center of the source(s).
 
-    N = image.shape[0]
-    pixelsize = numpy.abs(header["CDELT2"])*numpy.pi/180. / \
-            arcsec
+        x0, y0 = 0., 0.
 
-    xmin, xmax = int(round(N/2-x0/pixelsize+ticks[0]/pixelsize)), \
-            int(round(N/2-x0/pixelsize+ticks[-1]/pixelsize))
-    ymin, ymax = int(round(N/2+y0/pixelsize+ticks[0]/pixelsize)), \
-            int(round(N/2+y0/pixelsize+ticks[-1]/pixelsize))
+        # Plot the image.
 
-    npix = min(xmax - xmin, N)
-    if xmin < 0:
-        xmin, xmax = 0, npix
-    if xmax > N:
-        xmin, xmax = N - npix, N
-    if ymin < 0:
-        ymin, ymax = 0, npix
-    if ymax > N:
-        ymin, ymax = N - npix, N
+        N = image.shape[0]
+        pixelsize = numpy.abs(header["CDELT2"])*numpy.pi/180. / \
+                arcsec
 
-    # Plot the data.
+        xmin, xmax = int(round(N/2-x0/pixelsize+ticks[0]/pixelsize)), \
+                int(round(N/2-x0/pixelsize+ticks[-1]/pixelsize))
+        ymin, ymax = int(round(N/2+y0/pixelsize+ticks[0]/pixelsize)), \
+                int(round(N/2+y0/pixelsize+ticks[-1]/pixelsize))
 
-    ax.imshow(image[ymin:ymax,xmin:xmax], origin="lower",\
-            interpolation="nearest", cmap="inferno")
+        npix = min(xmax - xmin, N)
+        if xmin < 0:
+            xmin, xmax = 0, npix
+        if xmax > N:
+            xmin, xmax = N - npix, N
+        if ymin < 0:
+            ymin, ymax = 0, npix
+        if ymax > N:
+            ymin, ymax = N - npix, N
 
-    # Add labels to the x-axis.
+        # Plot the data.
 
-    transform = ticker.FuncFormatter(Transform(xmin, xmax, pixelsize, '%.1f"'))
+        ax.imshow(image[ymin:ymax,xmin:xmax], origin="lower",\
+                interpolation="nearest", cmap="inferno")
 
-    ax.set_xticks((ticks[1:-1]-ticks[0])/pixelsize)
-    ax.set_yticks((ticks[1:-1]-ticks[0])/pixelsize)
-    ax.get_xaxis().set_major_formatter(transform)
-    ax.get_yaxis().set_major_formatter(transform)
+        # Add labels to the x-axis.
 
-    if i >= axes.size - axes.shape[1]:
-        ax.set_xlabel('$\Delta$R.A. ["]', fontsize=20, labelpad=8)
-    else:
-        ax.set_xticklabels([])
+        transform = ticker.FuncFormatter(Transform(xmin, xmax, pixelsize, \
+                '%.1f"'))
 
-    if i%axes.shape[1] == 0:
-        ax.set_ylabel('$\Delta$Dec. ["]', fontsize=20, labelpad=12)
-    else:
-        ax.set_yticklabels([])
+        ax.set_xticks((ticks[1:-1]-ticks[0])/pixelsize)
+        ax.set_yticks((ticks[1:-1]-ticks[0])/pixelsize)
+        ax.get_xaxis().set_major_formatter(transform)
+        ax.get_yaxis().set_major_formatter(transform)
 
-    ax.tick_params(axis='both', direction='in', labelsize=20, color="white")
+        if i >= axes.size - axes.shape[1]:
+            ax.set_xlabel('$\Delta$R.A. ["]', fontsize=20, labelpad=8)
+        else:
+            ax.set_xticklabels([])
 
-    ax.annotate("Robust = {0:3.1f}".format(robust), fontsize=20, color="white",\
-            xy=(0.05,0.9), xycoords="axes fraction")
+        if i%axes.shape[1] == 0:
+            ax.set_ylabel('$\Delta$Dec. ["]', fontsize=20, labelpad=12)
+        else:
+            ax.set_yticklabels([])
 
-    # Make the axes white as well.
+        ax.tick_params(axis='both', direction='in', labelsize=20, color="white")
 
-    for side in ["left","right","top","bottom"]:
-        ax.spines[side].set_color("white")
+        ax.annotate("Robust = {0:3.1f}".format(robust), fontsize=20, \
+                color="white", xy=(0.05,0.9), xycoords="axes fraction")
 
-    # Show the beam.
+        # Make the axes white as well.
 
-    bmaj = header["BMAJ"]/abs(header["CDELT1"])
-    bmin = header["BMIN"]/abs(header["CDELT1"])
-    bpa = header["BPA"]
+        for side in ["left","right","top","bottom"]:
+            ax.spines[side].set_color("white")
 
-    xy = ((xmax - xmin)*0.1, (ymax - ymin)*0.1)
+        # Show the beam.
 
-    ax.add_artist(patches.Ellipse(xy=xy, width=bmaj, \
-            height=bmin, angle=(bpa+90), facecolor="white", \
-            edgecolor="black"))
+        bmaj = header["BMAJ"]/abs(header["CDELT1"])
+        bmin = header["BMIN"]/abs(header["CDELT1"])
+        bpa = header["BPA"]
 
-# Adjust the spacing.
+        xy = ((xmax - xmin)*0.1, (ymax - ymin)*0.1)
 
-plt.tight_layout(pad=1.08, rect=(0.01,0.01,0.99,0.99))
+        ax.add_artist(patches.Ellipse(xy=xy, width=bmaj, \
+                height=bmin, angle=(bpa+90), facecolor="white", \
+                edgecolor="black"))
 
-# Save the figure.
+    # Adjust the spacing.
 
-pdf.savefig(fig)
+    plt.tight_layout(pad=1.08, rect=(0.01,0.01,0.99,0.99))
 
-# Clear the figure.
+    # Save the figure.
 
-plt.close(fig)
+    pdf.savefig(fig)
+
+    # Clear the figure.
+
+    plt.close(fig)
 
 ################################################################################
 ### Plot the spectral line observations.
