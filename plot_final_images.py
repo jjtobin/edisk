@@ -1,9 +1,12 @@
 from matplotlib.backends.backend_pdf import PdfPages
-#from casahelper.utils import get_line_info
+from astropy.visualization import MinMaxInterval, AsinhStretch, LinearStretch, \
+        ImageNormalize, ManualInterval
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.ticker as ticker
 import astropy.io.fits as fits
+import astropy.stats
 import numpy
 import glob
 import os
@@ -69,7 +72,7 @@ for ticks in ticks_list:
             ax.set_axis_off()
             continue
 
-        image = data[0,0,:,:]
+        image = data[0,0,:,:]*1000
 
         # Get the center of the source(s).
 
@@ -96,10 +99,22 @@ for ticks in ticks_list:
         if ymax > N:
             ymin, ymax = N - npix, N
 
+        # Get the normalization.
+
+        snr = numpy.nanmax(image) / astropy.stats.mad_std(image, \
+                ignore_nan=True)
+
+        if snr > 100:
+            norm = ImageNormalize(image, stretch=AsinhStretch(), \
+                    interval=MinMaxInterval())
+        else:
+            norm = ImageNormalize(image, stretch=LinearStretch(), \
+                    interval=MinMaxInterval())
+
         # Plot the data.
 
-        ax.imshow(image[ymin:ymax,xmin:xmax], origin="lower",\
-                interpolation="nearest", cmap="inferno")
+        implot = ax.imshow(image[ymin:ymax,xmin:xmax], origin="lower",\
+                interpolation="nearest", cmap="inferno", norm=norm)
 
         # Add labels to the x-axis.
 
@@ -142,6 +157,24 @@ for ticks in ticks_list:
         ax.add_artist(patches.Ellipse(xy=xy, width=bmaj, \
                 height=bmin, angle=(bpa+90), facecolor="white", \
                 edgecolor="black"))
+
+        # Add a colorbar.
+
+        divider = make_axes_locatable(ax)
+
+        cax = divider.append_axes('top', size='5%', pad=0.05)
+
+        if i == 0:
+            cbar = plt.colorbar(implot, cax=cax, orientation="horizontal")
+            cbar.set_label("mJy beam$^{-1}$", size=20)
+        else:
+            cbar = plt.colorbar(implot, cax=cax, orientation="horizontal")
+
+        cax.xaxis.set_ticks_position('top')
+        cax.xaxis.set_label_position('top')
+
+        cax.tick_params(labelsize=20)
+        cax.locator_params(nbins=5)
 
     # Adjust the spacing.
 
@@ -234,10 +267,21 @@ for dataset, line_center in zip(datasets, line_centers):
             fig, ax = plt.subplots(nrows=nrows, ncols=ncols, \
                     figsize=(2*ncols,2*nrows+0.5))
 
-            # Plot all of the channels.
+            # Get the normalization.
 
-            vmin = -2*numpy.nanstd(image)
-            vmax = max(10*numpy.nanstd(image), numpy.nanmax(image))
+            vmin = -2*numpy.nanstd(image[0])
+            vmax = max(10*numpy.nanstd(image[0]), numpy.nanmax(image))
+
+            snr = vmax / astropy.stats.mad_std(image[0], ignore_nan=True)
+
+            if snr > 100:
+                norm = ImageNormalize(image, stretch=AsinhStretch(), \
+                        interval=ManualInterval(vmin=vmin, vmax=vmax))
+            else:
+                norm = ImageNormalize(image, stretch=LinearStretch(), \
+                        interval=ManualInterval(vmin=vmin, vmax=vmax))
+
+            # Plot all of the channels.
 
             velocity = (line_center - freq/1e9) / line_center * c_l
 
@@ -256,7 +300,7 @@ for dataset, line_center in zip(datasets, line_centers):
 
                     ax[i,j].imshow(image[ind,ymin:ymax,xmin:xmax], \
                             origin="lower", interpolation="bilinear", \
-                            vmin=vmin, vmax=vmax, cmap="inferno")
+                            norm=norm, cmap="inferno")
 
                     # Contour the continuum data.
 
