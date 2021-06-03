@@ -369,18 +369,14 @@ for dataset, line_center in zip(datasets, line_centers):
             # Add a title to the figure.
             if np.max(ticks) > 5.0:
                if nrows*ncols > 30:
-                  fig.suptitle("{0:s}, Robust = {1:s} wide".format(dataset.replace("_",\
-                       ""), robust), fontsize=2*fontsize)
+                  fig.suptitle("{0:s}, Robust = {1:s} wide".format(dataset, robust), fontsize=2*fontsize)
                else:
-                  fig.suptitle("{0:s}, Robust = {1:s} wide".format(dataset.replace("_",\
-                       ""), robust), fontsize=fontsize)
+                  fig.suptitle("{0:s}, Robust = {1:s} wide".format(dataset, robust), fontsize=fontsize)
             else:
                if nrows*ncols > 30:
-                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset.replace("_",\
-                       ""), robust), fontsize=2*fontsize)
+                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset, robust), fontsize=2*fontsize)
                else:
-                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset.replace("_",\
-                       ""), robust), fontsize=fontsize)
+                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset, fontsize=fontsize)
 
             # Adjust the spacing.
 
