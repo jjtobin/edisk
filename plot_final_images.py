@@ -72,6 +72,9 @@ for ticks in ticks_list:
             ax.set_axis_off()
             continue
 
+        #check if continuum images are 2 axis or if they include stokes and frequency planes
+        ndim_cont=len(data.shape)
+
         image = data[:,:]*1000
 
         # Get the center of the source(s).
@@ -223,10 +226,12 @@ for dataset, line_center in zip(datasets, line_centers):
         freq = numpy.arange(image.shape[0])*header["CDELT3"] + header["CRVAL3"]
 
         # Load the continuum image.
-
-        cont = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
-                "tt0.fits".format(source, robust)) #[0,0]
-
+        if ndim_cont == 4:
+           cont = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
+                  "tt0.fits".format(source, robust))[0,0]
+        elif ndim_cont ==2:
+           cont = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
+                  "tt0.fits".format(source, robust)) #[0,0]
         # Get the center of the source(s).
 
         x0, y0 = 0., 0.
