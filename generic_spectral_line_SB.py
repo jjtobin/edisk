@@ -182,7 +182,7 @@ image_list = {
             chanwidth='1.34km/s', nchan=23, linefreq='218.22219200GHz', 
             linespw='4', robust=[0.5]),
         ### H2CO 3(2,2)-2(2,1) Images
-        "H2CO_3_03-2_02_218.47GHz":dict(chanstart='-10km/s', 
+        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-10km/s', 
             chanwidth='1.34km/s', nchan=23, linefreq='218.47563200GHz',
             linespw='4', robust=[0.5]),
         ### c-C3H2 217.82 GHz Images
