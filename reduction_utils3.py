@@ -654,7 +654,7 @@ cyclefactor=3,uvrange='',threshold='0.0Jy'):
                  threshold=threshold,
                  parallel=False)
     
-def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange=''):
+def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggs'):
 
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging

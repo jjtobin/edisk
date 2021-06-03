@@ -15,7 +15,7 @@ pdf = PdfPages('data.pdf')
 
 # Get a list of sources.
 
-source = "Ced110IRS4"
+source = "IRAS15398"
 
 # A few definitions.
 
@@ -72,7 +72,7 @@ for ticks in ticks_list:
             ax.set_axis_off()
             continue
 
-        image = data[0,0,:,:]*1000
+        image = data[:,:]*1000
 
         # Get the center of the source(s).
 

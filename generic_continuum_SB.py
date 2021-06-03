@@ -566,7 +566,7 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
             cellsize='0.025arcsec', imsize=1600)
 
     imagename=imagename+'.image.tt0'
-    exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True)
+    exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)
 
 ###############################################################
 ########################### CLEANUP ###########################

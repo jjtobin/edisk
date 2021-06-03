@@ -52,7 +52,7 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 
 ### automasking parameters for very extended emission
 sidelobethreshold=2.0
-noisethreshold=2.0
+noisethreshold=3.5
 lownoisethreshold=1.0 
 smoothfactor=2.0
 ### automasking parameters for compact emission (uncomment to use)
@@ -171,7 +171,7 @@ image_list = {
         ### 12CO images
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
             nchan=315, linefreq='230.538GHz', linespw='6',
-            robust=[2.0,0.0]),
+            robust=[2.0]),
         ### SO Images
         "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
             nchan=120, linefreq='219.94944200GHz', linespw='2',
@@ -223,7 +223,8 @@ for line in image_list:
                 image_list[line]["linespw"], SB_scales, threshold=3.0*sigma,
                 imsize=1600, cellsize='0.025arcsec',robust=robust, 
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel)
+                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,
+                parallel=parallel,weighting='briggsbwtaper')
 
 
 ###############################################################
