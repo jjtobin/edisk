@@ -247,7 +247,7 @@ for dataset, line_center in zip(datasets, line_centers):
 
         # Loop over field of view.
 
-        ticks_list = [numpy.array([-15.0,-10.0,-5.0,0.0,5.0,10.0,15.0]), \
+        ticks_list = [numpy.array([-15.0,-10.0,0.0,10.0,15.0]), \
                 numpy.array([-2.0,-1.0,0.0,1.0,2.0])]
 
         for ticks in ticks_list:
@@ -330,17 +330,17 @@ for dataset, line_center in zip(datasets, line_centers):
 
                     if i == nrows-1:
                         ax[i,j].set_xlabel('$\Delta$R.A. ["]', \
-                                fontsize=fontsize, labelpad=8)
+                                fontsize=fontsize/1.75, labelpad=8)
                     else:
                         ax[i,j].set_xticklabels([])
                     if j == 0:
                         ax[i,j].set_ylabel('$\Delta$Dec. ["]', \
-                                fontsize=fontsize, labelpad=12)
+                                fontsize=fontsize/1.75, labelpad=12)
                     else:
                         ax[i,j].set_yticklabels([])
 
                     ax[i,j].tick_params(axis='both', direction='in', \
-                            labelsize=fontsize, color="white")
+                            labelsize=fontsize/1.75, color="white")
 
                     # Make the axes white as well.
 
@@ -349,7 +349,7 @@ for dataset, line_center in zip(datasets, line_centers):
 
                     # Add the velocity to the image.
 
-                    txt = ax[i,j].annotate(r"$v={0:3.1f}$".\
+                    txt = ax[i,j].annotate(r"$v={0:3.2f}$".\
                             format(velocity[ind]/1e5), xy=(0.01,0.85), \
                             xycoords='axes fraction', fontsize=fontsize, \
                             color="white")
