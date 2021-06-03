@@ -226,6 +226,13 @@ for line in image_list:
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,
                 parallel=parallel,weighting='briggsbwtaper')
 
+###############################################################
+################# Make Plots of Everything ####################
+###############################################################
+import sys
+sys.argv = ['../edisk/plot_final_images.py',prefix]
+execfile('../edisk/plot_final_images.py')
+
 
 ###############################################################
 ########################### CLEANUP ###########################

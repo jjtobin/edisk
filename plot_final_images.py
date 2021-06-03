@@ -10,12 +10,16 @@ import astropy.stats
 import numpy
 import glob
 import os
+import sys
 
-pdf = PdfPages('data.pdf')
+
+#source = "IRAS15398"
+source = str(sys.argv[1])
+pdf = PdfPages(source+'.pdf')
 
 # Get a list of sources.
 
-source = "IRAS15398"
+
 
 # A few definitions.
 
@@ -42,7 +46,7 @@ robust_list = [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]
 
 # The list of tick values to use.
 
-ticks_list = [numpy.array([-10.0,-5.0,0.0,5.0,10.0]), \
+ticks_list = [numpy.array([-15.0,-10.0,-5.0,0.0,5.0,10.0,15.0]), \
         numpy.array([-2.0,-1.0,0.0,1.0,2.0])]
 
 # Loop through and plot.
@@ -243,7 +247,7 @@ for dataset, line_center in zip(datasets, line_centers):
 
         # Loop over field of view.
 
-        ticks_list = [numpy.array([-15.0,-5.0,0.0,5.0,15.0]), \
+        ticks_list = [numpy.array([-15.0,-10.0,-5.0,0.0,5.0,10.0,15.0]), \
                 numpy.array([-2.0,-1.0,0.0,1.0,2.0])]
 
         for ticks in ticks_list:
