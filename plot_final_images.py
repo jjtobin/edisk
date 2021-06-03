@@ -243,7 +243,7 @@ for dataset, line_center in zip(datasets, line_centers):
 
         # Loop over field of view.
 
-        ticks_list = [numpy.array([-10.0,-5.0,0.0,5.0,10.0]), \
+        ticks_list = [numpy.array([-15.0,-5.0,0.0,5.0,15.0]), \
                 numpy.array([-2.0,-1.0,0.0,1.0,2.0])]
 
         for ticks in ticks_list:
@@ -363,9 +363,20 @@ for dataset, line_center in zip(datasets, line_centers):
                             edgecolor="black"))
 
             # Add a title to the figure.
-
-            fig.suptitle("{0:s}, Robust = {1:s}".format(dataset.replace("_",\
-                    ""), robust), fontsize=2*fontsize)
+            if np.max(ticks) > 5.0:
+               if nrows*ncols > 30:
+                  fig.suptitle("{0:s}, Robust = {1:s} wide".format(dataset.replace("_",\
+                       ""), robust), fontsize=2*fontsize)
+               else:
+                  fig.suptitle("{0:s}, Robust = {1:s} wide".format(dataset.replace("_",\
+                       ""), robust), fontsize=fontsize)
+            else:
+               if nrows*ncols > 30:
+                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset.replace("_",\
+                       ""), robust), fontsize=2*fontsize)
+               else:
+                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset.replace("_",\
+                       ""), robust), fontsize=fontsize)
 
             # Adjust the spacing.
 
