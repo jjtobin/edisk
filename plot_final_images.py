@@ -225,7 +225,7 @@ for dataset, line_center in zip(datasets, line_centers):
         # Load the continuum image.
 
         cont = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
-                "tt0.fits".format(source, robust))[0,0]
+                "tt0.fits".format(source, robust)) #[0,0]
 
         # Get the center of the source(s).
 
