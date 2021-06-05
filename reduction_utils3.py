@@ -490,7 +490,7 @@ def avg_cont(ms_dict, output_prefix, flagchannels = '', maxchanwidth = 125, data
               timebin = timebin,
               datacolumn=datacolumn,
               intent = 'OBSERVE_TARGET#ON_SOURCE',
-              keepflags = False)
+              keepflags = True)
     else:
         if os.path.isdir(msfile+'.flagversions/flags.before_cont_flags'):
             flagmanager(vis = msfile, mode = 'delete', versionname = 'before_cont_flags') # clear out old versions of the flags 
@@ -508,7 +508,7 @@ def avg_cont(ms_dict, output_prefix, flagchannels = '', maxchanwidth = 125, data
               timebin = timebin,
               datacolumn=datacolumn,
               intent = 'OBSERVE_TARGET#ON_SOURCE',
-              keepflags = False)
+              keepflags = True)
 
         flagmanager(vis = msfile, mode = 'restore', versionname = 'before_cont_flags') #restore flagged spectral line channels       
     
@@ -594,7 +594,7 @@ cyclefactor=3,uvrange='',threshold='0.0Jy'):
         else:
             print("Error: need to set cellsize manually")
 
-    for ext in ['.image*', '.mask', '.model*', '.pb*', '.psf*', '.residual*', '.sumwt*']:
+    for ext in ['.image*', '.mask', '.model*', '.pb*', '.psf*', '.residual*', '.sumwt*','.gridwt*']:
         os.system('rm -rf '+ imagename + ext)
     tclean(vis= vis, 
            imagename = imagename, 
@@ -1307,7 +1307,8 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
                   sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5):
-   
+   contspws=''
+   spwmap=[0,0,0,0,0]
    if remove_all_following_iterations:   ### Remove all following selfcal files after the iteration being run
       os.system("rm -rf *p{{{0:d}..99}}*".format(iteration))
    if prevselfcalmode==None:
@@ -1319,12 +1320,12 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
       scales=[0,5]
 
    if (mode == 'LB+SB') and (imsize==None):
-      imsize=4800
+      imsize=5000
    else:
       imsize=1600
 
    if (mode == 'LB+SB') and (cellsize==None):
-      cellsize='0.008arcsec'
+      cellsize='0.003arcsec'
    else:
       cellsize='0.025arcsec'
 
@@ -1373,15 +1374,19 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
       if (mode =='LB-only') and ('LB' in i): # skip over SB EBs if in LB-only mode
          continue
       os.system('rm -rf '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
+      if 'LB' in i:
+         contspws=LB_contspws
+      if 'SB' in i:
+         contspws=SB_contspws
       if selfcalmode=='p':
          gaincal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
-                    gaintype='T', spw=SB_contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
+                    gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
                     minsnr=2.0, minblperant=4,combine='spw')
       elif selfcalmode=='ap':
          gaincal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
-                    gaintype='T', spw=SB_contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
+                    gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
                     minsnr=2.0, minblperant=4,combine='spw',solnorm=True)
       # Add caltable to the dictionary for use later
       data_params[i]['selfcal_tables'].append(data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
@@ -1392,10 +1397,14 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
          continue
       if (mode =='LB-only') and ('LB' in i): # skip over SB EBs if in LB-only mode
          continue
+      if 'LB' in i:
+         spwmap=LB_spwmap
+      if 'SB' in i:
+         spwmap=SB_spwmap
       applycal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+selfcalmode+str(iteration)+'.ms'),
                gaintable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'),
-               interp='linearPD', calwt=True,spwmap=SB_spwmap,applymode='calonly')
-      data_params[i]['selfcal_spwmap'].append(SB_spwmap) # Add spw map to the dictionary for use later
+               interp='linearPD', calwt=True,spwmap=spwmap,applymode='calonly')
+      data_params[i]['selfcal_spwmap'].append(spwmap) # Add spw map to the dictionary for use later
 
 
 
