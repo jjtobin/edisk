@@ -239,16 +239,16 @@ with open(prefix+'.pickle', 'wb') as handle:
 ############### PLOT UV DATA TO CHECK SCALING #################
 ###############################################################
 
+### Assign rough emission geometry parameters; keep 0, 0
+PA, incl = 0, 0
+
+### Export MS contents into Numpy save files 
+export_vislist=[]
+for i in data_params.keys():
+   export_MS(data_params[i]['vis_avg_shift'])
+   export_vislist.append(data_params[i]['vis_avg_shift'].replace('.ms','.vis.npz'))
+
 if not skip_plots:
-    ### Assign rough emission geometry parameters; keep 0, 0
-    PA, incl = 0, 0
-
-    ### Export MS contents into Numpy save files 
-    export_vislist=[]
-    for i in data_params.keys():
-      export_MS(data_params[i]['vis_avg_shift'])
-      export_vislist.append(data_params[i]['vis_avg_shift'].replace('.ms','.vis.npz'))
-
     ### Plot deprojected visibility profiles for all data together """
     plot_deprojected(export_vislist,
                      fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 

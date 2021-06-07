@@ -376,7 +376,7 @@ for dataset, line_center in zip(datasets, line_centers):
                if nrows*ncols > 30:
                   fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset, robust), fontsize=2*fontsize)
                else:
-                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset, fontsize=fontsize)
+                  fig.suptitle("{0:s}, Robust = {1:s} zoom".format(dataset, robust), fontsize=fontsize)
 
             # Adjust the spacing.
 

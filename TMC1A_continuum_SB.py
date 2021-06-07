@@ -37,7 +37,7 @@ execfile('../reduction_utils3.py', globals())
 parallel=True  
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
@@ -83,7 +83,8 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'flagrange': np.array([[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5]]),
                        'orig_spw_map': {0:0, 1:1, 2:2, 3:3, 4:4, 5:5},  # mapping of old spws to new spws (needed for cont.dat to work)
                        'cont_spws':  np.array([0,1,2,3,4,5]),  #spws to use for continuum
-                       'cont_avg_width':  np.array([960,960,480,480,480,2]), #n channels to average; approximately aiming for 30 MHz channels
+                       'cont_avg_width':  np.array([240,240,120,120,120,1]), #n channels to average; approximately aiming for 30 MHz channels
+                       #'cont_avg_width':  np.array([0,0,0,0,0,0]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
                        'timerange': '2015/09/20/06:45:00~2015/09/20/09:00:00',
                        #'contdotdat' : 'LB/cont.dat'
@@ -97,7 +98,8 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'flagrange': np.array([[-15.5,24.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5]]),
                        'orig_spw_map': {0:0, 1:1, 2:2, 3:3, 4:4},  # mapping of old spws to new spws (needed for cont.dat to work)
                        'cont_spws':  np.array([0,1,2,3,4]),  #spws to use for continuum
-                       'cont_avg_width':  np.array([240,30,120,240,240]), #n channels to average; approximately aiming for 30 MHz channels
+                       'cont_avg_width':  np.array([60,15,30,60,60]), #n channels to average; approximately aiming for 30 MHz channels
+                       #'cont_avg_width':  np.array([0,0,0,0,0]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
                        'timerange': '2015/10/23/06:00:00~2015/10/24/07:30:00',
                        #'contdotdat' : 'SB/cont.dat'
@@ -111,7 +113,8 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'flagrange': np.array([[-15.5,24.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5]]),
                        'orig_spw_map': {0:0, 1:1, 2:2, 3:3, 4:4},  # mapping of old spws to new spws (needed for cont.dat to work)
                        'cont_spws':  np.array([0,1,2,3,4]),  #spws to use for continuum
-                       'cont_avg_width':  np.array([240,30,120,240,240]), #n channels to average; approximately aiming for 30 MHz channels
+                       #'cont_avg_width':  np.array([0,0,0,0,0]), #n channels to average; approximately aiming for 30 MHz channels
+                       'cont_avg_width':  np.array([60,15,30,60,60]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
                        'timerange': '2015/10/30/06:00:00~2021/10/30/07:30:00',
                        #'contdotdat' : 'LB/cont.dat'
@@ -255,17 +258,17 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 ############### PLOT UV DATA TO CHECK SCALING #################
 ###############################################################
+PA, incl = 0, 0
 
-if not skip_plots:
     ### Assign rough emission geometry parameters; keep 0, 0
-    PA, incl = 0, 0
+
 
     ### Export MS contents into Numpy save files 
-    export_vislist=[]
-    for i in data_params.keys():
-      export_MS(data_params[i]['vis_avg_shift'])
-      export_vislist.append(data_params[i]['vis_avg_shift'].replace('.ms','.vis.npz'))
-
+export_vislist=[]
+for i in data_params.keys():
+   export_MS(data_params[i]['vis_avg_shift'])
+   export_vislist.append(data_params[i]['vis_avg_shift'].replace('.ms','.vis.npz'))
+if not skip_plots:
     ### Plot deprojected visibility profiles for all data together """
     plot_deprojected(export_vislist,
                      fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
@@ -289,10 +292,6 @@ for i in data_params.keys():
       data_params[i]['gencal_scale']=1.0
    print(' ')
 
-#No rescaling here since just one dataset
-#Go ahead with rescaling anyway to keep the flow of the script
-
-
 ###############################################################
 ############### SCALE DATA RELATIVE TO ONE EB #################
 ###############################################################
@@ -307,25 +306,25 @@ for i in data_params.keys():
 ############## PLOT UV DATA TO CHECK RE-SCALING ###############
 ###############################################################
 
-if not skip_plots:
+
     ### Assign rough emission geometry parameters; keep 0, 0
-   PA, incl = 0, 0
+PA, incl = 0, 0
 
    ### Check that rescaling did what we expect
-   export_vislist_rescaled=[]
-   for i in data_params.keys():
+export_vislist_rescaled=[]
+for i in data_params.keys():
       export_MS(data_params[i]['vis_avg_shift_rescaled'])
       export_vislist_rescaled.append(data_params[i]['vis_avg_shift_rescaled'].replace('.ms','.vis.npz'))
-
+if not skip_plots:
    plot_deprojected(export_vislist_rescaled,
                      fluxscale=[1.0]*len(export_vislist_rescaled), PA=PA, incl=incl, 
                      show_err=False)
    ### Make sure differences are no longer significant
-   refdata='SB1'
-   reference=prefix+'_'+refdata+'_initcont_shift.vis.npz'
-   for i in data_params.keys():
-      if i != refdata:
-         estimate_flux_scale(reference=reference, 
+refdata='SB1'
+reference=prefix+'_'+refdata+'_initcont_shift.vis.npz'
+for i in data_params.keys():
+   if i != refdata:
+      estimate_flux_scale(reference=reference, 
                         comparison=prefix+'_'+i+'_initcont_shift_rescaled.vis.npz', 
                         incl=incl, PA=PA)
 
@@ -564,7 +563,11 @@ self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode
 #rms: 1.56e-01 mJy/beam
 #Peak SNR: 532.26
 
-
+###Backup gain table list for LB+SB runs
+for i in data_params.keys():
+   if 'SB' in i:
+      data_params[i]['selfcal_spwmap_SB-only']=data_params[i]['selfcal_spwmap']
+      data_params[i]['selfcal_tables_SB-only']=data_params[i]['selfcal_tables']
 
 ###############################################################
 ################### SELF-CALIBRATION SB+LB ####################
@@ -584,13 +587,12 @@ tclean_wrapper(vis=vislist, imagename=prefix+'_LB+SB_dirty',
 estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask, 
              noise_mask=noise_annulus)
 
-#Ced110IRS4_dirty.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 88.43 mJy
-#Peak intensity of source: 30.05 mJy/beam
-#rms: 2.58e-01 mJy/beam
-#Peak SNR: 116.68
-
+#TMC1A_LB+SB_dirty.image.tt0
+#Beam 0.040 arcsec x 0.026 arcsec (12.07 deg)
+#Flux inside disk mask: 272.95 mJy
+#Peak intensity of source: 9.05 mJy/beam
+#rms: 7.11e-02 mJy/beam
+#Peak SNR: 127.23
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
 ### only images >0 have self-calibration applied
@@ -603,9 +605,9 @@ estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask,
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0
-self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=50.0,solint='900s',
+self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='600s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel,skipImage=True)
 
 
 ### Plot gain corrections, loop through each
@@ -615,17 +617,17 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-#TMC1A_LB+SB_dirty.image.tt0
-#Beam 0.040 arcsec x 0.026 arcsec (12.07 deg)
-#Flux inside disk mask: 272.95 mJy
-#Peak intensity of source: 9.05 mJy/beam
-#rms: 7.11e-02 mJy/beam
-#Peak SNR: 127.23
+#TMC1A_LB+SB_p0.image.tt0
+#Beam 0.040 arcsec x 0.026 arcsec (11.61 deg)
+#Flux inside disk mask: 247.79 mJy
+#Peak intensity of source: 6.71 mJy/beam
+#rms: 3.90e-02 mJy/beam
+#Peak SNR: 172.26
 
 iteration=1
-self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=25.0,solint='300s',
+self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=20.0,solint='300s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -633,14 +635,15 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-#Ced110IRS4_SB-only_p1.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 84.55 mJy
-#Peak intensity of source: 37.08 mJy/beam
-#rms: 4.84e-02 mJy/beam
-#Peak SNR: 766.55
+#TMC1A_LB+SB_p1.image.tt0
+#Beam 0.040 arcsec x 0.026 arcsec (11.62 deg)
+#Flux inside disk mask: 228.53 mJy
+#Peak intensity of source: 6.62 mJy/beam
+#rms: 2.64e-02 mJy/beam
+#Peak SNR: 251.12
+
 iteration=2
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='90s',
+self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
 
@@ -658,7 +661,7 @@ if not skip_plots:
 #Peak SNR: 1143.40
 
 iteration=3
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='42s',
+self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='300s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
 
@@ -679,7 +682,7 @@ if not skip_plots:
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
 
 iteration=4
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='30s',
+self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
 
@@ -697,7 +700,7 @@ if not skip_plots:
 #Peak SNR: 1229.56
 
 iteration=5
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='300s',
+self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='300s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
 
@@ -716,7 +719,7 @@ if not skip_plots:
 
 
 iteration=6
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
+self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
 
