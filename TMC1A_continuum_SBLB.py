@@ -604,6 +604,8 @@ estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask,
 ### 3. Apply self-cal gain solutions to MS
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
+############################ CONTINUE SELF-CALIBRATION ITERATIONS UNTIL ###################################
+#################### THE S/N BEGINS TO DROP OR SOLINTS ARE AS LOW AS POSSIBLE #############################
 iteration=0
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='600s',
                noisemasks=[common_mask,noise_annulus],
@@ -616,13 +618,6 @@ if not skip_plots:
        plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_LB+SB_p'+str(iteration)+'.g'),
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
-
-#TMC1A_LB+SB_p0.image.tt0
-#Beam 0.040 arcsec x 0.026 arcsec (11.61 deg)
-#Flux inside disk mask: 247.79 mJy
-#Peak intensity of source: 6.71 mJy/beam
-#rms: 3.90e-02 mJy/beam
-#Peak SNR: 172.26
 
 #TMC1A_LB+SB_p0.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
@@ -727,6 +722,9 @@ if not skip_plots:
 #Peak intensity of source: 6.74 mJy/beam
 #rms: 2.39e-02 mJy/beam
 #Peak SNR: 282.01
+
+
+
 
 iteration=6
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='12.12',

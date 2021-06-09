@@ -534,13 +534,11 @@ self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode
 ################# SPLIT OFF FINAL CONT DATA ###################
 ###############################################################
 
-vislist=[]
 for i in data_params.keys():
    os.system('rm -rf '+prefix+'_'+i+'_continuum.ms '+prefix+'_'+i+'_continuum.ms.tgz')
    split(vis=data_params[i]['vis_avg_selfcal'], outputvis=prefix+'_'+i+'_continuum.ms',
       datacolumn='data')
    data_params[i]['vis_final']=prefix+'_'+i+'_continuum.ms'
-   vislist.append(data_params[i]['vis_final'])
    os.system('tar cvzf '+prefix+'_'+i+'_continuum.ms.tgz '+prefix+'_'+i+'_continuum.ms')
 
 #save data params to a pickle
@@ -552,6 +550,10 @@ with open(prefix+'.pickle', 'wb') as handle:
 ################## RUN A FINAL IMAGE SET ######################
 ###############################################################
 
+### Generate a vislist
+vislist=[]
+for i in data_params.keys():
+   vislist.append(data_params[i]['vis_final'])
 scales = SB_scales
 
 for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
