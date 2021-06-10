@@ -568,7 +568,7 @@ for i in data_params.keys():
    if 'SB' in i:
       data_params[i]['selfcal_spwmap_SB-only']=data_params[i]['selfcal_spwmap'].copy()
       data_params[i]['selfcal_tables_SB-only']=data_params[i]['selfcal_tables'].copy()
-      data_params[i]['vis_avg_selfcal_SB-only']=data_params[i]['vis_avg_selfcal'].copy()
+      data_params[i]['vis_avg_selfcal_SB-only']=(data_params[i]['vis_avg_selfcal']+'.')[:-1]  ## trick to copy the string
 ###############################################################
 ################### SELF-CALIBRATION SB+LB ####################
 ###############################################################
