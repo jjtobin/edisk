@@ -1311,7 +1311,7 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
    contspws=''
    spwmap=[0,0,0,0,0]
    if remove_all_following_iterations:   ### Remove all following selfcal files after the iteration being run
-      if skipImage:   # don't erase the current iteration if you want to skip imaging and re-run with current model
+      if not skipImage:   # don't erase the current iteration if you want to skip imaging and re-run with current model
          os.system("rm -rf "+"*_"+mode+"*p{{{0:d}..99}}*".format(iteration+1))
       else:
          os.system("rm -rf "+"*_"+mode+"*p{{{0:d}..99}}*".format(iteration))
@@ -1343,9 +1343,10 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
       if (mode =='LB+SB') and ('SB' in i) and (iteration == 0): # slightly different flow for the SB data in iter0
          if not skipImage:
             os.system('rm -rf '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
-            os.system('cp -r '+data_params[i]['vis_avg_selfcal']+' '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
-            data_params[i]['selfcal_spwmap']=data_params[i]['selfcal_spwmap_SB-only']
-            data_params[i]['selfcal_tables']=data_params[i]['selfcal_tables_SB-only']
+            os.system('cp -r '+data_params[i]['vis_avg_selfcal_SB-only']+' '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
+            data_params[i]['selfcal_spwmap']=[]
+            data_params[i]['selfcal_tables']=[]
+            data_params[i]['vis_avg_selfcal']=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
          vislist.append(data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
          continue
       if iteration == 0:
@@ -1354,6 +1355,7 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
             os.system('cp -r '+data_params[i]['vis_avg_shift_rescaled']+' '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
             data_params[i]['selfcal_tables']=[]
             data_params[i]['selfcal_spwmap']=[]
+            data_params[i]['vis_avg_selfcal']=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
       elif iteration > 0:
          if len(data_params[i]['selfcal_tables']) > iteration:  ### remove selfcal table entries when redoing self-cal stages
             data_params[i]['selfcal_tables'] = data_params[i]['selfcal_tables'][0:iteration]
