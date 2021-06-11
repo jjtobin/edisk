@@ -641,13 +641,12 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-
 #TMC1A_LB+SB_p2.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 210.06 mJy
-#Peak intensity of source: 6.28 mJy/beam
-#rms: 2.51e-02 mJy/beam
-#Peak SNR: 250.72
+#Flux inside disk mask: 258.64 mJy
+#Peak intensity of source: 6.44 mJy/beam
+#rms: 2.35e-02 mJy/beam
+#Peak SNR: 273.96
 
 iteration=3
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',

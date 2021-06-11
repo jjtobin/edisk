@@ -146,7 +146,6 @@ for i in data_params.keys():
 ############ RUN A FINAL SPECTRAL LINE IMAGE SET ##############
 ###############################################################
 
-prefix='Ced110IRS4'
 
 ### generate list of MS files to image
 vislist=[]
