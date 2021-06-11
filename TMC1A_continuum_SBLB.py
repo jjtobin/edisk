@@ -399,16 +399,18 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 
 ### Initial dirty map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_dirty', 
-               scales=SB_scales, niter=0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
+               scales=SB_scales, niter=0,parallel=parallel,cellsize='0.025arcsec',imsize=1600,nterms=1)
 estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask, 
              noise_mask=noise_annulus)
 
-#Ced110IRS4_dirty.image.tt0
-#Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)
-#Flux inside disk mask: 88.43 mJy
-#Peak intensity of source: 30.05 mJy/beam
-#rms: 2.58e-01 mJy/beam
-#Peak SNR: 116.68
+
+#TMC1A_dirty.image.tt0
+#Beam 0.256 arcsec x 0.149 arcsec (38.75 deg)
+#Flux inside disk mask: 139.50 mJy
+#Peak intensity of source: 70.29 mJy/beam
+#rms: 8.81e-01 mJy/beam
+#Peak SNR: 79.76
+
 
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
@@ -427,7 +429,7 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 iteration=0
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,nterms=1)
 
 
 ### Plot gain corrections, loop through each
@@ -439,18 +441,18 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-### Make note of key metrics of image in each round
+
 #TMC1A_SB-only_p0.image.tt0
-#Beam 0.257 arcsec x 0.149 arcsec (38.77 deg)
-#Flux inside disk mask: 165.70 mJy
-#Peak intensity of source: 69.33 mJy/beam
-#rms: 4.53e-01 mJy/beam
-#Peak SNR: 153.00
+#Beam 0.256 arcsec x 0.149 arcsec (38.75 deg)
+#Flux inside disk mask: 163.44 mJy
+#Peak intensity of source: 71.79 mJy/beam
+#rms: 5.66e-01 mJy/beam
+#Peak SNR: 126.94
 
 iteration=1
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=20.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -460,18 +462,19 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-#TMC1A_SB-only_p1.image.tt0
-#Beam 0.257 arcsec x 0.149 arcsec (38.77 deg)
-#Flux inside disk mask: 191.58 mJy
-#Peak intensity of source: 76.83 mJy/beam
-#rms: 2.29e-01 mJy/beam
-#Peak SNR: 335.56
 
+
+#TMC1A_SB-only_p1.image.tt0
+#Beam 0.256 arcsec x 0.149 arcsec (38.75 deg)
+#Flux inside disk mask: 196.84 mJy
+#Peak intensity of source: 81.52 mJy/beam
+#rms: 2.30e-01 mJy/beam
+#Peak SNR: 355.06
 
 iteration=2
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='6s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -481,17 +484,18 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
+
 #TMC1A_SB-only_p2.image.tt0
-#Beam 0.257 arcsec x 0.149 arcsec (38.77 deg)
-#Flux inside disk mask: 201.83 mJy
-#Peak intensity of source: 78.27 mJy/beam
-#rms: 1.96e-01 mJy/beam
-#Peak SNR: 400.04
+#Beam 0.256 arcsec x 0.149 arcsec (38.75 deg)
+#Flux inside disk mask: 210.82 mJy
+#Peak intensity of source: 83.41 mJy/beam
+#rms: 1.76e-01 mJy/beam
+#Peak SNR: 473.23
 
 iteration=3
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -501,12 +505,13 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
+
 #TMC1A_SB-only_p3.image.tt0
-#Beam 0.257 arcsec x 0.149 arcsec (38.77 deg)
-#Flux inside disk mask: 204.98 mJy
-#Peak intensity of source: 79.58 mJy/beam
-#rms: 1.90e-01 mJy/beam
-#Peak SNR: 419.65
+#Beam 0.256 arcsec x 0.149 arcsec (38.75 deg)
+#Flux inside disk mask: 214.82 mJy
+#Peak intensity of source: 84.26 mJy/beam
+#rms: 1.70e-01 mJy/beam
+#Peak SNR: 495.28
 
 
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
@@ -514,7 +519,7 @@ if not skip_plots:
 iteration=4
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -524,17 +529,18 @@ if not skip_plots:
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
 
+
 #TMC1A_SB-only_p4.image.tt0
-#Beam 0.257 arcsec x 0.149 arcsec (38.77 deg)
-#Flux inside disk mask: 204.95 mJy
-#Peak intensity of source: 79.60 mJy/beam
-#rms: 1.90e-01 mJy/beam
-#Peak SNR: 419.83
+#Beam 0.256 arcsec x 0.149 arcsec (38.75 deg)
+#Flux inside disk mask: 214.69 mJy
+#Peak intensity of source: 84.28 mJy/beam
+#rms: 1.70e-01 mJy/beam
+#Peak SNR: 495.15
 
 iteration=5
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='18s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -543,25 +549,27 @@ if not skip_plots:
        plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_SB-only_ap'+str(iteration)+'.g'), xaxis='time',
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key tto advance to next MS/Caltable...")
+
 #TMC1A_SB-only_ap5.image.tt0
-#Beam 0.257 arcsec x 0.150 arcsec (38.83 deg)
-#Flux inside disk mask: 208.86 mJy
-#Peak intensity of source: 82.86 mJy/beam
-#rms: 1.56e-01 mJy/beam
-#Peak SNR: 532.79
+#Beam 0.256 arcsec x 0.150 arcsec (38.87 deg)
+#Flux inside disk mask: 219.00 mJy
+#Peak intensity of source: 87.54 mJy/beam
+#rms: 8.71e-02 mJy/beam
+#Peak SNR: 1005.20
 
 ### Make the final image, will not run another self-calibration
 iteration=6
 self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='18s',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               parallel=parallel,finalimageonly=True)
+               parallel=parallel,finalimageonly=True,nterms=1)
+
 
 #TMC1A_SB-only_ap6.image.tt0
-#Beam 0.256 arcsec x 0.149 arcsec (38.80 deg)
-#Flux inside disk mask: 210.45 mJy
-#Peak intensity of source: 82.86 mJy/beam
-#rms: 1.56e-01 mJy/beam
-#Peak SNR: 532.26
+#Beam 0.256 arcsec x 0.150 arcsec (38.80 deg)
+#Flux inside disk mask: 220.26 mJy
+#Peak intensity of source: 87.74 mJy/beam
+#rms: 8.52e-02 mJy/beam
+#Peak SNR: 1029.37
 
 ###Backup gain table list for LB+SB runs
 for i in data_params.keys():
@@ -583,7 +591,7 @@ for i in data_params.keys():
 
 ### Initial dirty map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_LB+SB_dirty', 
-               scales=SB_scales, niter=0,parallel=parallel,cellsize='0.003arcsec',imsize=5000)
+               scales=SB_scales, niter=0,parallel=parallel,cellsize='0.003arcsec',imsize=5000,nterms=1)
 estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask, 
              noise_mask=noise_annulus)
 
@@ -609,7 +617,7 @@ estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask,
 iteration=0
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='600s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel,smoothfactor=2.0,nterms=1)
 
 
 ### Plot gain corrections, loop through each
@@ -618,17 +626,18 @@ if not skip_plots:
        plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_LB+SB_p'+str(iteration)+'.g'),
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
+
 #TMC1A_LB+SB_p0.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 227.47 mJy
-#Peak intensity of source: 6.58 mJy/beam
-#rms: 3.90e-02 mJy/beam
-#Peak SNR: 168.76
+#Flux inside disk mask: 306.43 mJy
+#Peak intensity of source: 6.73 mJy/beam
+#rms: 3.56e-02 mJy/beam
+#Peak SNR: 189.31
 
 iteration=1
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=20.0,solint='240s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel,smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -646,7 +655,7 @@ if not skip_plots:
 iteration=2
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='120s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='spw,scan')
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='spw,scan',smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -665,7 +674,7 @@ if not skip_plots:
 iteration=3
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -686,7 +695,7 @@ if not skip_plots:
 iteration=4
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='24.24s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -707,7 +716,7 @@ if not skip_plots:
 iteration=5
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='12.12s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -728,20 +737,20 @@ if not skip_plots:
 iteration=6
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='12.12',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,finalimageonly=True)
+               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,finalimageonly=True,nterms=1)
 
 #TMC1A_LB+SB_p6.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 211.34 mJy
-#Peak intensity of source: 6.84 mJy/beam
-#rms: 2.39e-02 mJy/beam
-#Peak SNR: 286.00
+#Flux inside disk mask: 252.47 mJy
+#Peak intensity of source: 7.01 mJy/beam
+#rms: 2.23e-02 mJy/beam
+#Peak SNR: 314.71
 
 '''
 iteration=6
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='6.06s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -761,26 +770,26 @@ if not skip_plots:
 iteration=7
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='240s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='scan,spw')
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='scan,spw',smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
        plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_LB+SB_ap'+str(iteration)+'.g'), xaxis='time',
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
+
 #TMC1A_LB+SB_p7.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 212.05 mJy
-#Peak intensity of source: 6.87 mJy/beam
-#rms: 2.40e-02 mJy/beam
-#Peak SNR: 285.79
-
+#Flux inside disk mask: 252.85 mJy
+#Peak intensity of source: 7.06 mJy/beam
+#rms: 2.24e-02 mJy/beam
+#Peak SNR: 315.19
 
 
 iteration=8
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,nterms=1)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -788,26 +797,28 @@ if not skip_plots:
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key tto advance to next MS/Caltable...")
 
+
 #TMC1A_LB+SB_ap8.image.tt0
-#Beam 0.042 arcsec x 0.026 arcsec (15.87 deg)
-#Flux inside disk mask: 205.75 mJy
-#Peak intensity of source: 6.80 mJy/beam
-#rms: 2.47e-02 mJy/beam
-#Peak SNR: 274.76
+#Beam 0.041 arcsec x 0.026 arcsec (14.49 deg)
+#Flux inside disk mask: 251.39 mJy
+#Peak intensity of source: 6.79 mJy/beam
+#rms: 2.31e-02 mJy/beam
+#Peak SNR: 293.51
 
 
 
 iteration=9
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,finalimageonly=True)
+               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,nterms=1,finalimageonly=True)
 
 #TMC1A_LB+SB_ap9.image.tt0
-#Beam 0.041 arcsec x 0.026 arcsec (13.86 deg)
-#Flux inside disk mask: 214.14 mJy
+#Beam 0.041 arcsec x 0.026 arcsec (13.82 deg)
+#Flux inside disk mask: 254.31 mJy
 #Peak intensity of source: 6.70 mJy/beam
-#rms: 2.61e-02 mJy/beam
-#Peak SNR: 257.15
+#rms: 2.32e-02 mJy/beam
+#Peak SNR: 289.18
+
 '''
 
 
@@ -870,12 +881,12 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
     tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=2.0*sigma, 
             noisethreshold=3.0, robust=robust, parallel=parallel, 
-            cellsize='0.003arcsec', imsize=8000,uvrange=uvrange)
+            cellsize='0.003arcsec', imsize=8000,uvrange=uvrange,nterms=1)
 
     imagename=imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)
 
-for taper in ['1000klambda','1500klambda','2000klmabda','2500klambda','3000klambda']:
+for taper in ['1000klambda','1500klambda','2000klambda','2500klambda','3000klambda']:
    for robust in [0.5]:
       imagename=prefix+'_SB_continuum_robust_'+str(robust)+'_taper_'+taper
       os.system('rm -rf '+imagename+'*')
@@ -883,7 +894,7 @@ for taper in ['1000klambda','1500klambda','2000klmabda','2500klambda','3000klamb
       tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
             noisethreshold=3.0, robust=robust, parallel=parallel, 
-            cellsize='0.003arcsec', imsize=8000,uvtaper=[taper],uvrange='>60klambda')
+            cellsize='0.003arcsec', imsize=8000,uvtaper=[taper],uvrange='>60klambda',nterms=1)
       imagename=imagename+'.image.tt0'
       exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)
 
