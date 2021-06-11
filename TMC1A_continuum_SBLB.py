@@ -12,7 +12,7 @@ LB1: 2015.1.01415.S (2015/10/23)
 LB2: 2015.1.01415.S (2015/10/30)
      
 
-reducer: 
+reducer: J. Tobin
 """
 
 ### Import statements
@@ -343,28 +343,6 @@ with open(prefix+'.pickle', 'wb') as handle:
 for i in data_params.keys():
    data_params[i]["refant"] = rank_refants(data_params[i]["vis_avg_shift_rescaled"])
 
-'''Find reference antenna, pick 2 near array center'''
-'''
-if not skip_plots:
-   for i in data_params.keys():
-      if 'LB' in i:
-         continue
-      listobs(data_params[i]['vis'])
-      plotants(data_params[i]['vis'])
-      input("Press Enter key to advance to next MS/Caltable...")
-'''
-
-'''antenna name is DV/DA/PMXX'''
-'''pad number is @AXXX '''
-'''want antenna that is on the same pad if possible, list multiple in case one drops out'''
-'''check listobs and fill in the SB_refant field '''
-'''with the antenna name (DAXX, DVXX, or PMXX) @ pad number (AXXX)'''
-'''so make a comma separated list like: DA43@A035,DV07@A011,...'''
-
-
-#################### MANUALLY SET THIS ######################
-#SB_refant   = 'DA43@A035,DV07@A011,DV05@A042' 
-
 ############### CHECK THESE, SHOULD BE FINE #################
 SB_spwmap=[0,0,0,0,0,0]
 SB_contspws = '' 
@@ -596,11 +574,11 @@ estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask,
              noise_mask=noise_annulus)
 
 #TMC1A_LB+SB_dirty.image.tt0
-#Beam 0.040 arcsec x 0.026 arcsec (12.07 deg)
-#Flux inside disk mask: 272.95 mJy
-#Peak intensity of source: 9.05 mJy/beam
-#rms: 7.11e-02 mJy/beam
-#Peak SNR: 127.23
+#Beam 0.040 arcsec x 0.026 arcsec (12.10 deg)
+#Flux inside disk mask: 354.06 mJy
+#Peak intensity of source: 9.60 mJy/beam
+#rms: 7.83e-02 mJy/beam
+#Peak SNR: 122.66
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
 ### only images >0 have self-calibration applied
@@ -629,10 +607,10 @@ if not skip_plots:
 
 #TMC1A_LB+SB_p0.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 306.43 mJy
-#Peak intensity of source: 6.73 mJy/beam
-#rms: 3.56e-02 mJy/beam
-#Peak SNR: 189.31
+#Flux inside disk mask: 305.68 mJy
+#Peak intensity of source: 6.72 mJy/beam
+#rms: 3.54e-02 mJy/beam
+#Peak SNR: 189.97
 
 iteration=1
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=20.0,solint='240s',
@@ -647,10 +625,10 @@ if not skip_plots:
 
 #TMC1A_LB+SB_p1.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 216.10 mJy
-#Peak intensity of source: 6.25 mJy/beam
-#rms: 2.96e-02 mJy/beam
-#Peak SNR: 210.67
+#Flux inside disk mask: 283.42 mJy
+#Peak intensity of source: 6.46 mJy/beam
+#rms: 2.70e-02 mJy/beam
+#Peak SNR: 239.45
 
 iteration=2
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='120s',

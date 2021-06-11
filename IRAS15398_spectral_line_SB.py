@@ -147,9 +147,6 @@ for i in data_params.keys():
 ############ RUN A FINAL SPECTRAL LINE IMAGE SET ##############
 ###############################################################
 
-parallel=True     # only set to True if running with mpicasa
-prefix='IRAS15398'
-
 ### generate list of MS files to image
 vislist=[]
 for i in data_params.keys():
