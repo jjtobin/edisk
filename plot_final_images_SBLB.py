@@ -216,7 +216,7 @@ for dataset, line_center in zip(datasets, line_centers):
     # Check for which robust parameters are available.
 
     robust_list = [f.split("_")[-1].split("image")[0][0:-1] for f in \
-            glob.glob("{0:s}_SB_{1:s}_robust_*.image.fits".format(source, \
+            glob.glob("{0:s}_SBLB_{1:s}_robust_*.image.fits".format(source, \
             dataset))]
     
     # Now plot each of the images.
@@ -224,7 +224,7 @@ for dataset, line_center in zip(datasets, line_centers):
     for robust in robust_list:
         # Load in the image.
 
-        image, header = fits.getdata("{0:s}_SB_{1:s}_robust_{2:s}.image."
+        image, header = fits.getdata("{0:s}_SBLB_{1:s}_robust_{2:s}.image."
                 "fits".format(source, dataset, robust), header=True)
 
         freq = numpy.arange(image.shape[0])*header["CDELT3"] + header["CRVAL3"]
