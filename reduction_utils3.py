@@ -654,7 +654,8 @@ cyclefactor=3,uvrange='',threshold='0.0Jy'):
                  threshold=threshold,
                  parallel=False)
     
-def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggs'):
+def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,
+parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggsbwtaper'):
 
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
@@ -693,7 +694,7 @@ def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, 
            specmode = 'cube', 
            deconvolver = 'multiscale',
            scales = scales, 
-           weighting='briggs', 
+           weighting=weighting, 
            robust = robust,
            gain = gain,
            start=start,
@@ -1482,7 +1483,10 @@ def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcs
          spw=data_params[key]['cont_spws'].tolist()
          vis=data_params[key]['vis_final']
          scalefactor=2.5
-      spwstring=''.join(str(spwnum)+',' for spwnum in spw)[:-1]
+      if (type(spw[0]) == str):
+         spwstring=''.join(str(spwnum)+',' for spwnum in spw)[:-1]
+      elif (type(spw[0]) == list):
+          spwstring=spw[0][counter]
       if specmode=='cube':
          print('Using Cube Mode')
          vis=data_params[key]['vis_contsub']

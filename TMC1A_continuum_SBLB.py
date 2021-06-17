@@ -592,6 +592,9 @@ estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask,
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 ############################ CONTINUE SELF-CALIBRATION ITERATIONS UNTIL ###################################
 #################### THE S/N BEGINS TO DROP OR SOLINTS ARE AS LOW AS POSSIBLE #############################
+
+#################### LOOK FOR ERRORS IN GAINCAL CLAIMING A FREQUENCY MISMATCH #############################
+####### IF FOUND, CHANGE SOLINT, MAYBE TRY TO ALIGN WITH A CERTAIN NUMBER OF SCANS AND TRY AGAIN ##########
 iteration=0
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='600s',
                noisemasks=[common_mask,noise_annulus],
@@ -641,6 +644,7 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
+
 #TMC1A_LB+SB_p2.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
 #Flux inside disk mask: 258.64 mJy
@@ -661,13 +665,10 @@ if not skip_plots:
 
 #TMC1A_LB+SB_p3.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 209.51 mJy
-#Peak intensity of source: 6.44 mJy/beam
-#rms: 2.44e-02 mJy/beam
-#Peak SNR: 264.21
-
-
-
+#Flux inside disk mask: 252.73 mJy
+#Peak intensity of source: 6.65 mJy/beam
+#rms: 2.28e-02 mJy/beam
+#Peak SNR: 291.32
 
 iteration=4
 self_calibrate(prefix,data_params,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='24.24s',
@@ -681,12 +682,13 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 
+
 #TMC1A_LB+SB_p4.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 208.83 mJy
-#Peak intensity of source: 6.55 mJy/beam
-#rms: 2.39e-02 mJy/beam
-#Peak SNR: 274.09
+#Flux inside disk mask: 251.56 mJy
+#Peak intensity of source: 6.76 mJy/beam
+#rms: 2.23e-02 mJy/beam
+#Peak SNR: 303.15
 
 
 
@@ -701,13 +703,13 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
+
 #TMC1A_LB+SB_p5.image.tt0
 #Beam 0.040 arcsec x 0.026 arcsec (11.66 deg)
-#Flux inside disk mask: 209.96 mJy
-#Peak intensity of source: 6.74 mJy/beam
-#rms: 2.39e-02 mJy/beam
-#Peak SNR: 282.01
-
+#Flux inside disk mask: 252.40 mJy
+#Peak intensity of source: 6.91 mJy/beam
+#rms: 2.23e-02 mJy/beam
+#Peak SNR: 310.36
 
 
 
@@ -845,6 +847,7 @@ for i in data_params.keys():
 scales = SB_scales
 
 for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
+    print('Generate Robust '+str(robust) + ' image')
     imagename=prefix+'_SB_continuum_robust_'+str(robust)
     os.system('rm -rf '+imagename+'*')
 
@@ -865,6 +868,7 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
 
 for taper in ['1000klambda','1500klambda','2000klambda','2500klambda','3000klambda']:
    for robust in [0.5]:
+      print('Generate Robust '+str(robust) + ' taper '+taper+' image')
       imagename=prefix+'_SB_continuum_robust_'+str(robust)+'_taper_'+taper
       os.system('rm -rf '+imagename+'*')
       sigma = get_sensitivity(data_params, specmode='mfs')

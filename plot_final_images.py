@@ -216,7 +216,7 @@ for dataset, line_center in zip(datasets, line_centers):
     # Check for which robust parameters are available.
 
     robust_list = [f.split("_")[-1].split("image")[0][0:-1] for f in \
-            glob.glob("{0:s}_SB_{1:s}_robust_*.image.fits".format(source, \
+            glob.glob("{0:s}_SB*_{1:s}_robust_*.image.fits".format(source, \
             dataset))]
     
     # Now plot each of the images.
