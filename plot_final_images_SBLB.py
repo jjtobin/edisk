@@ -15,7 +15,7 @@ import sys
 
 #source = "IRAS15398"
 source = str(sys.argv[1])
-pdf = PdfPages(source+'.pdf')
+pdf = PdfPages(source+'_SBLB.pdf')
 
 # Get a list of sources.
 
@@ -70,7 +70,7 @@ for ticks in ticks_list:
         # Load the continuum image.
 
         try:
-            data, header = fits.getdata("{0:s}_SB_continuum_robust_{1:3.1f}."
+            data, header = fits.getdata("{0:s}_SBLB_continuum_robust_{1:3.1f}."
                     "image.tt0.fits".format(source, robust), header=True)
         except:
             ax.set_axis_off()
@@ -231,10 +231,10 @@ for dataset, line_center in zip(datasets, line_centers):
 
         # Load the continuum image.
         if ndim_cont == 4:
-           cont = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
+           cont = fits.getdata("{0:s}_SBLB_continuum_robust_{1:s}.image."
                   "tt0.fits".format(source, robust))[0,0]
         elif ndim_cont ==2:
-           cont = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
+           cont = fits.getdata("{0:s}_SBLB_continuum_robust_{1:s}.image."
                   "tt0.fits".format(source, robust)) #[0,0]
         # Get the center of the source(s).
 

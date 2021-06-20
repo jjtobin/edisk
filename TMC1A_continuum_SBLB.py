@@ -869,7 +869,7 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
 for taper in ['1000klambda','1500klambda','2000klambda','2500klambda','3000klambda']:
    for robust in [0.5]:
       print('Generate Robust '+str(robust) + ' taper '+taper+' image')
-      imagename=prefix+'_SB_continuum_robust_'+str(robust)+'_taper_'+taper
+      imagename=prefix+'_SBLB_continuum_robust_'+str(robust)+'_taper_'+taper
       os.system('rm -rf '+imagename+'*')
       sigma = get_sensitivity(data_params, specmode='mfs')
       tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
