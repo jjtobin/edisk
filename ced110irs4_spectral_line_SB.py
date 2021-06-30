@@ -221,12 +221,7 @@ for line in image_list:
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel)
 
-###############################################################
-################# Make Plots of Everything ####################
-###############################################################
-import sys
-sys.argv = ['../edisk/plot_final_images.py',prefix]
-execfile('../edisk/plot_final_images.py')
+
 
 ###############################################################
 ########################### CLEANUP ###########################
@@ -259,4 +254,10 @@ os.system('mkdir export')
 os.system('cp *.fits export/')
 os.system('cp *.tgz export/')
 
+###############################################################
+################# Make Plots of Everything ####################
+###############################################################
+import sys
+sys.argv = ['../edisk/plot_final_images.py',prefix]
+execfile('../edisk/plot_final_images.py')
 
