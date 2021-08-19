@@ -15,6 +15,7 @@ import sys
 
 #source = "IRAS15398"
 source = str(sys.argv[1])
+print(source)
 pdf = PdfPages(source+'.pdf')
 
 # Get a list of sources.

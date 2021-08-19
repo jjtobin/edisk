@@ -564,7 +564,7 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
 def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,
-cyclefactor=3,uvrange='',threshold='0.0Jy'):
+cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter=''):
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
     See the CASA 6.1.1 documentation for tclean to get the definitions of all the parameters
@@ -618,10 +618,13 @@ cyclefactor=3,uvrange='',threshold='0.0Jy'):
            usemask=usemask,
            sidelobethreshold=sidelobethreshold,
            smoothfactor=smoothfactor,
+           pbmask=0.1,
+           pblimit=0.1,
            nterms = nterms,
            uvrange=uvrange,
            threshold=threshold,
-           parallel=parallel)
+           parallel=parallel,
+           phasecenter=phasecenter)
      #this step is a workaround a bug in tclean that doesn't always save the model during multiscale clean. See the "Known Issues" section for CASA 5.1.1 on NRAO's website
     if savemodel=='modelcolumn':
           print("")
@@ -647,15 +650,18 @@ cyclefactor=3,uvrange='',threshold='0.0Jy'):
                  savemodel = savemodel,
                  sidelobethreshold=sidelobethreshold,
                  smoothfactor=smoothfactor,
+                 pbmask=0.1,
+                 pblimit=0.1,
                  calcres = False,
                  calcpsf = False,
                  nterms = nterms,
                  uvrange=uvrange,
                  threshold=threshold,
-                 parallel=False)
+                 parallel=False,
+                 phasecenter=phasecenter)
     
 def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,
-parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggsbwtaper'):
+parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggsbwtaper',phasecenter=''):
 
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
@@ -723,7 +729,8 @@ parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggsbwtap
            threshold=threshold,
            uvrange=uvrange,
            restfreq=restfreq,
-           parallel=parallel)
+           parallel=parallel,
+           phasecenter=phasecenter)
 
 def image_each_obs(ms_dict, prefix, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.3, niter = 50000, cycleniter = 300,sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,uvtaper='',parallel=False):
     """
@@ -1303,7 +1310,7 @@ def get_station_numbers(msfile, antenna_name):
             print("#Observation ID %d: %s@%s" % (j, antenna_name, ant_stations[i]))
 
 
-def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p',prevselfcalmode=None,nsigma=50.0,solint='inf',
+def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode='SB-only',iteration=0,selfcalmode='p',prevselfcalmode=None,nsigma=50.0,solint='inf',
                   noisemasks=['',''],parallel=False,SB_contspws='',
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
@@ -1343,32 +1350,32 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
          continue
       if (mode =='LB+SB') and ('SB' in i) and (iteration == 0): # slightly different flow for the SB data in iter0
          if not skipImage:
-            os.system('rm -rf '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
-            os.system('cp -r '+data_params[i]['vis_avg_selfcal_SB-only']+' '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
+            os.system('rm -rf '+data_params[i][selectedVis].replace('.ms','_'+mode+'_p0.ms'))
+            os.system('cp -r '+data_params[i]['vis_avg_selfcal_SB-only']+' '+data_params[i][selectedVis].replace('.ms','_'+mode+'_p0.ms'))
             data_params[i]['selfcal_spwmap']=[]
             data_params[i]['selfcal_tables']=[]
-            data_params[i]['vis_avg_selfcal']=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
-         vislist.append(data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
+            data_params[i]['vis_avg_selfcal']=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
+         vislist.append(data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
          continue
       if iteration == 0:
          if not skipImage:
-            os.system('rm -rf '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
-            os.system('cp -r '+data_params[i]['vis_avg_shift_rescaled']+' '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_p0.ms'))
+            os.system('rm -rf '+data_params[i][selectedVis].replace('.ms','_'+mode+'_p0.ms'))
+            os.system('cp -r '+data_params[i][selectedVis]+' '+data_params[i][selectedVis].replace('.ms','_'+mode+'_p0.ms'))
             data_params[i]['selfcal_tables']=[]
             data_params[i]['selfcal_spwmap']=[]
-            data_params[i]['vis_avg_selfcal']=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
+            data_params[i]['vis_avg_selfcal']=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
       elif iteration > 0:
          if len(data_params[i]['selfcal_tables']) > iteration:  ### remove selfcal table entries when redoing self-cal stages
             data_params[i]['selfcal_tables'] = data_params[i]['selfcal_tables'][0:iteration]
             data_params[i]['selfcal_spwmap'] = data_params[i]['selfcal_spwmap'][0:iteration]
          if not skipImage:
-            print('Input MS: ',data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+prevselfcalmode+str(iteration-1)+'.ms'))
-            os.system('rm -rf '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
-            split(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+prevselfcalmode+str(iteration-1)+'.ms'),
-                  outputvis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
-            data_params[i]['vis_avg_selfcal']=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
-            print('Output MS: ',data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
-      vislist.append(data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
+            print('Input MS: ',data_params[i][selectedVis].replace('.ms','_'+mode+'_'+prevselfcalmode+str(iteration-1)+'.ms'))
+            os.system('rm -rf '+data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
+            split(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+prevselfcalmode+str(iteration-1)+'.ms'),
+                  outputvis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
+            data_params[i]['vis_avg_selfcal']=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms')
+            print('Output MS: ',data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
+      vislist.append(data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'))
 
 
 
@@ -1390,25 +1397,25 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
          continue
       if (mode =='LB-only') and ('LB' in i): # skip over SB EBs if in LB-only mode
          continue
-      os.system('rm -rf '+data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
+      os.system('rm -rf '+data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
       if 'LB' in i:
          contspws=LB_contspws
       if 'SB' in i:
          contspws=SB_contspws
       if selfcalmode=='p':
-         gaincal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
-                    caltable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
+         gaincal(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
+                    caltable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
                     gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
                     minsnr=2.0, minblperant=4,combine=combine)
       elif selfcalmode=='ap':
-         gaincal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
-                    caltable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
+         gaincal(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
+                    caltable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
                     gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
                     minsnr=4.0, minblperant=4,combine=combine,solnorm=True)
-         flagdata(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'),mode='clip',
+         flagdata(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'),mode='clip',
                   clipoutside=True,clipminmax =[0.5,1.5],datacolumn='CPARAM')
       # Add caltable to the dictionary for use later
-      data_params[i]['selfcal_tables'].append(data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
+      data_params[i]['selfcal_tables'].append(data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
 
    #apply the solutions
    for i in data_params.keys():
@@ -1420,8 +1427,8 @@ def self_calibrate(prefix,data_params,mode='SB-only',iteration=0,selfcalmode='p'
          spwmap=LB_spwmap
       if 'SB' in i:
          spwmap=SB_spwmap
-      applycal(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'),
-               gaintable=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'),
+      applycal(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'),
+               gaintable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'),
                interp='linearPD', calwt=True,spwmap=spwmap,applymode='calonly')
       data_params[i]['selfcal_spwmap'].append(spwmap) # Add spw map to the dictionary for use later
 

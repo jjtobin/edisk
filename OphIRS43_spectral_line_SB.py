@@ -33,16 +33,16 @@ execfile('../reduction_utils3.py', globals())
 parallel=True
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = 'fieldName'
-prefix  = 'filename prefix' 
+field   = 'OphIRS43'
+prefix  = 'OphIRS43' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/sourceDirectory/'
+WD_path = '/lustre/cv/projects/edisk/OphIRS43/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -167,15 +167,15 @@ image_list = {
             robust=[0.5,-0.5,0.]),
         ### 13CO images
         "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
-            nchan=120, linefreq='220.39868420GHz', linespw='1', 
+            nchan=140, linefreq='220.39868420GHz', linespw='1', 
             robust=[0.5,-0.5]),
         ### 12CO images
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
             nchan=315, linefreq='230.538GHz', linespw='6',
             robust=[0.5]),
         ### SO Images
-        "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
-            nchan=120, linefreq='219.94944200GHz', linespw='2',
+        "SO":dict(chanstart='-25.5km/s', chanwidth='0.33km/s', 
+            nchan=182, linefreq='219.94944200GHz', linespw='2',
             robust=[0.5]),
         ### H2CO 3(2,1)-2(2,0) Images
         "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-5.5km/s', 
@@ -224,14 +224,10 @@ for line in image_list:
                 image_list[line]["linespw"], SB_scales, threshold=3.0*sigma,
                 imsize=1600, cellsize='0.025arcsec',robust=robust, 
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel)
+                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
+                phasecenter=data_params[i]['common_dir'].replace('J2000','ICRS'))
 
-###############################################################
-################# Make Plots of Everything ####################
-###############################################################
-import sys
-sys.argv = ['../edisk/plot_final_images.py',prefix]
-execfile('../edisk/plot_final_images.py')
+
 
 ###############################################################
 ########################### CLEANUP ###########################
@@ -240,7 +236,7 @@ execfile('../edisk/plot_final_images.py')
 
 import glob
 ### Remove extra image products
-os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
+os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory TempLattice*')
 
 ### Remove fits files and pbcor files from previous iterations. 
 os.system("rm -rf *.pbcor* *.fits") 
@@ -264,4 +260,10 @@ os.system('mkdir export')
 os.system('cp *.fits export/')
 os.system('cp *.tgz export/')
 
+###############################################################
+################# Make Plots of Everything ####################
+###############################################################
+import sys
+sys.argv = ['../edisk/plot_final_images.py',prefix]
+execfile('../edisk/plot_final_images.py')
 

@@ -22,7 +22,7 @@ import glob
 import numpy as np
 import sys
 import pickle
-execfile('../reduction_utils3.py', globals())
+execfile('../edisk/reduction_utils3.py', globals())
 
 
 ###############################################################
