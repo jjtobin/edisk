@@ -35,7 +35,7 @@ execfile('../reduction_utils3.py', globals())
 parallel=True  
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
@@ -44,7 +44,7 @@ field   = 'BHR71_IRS2'
 prefix  = 'BHR71_IRS2' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/BHR71_IRS2/'
+WD_path = '/lustre/cv/projects/edisk/BHR71_IRS2-2nd/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 

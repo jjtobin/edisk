@@ -725,6 +725,8 @@ parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggsbwtap
            lownoisethreshold=lownoisethreshold,
            noisethreshold=noisethreshold,
            smoothfactor=smoothfactor,
+           pbmask=0.1,
+           pblimit=0.1,
            restoringbeam='common',
            threshold=threshold,
            uvrange=uvrange,

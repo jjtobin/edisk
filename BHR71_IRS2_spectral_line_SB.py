@@ -33,7 +33,7 @@ execfile('../reduction_utils3.py', globals())
 parallel=True
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
@@ -42,7 +42,7 @@ field   = 'BHR71_IRS2'
 prefix  = 'BHR71_IRS2' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/BHR71_IRS2/'
+WD_path = '/lustre/cv/projects/edisk/BHR71_IRS2-2nd/'
 
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
@@ -163,11 +163,11 @@ for i in data_params.keys():
 
 image_list = {
         ### C18O images
-        "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
+        "C18O":dict(chanstart='-15.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='219.56035410GHz', linespw='3',
             robust=[0.5,-0.5,0.]),
         ### 13CO images
-        "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
+        "13CO":dict(chanstart='-15.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='220.39868420GHz', linespw='1', 
             robust=[0.5,-0.5]),
         ### 12CO images
@@ -175,38 +175,38 @@ image_list = {
             nchan=315, linefreq='230.538GHz', linespw='6',
             robust=[0.5]),
         ### SO Images
-        "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
+        "SO":dict(chanstart='-15.5km/s', chanwidth='0.167km/s', 
             nchan=120, linefreq='219.94944200GHz', linespw='2',
             robust=[0.5]),
         ### H2CO 3(2,1)-2(2,0) Images
-        "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-5.5km/s', 
+        "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-15.5km/s', 
             chanwidth='0.167km/s', nchan=120, linefreq='218.76006600GHz', 
             linespw='0', robust=[0.5]),
         ### H2CO 3(0,3)-2(0,2) Images
-        "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-10km/s',
+        "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-20km/s',
             chanwidth='1.34km/s', nchan=23, linefreq='218.22219200GHz', 
             linespw='4', robust=[0.5]),
         ### H2CO 3(2,2)-2(2,1) Images
-        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-10km/s', 
+        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-20km/s', 
             chanwidth='1.34km/s', nchan=23, linefreq='218.47563200GHz',
             linespw='4', robust=[0.5]),
         ### c-C3H2 217.82 GHz Images
-        "c-C3H2_217.82":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
+        "c-C3H2_217.82":dict(chanstart='-20km/s', chanwidth='1.34km/s', 
             nchan=23, linefreq='217.82215GHz', linespw='4', robust=[0.5]),
         ### c-C3H2 217.94 GHz Images
-        "cC3H2_217.94":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
+        "cC3H2_217.94":dict(chanstart='-20km/s', chanwidth='1.34km/s', 
             nchan=23, linefreq='217.94005GHz', linespw='4', robust=[0.5]),
         ### c-C3H2 218.16 GHz Images
-        "cC3H2_218.16":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
+        "cC3H2_218.16":dict(chanstart='-20km/s', chanwidth='1.34km/s', 
             nchan=23, linefreq='218.16044GHz', linespw='4', robust=[0.5]),
         ### DCN Images
-        "DCN":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23, 
+        "DCN":dict(chanstart='-20km/s', chanwidth='1.34km/s', nchan=23, 
             linefreq='217.2386GHz', linespw='4', robust=[0.5]),
         ### CH3OH Images
-        "CH3OH":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23, 
+        "CH3OH":dict(chanstart='-20km/s', chanwidth='1.34km/s', nchan=23, 
             linefreq='218.44006300GHz', linespw='4', robust=[0.5]),
         ### SiO Images
-        "SiO":dict(chanstart='-100km/s', chanwidth='1.34km/s', nchan=150, 
+        "SiO":dict(chanstart='-150km/s', chanwidth='1.34km/s', nchan=225, 
             linefreq='217.10498000GHz', linespw='4', robust=[0.5])
         }
 

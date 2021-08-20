@@ -164,7 +164,7 @@ image_list = {
         ### C18O images
         "C18O":dict(chanstart='-15.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[0.5,-0.5,0.]),
+            robust=[0.5,-0.5]),
         ### 13CO images
         "13CO":dict(chanstart='-15.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='220.39868420GHz', linespw='1', 
@@ -180,7 +180,7 @@ image_list = {
         ### H2CO 3(2,1)-2(2,0) Images
         "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-15.5km/s', 
             chanwidth='0.167km/s', nchan=120, linefreq='218.76006600GHz', 
-            linespw='0', robust=[0.5]),
+            linespw='0', robust=[0.5,-0.5]),
         ### H2CO 3(0,3)-2(0,2) Images
         "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-20km/s',
             chanwidth='1.34km/s', nchan=23, linefreq='218.22219200GHz', 
