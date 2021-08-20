@@ -52,7 +52,7 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 
 ### automasking parameters for very extended emission
 sidelobethreshold=2.0
-noisethreshold=2.0
+noisethreshold=3.0
 lownoisethreshold=1.0
 smoothfactor=2.0
 ### automasking parameters for compact emission (uncomment to use)
