@@ -225,7 +225,7 @@ for line in image_list:
                 imsize=1600, cellsize='0.025arcsec',robust=robust, 
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
-                phasecenter=data_params[i]['common_dir'].replace('J2000','ICRS'))
+                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 
 
 
