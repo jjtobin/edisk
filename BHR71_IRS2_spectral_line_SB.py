@@ -175,8 +175,8 @@ image_list = {
             nchan=315, linefreq='230.538GHz', linespw='6',
             robust=[0.5]),
         ### SO Images
-        "SO":dict(chanstart='-25.5km/s', chanwidth='0.167km/s', 
-            nchan=180, linefreq='219.94944200GHz', linespw='2',
+        "SO":dict(chanstart='-44.0km/s', chanwidth='0.167km/s', 
+            nchan=473, linefreq='219.94944200GHz', linespw='2',
             robust=[0.5]),
         ### H2CO 3(2,1)-2(2,0) Images
         "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-15.5km/s', 
