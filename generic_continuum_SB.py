@@ -167,10 +167,22 @@ for i in data_params.keys():
 
 """ Fit Gaussians to roughly estimate centers, inclinations, PAs """
 """ Loops through each dataset specified """
+###default fit region is blank for an obvious single source
+fit_region=''
 
+###specify manual mask on brightest source if Gaussian fitting fails due to confusion
+'''
+mask_ra  =  '12h01m34.007s'.replace('h',':').replace('m',':').replace('s','')
+mask_dec = '-65d08m48.101s'.replace('d','.').replace('m','.').replace('s','')
+mask_pa  = 90.0 	# position angle of mask in degrees
+mask_maj = 0.76	# semimajor axis of mask in arcsec
+mask_min = 0.75 	# semiminor axis of mask in arcsec
+fit_region = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
+              (mask_ra, mask_dec, mask_maj, mask_min, mask_pa)
+'''
 for i in data_params.keys():
        print(i)
-       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont_exec0.image', region='',mask=prefix+'_'+i+'_initcont_exec0.mask')
+       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont_exec0.image', region=fit_region',mask=prefix+'_'+i+'_initcont_exec0.mask')
 
 
 ### Check phase center fits in viewer, tf centers appear too shifted from the Gaussian fit, 
@@ -225,7 +237,7 @@ for i in data_params.keys():
 for i in data_params.keys():
       print(i)     
       data_params[i]['phasecenter_new']=fit_gaussian(prefix+'_'+i+'_initcont_shift.image',\
-                                                     region='',mask=prefix+'_'+i+'_initcont_shift.mask')
+                                                     region=fit_region,mask=prefix+'_'+i+'_initcont_shift.mask')
       print('Phasecenter new: ',data_params[i]['phasecenter_new'])
       print('Phasecenter old: ',data_params[i]['phasecenter'])
 
