@@ -53,7 +53,7 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 ### automasking parameters for very extended emission
 sidelobethreshold=2.0
 noisethreshold=3.0
-lownoisethreshold=1.0
+lownoisethreshold=0.5
 smoothfactor=2.0
 ### automasking parameters for compact emission (uncomment to use)
 #sidelobethreshold=2.0
@@ -164,14 +164,14 @@ image_list = {
         ### C18O images
         "C18O":dict(chanstart='-15.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[0.5,-0.5]),
+            robust=[0.5,-0.5,0.0]),
         ### 13CO images
         "13CO":dict(chanstart='-15.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='220.39868420GHz', linespw='1', 
             robust=[0.5,-0.5]),
         ### 12CO images
-        "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
-            nchan=315, linefreq='230.538GHz', linespw='6',
+        "12CO":dict(chanstart='-125.0km/s', chanwidth='0.635km/s', 
+            nchan=394, linefreq='230.538GHz', linespw='6',
             robust=[0.5]),
         ### SO Images
         "SO":dict(chanstart='-15.5km/s', chanwidth='0.167km/s', 
@@ -227,15 +227,10 @@ for line in image_list:
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,
                 parallel=parallel,phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 
-###############################################################
-################# Make Plots of Everything ####################
-###############################################################
-import sys
-sys.argv = ['../edisk/plot_final_images.py',prefix]
-execfile('../edisk/plot_final_images.py')
+
 
 ###############################################################
-########################### CLEANUP ###########################
+################ CLEANUP AND FITS CONVERSION ##################
 ###############################################################
 
 
@@ -255,6 +250,14 @@ for image in imagelist:
 imagelist=glob.glob('*.mask')
 for image in imagelist:
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
+
+###############################################################
+################# Make Plots of Everything ####################
+###############################################################
+import sys
+sys.argv = ['../edisk/plot_final_images.py',prefix]
+execfile('../edisk/plot_final_images.py')
+
 
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *rescaled.ms.*')

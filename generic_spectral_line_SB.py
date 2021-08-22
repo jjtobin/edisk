@@ -226,15 +226,10 @@ for line in image_list:
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel)
 
-###############################################################
-################# Make Plots of Everything ####################
-###############################################################
-import sys
-sys.argv = ['../edisk/plot_final_images.py',prefix]
-execfile('../edisk/plot_final_images.py')
+
 
 ###############################################################
-########################### CLEANUP ###########################
+################ CLEANUP AND FITS CONVERSION ##################
 ###############################################################
 
 
@@ -254,6 +249,15 @@ for image in imagelist:
 imagelist=glob.glob('*.mask')
 for image in imagelist:
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
+
+
+###############################################################
+################# Make Plots of Everything ####################
+###############################################################
+import sys
+sys.argv = ['../edisk/plot_final_images.py',prefix]
+execfile('../edisk/plot_final_images.py')
+
 
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *rescaled.ms.*')
