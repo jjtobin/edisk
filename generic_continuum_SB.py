@@ -182,7 +182,7 @@ fit_region = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
 '''
 for i in data_params.keys():
        print(i)
-       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont_exec0.image', region=fit_region',mask=prefix+'_'+i+'_initcont_exec0.mask')
+       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont_exec0.image', region=fit_region,mask=prefix+'_'+i+'_initcont_exec0.mask')
 
 
 ### Check phase center fits in viewer, tf centers appear too shifted from the Gaussian fit, 
