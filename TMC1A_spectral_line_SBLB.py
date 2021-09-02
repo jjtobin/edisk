@@ -248,15 +248,14 @@ for image in imagelist:
 imagelist=glob.glob('*.mask')
 for image in imagelist:
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
+   os.system('gzip '+image+'.fits')
 
-### Remove rescaled selfcal MSfiles
-os.system('rm -rf *rescaled.ms.*')
+os.system('rm -rf *initcont*.pb')
+imagelist=glob.glob('*.pb') + glob.glob('*.pb.tt0')
+for image in imagelist:
+   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
+   os.system('gzip '+image+'.fits')
 
-### Make a directory to put the final products
-os.system('rm -rf export')
-os.system('mkdir export')
-os.system('cp *.fits export/')
-os.system('cp *.tgz export/')
 
 
 ###############################################################
@@ -265,5 +264,23 @@ os.system('cp *.tgz export/')
 import sys
 sys.argv = ['../edisk/plot_final_images_SBLB.py',prefix]
 execfile('../edisk/plot_final_images_SBLB.py')
+
+
+
+
+### Remove rescaled selfcal MSfiles
+os.system('rm -rf *rescaled.ms.*')
+os.system('rm -rf scale*')
+
+### Make a directory to put the final products
+os.system('rm -rf export')
+os.system('mkdir export')
+os.system('mv *.fits export/')
+os.system('mv *.fits.gz export/')
+os.system('mv *.tgz export/')
+os.system('mv *.pdf export/')
+
+
+
 
 

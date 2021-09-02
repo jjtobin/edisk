@@ -564,7 +564,7 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
 def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,
-cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter=''):
+cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel=''):
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
     See the CASA 6.1.1 documentation for tclean to get the definitions of all the parameters
@@ -624,7 +624,8 @@ cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter=''):
            uvrange=uvrange,
            threshold=threshold,
            parallel=parallel,
-           phasecenter=phasecenter)
+           phasecenter=phasecenter,
+           startmodel=startmodel)
      #this step is a workaround a bug in tclean that doesn't always save the model during multiscale clean. See the "Known Issues" section for CASA 5.1.1 on NRAO's website
     if savemodel=='modelcolumn':
           print("")
@@ -1316,7 +1317,8 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
                   noisemasks=['',''],parallel=False,SB_contspws='',
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
-                  sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5,smoothfactor=1.0,combine='spw',skipImage=False,nterms=2):
+                  sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5,smoothfactor=1.0,combine='spw',skipImage=False,nterms=2,
+                  evalImage=True):
    ### Use skipImage with care
    contspws=''
    spwmap=[0,0,0,0,0]
@@ -1337,12 +1339,12 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       imsize=5000
    else:
       imsize=1600
-
-   if (mode == 'LB+SB') and (cellsize==None):
-      cellsize='0.003arcsec'
-   else:
-      cellsize='0.025arcsec'
-
+   if cellsize is None:
+      if (mode == 'LB+SB'):
+         cellsize='0.003arcsec'
+      else:
+         cellsize='0.025arcsec'
+  
    #set up lists of MSes to image depending on SB-only or SB and LB
    vislist=[]
    for i in data_params.keys():
@@ -1388,8 +1390,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration),scales=scales, nsigma=nsigma,
                   savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
                   noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms)
-      estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.image.tt0', disk_mask=noisemasks[0], 
-             noise_mask=noisemasks[1])
+
 
    if finalimageonly==True: # break out of function if we just wanted final image and no more gain solutions
       return
@@ -1434,6 +1435,23 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
                interp='linearPD', calwt=True,spwmap=spwmap,applymode='calonly')
       data_params[i]['selfcal_spwmap'].append(spwmap) # Add spw map to the dictionary for use later
 
+   if evalImage:
+      print(vislist)
+      estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.image.tt0', disk_mask=noisemasks[0], 
+             noise_mask=noisemasks[1])
+      #create single image using all visibilities; model column always writes with parallel=False
+      os.system('rm -rf '+prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'_post*')
+      if nterms==1:
+         startmodel=[prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.model.tt0']
+      elif nterms==2:
+         startmodel=[prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.model.tt0',prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.model.tt1']
+      if (nterms == 2) or (nterms ==1):
+         tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'_post',scales=scales, nsigma=nsigma,
+                  savemodel='none',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
+                  noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,
+                  niter=0,startmodel=startmodel)
+         estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'_post'+'.image.tt0', disk_mask=noisemasks[0], 
+             noise_mask=noisemasks[1])
 
 
 

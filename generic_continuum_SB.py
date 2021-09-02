@@ -422,7 +422,7 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 iteration=0
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=50.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
 
 
 ### Plot gain corrections, loop through each
@@ -442,7 +442,7 @@ if not skip_plots:
 iteration=1
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=25.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -579,7 +579,7 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
     tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
             noisethreshold=3.0, robust=robust, parallel=parallel, 
-            cellsize='0.025arcsec', imsize=1600,phasecenter=data_params['SB1']['common_dir'])
+            cellsize='0.025arcsec', imsize=1600,phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 
     imagename=imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)
