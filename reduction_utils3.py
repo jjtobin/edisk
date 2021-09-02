@@ -1393,6 +1393,8 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
 
 
    if finalimageonly==True: # break out of function if we just wanted final image and no more gain solutions
+      estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'.image.tt0', disk_mask=noisemasks[0], 
+             noise_mask=noisemasks[1])
       return
 
    for i in data_params.keys():
