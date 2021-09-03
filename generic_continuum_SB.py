@@ -129,6 +129,7 @@ for i in data_params.keys():
        flagmanager(vis=data_params[i]['vis'], mode = 'save', versionname = 'starting_flags', comment = 'Flag states at start of reduction')
 
 ### Inspect data in each spw for each dataset
+#### OPTIONAL #####
 if not skip_plots:
     for i in data_params.keys():
         plotms(vis=data_params[i]['vis'], xaxis='frequency', yaxis='amplitude', 
@@ -136,6 +137,7 @@ if not skip_plots:
                avgtime='1e8', avgscan=True, avgbaseline=True, iteraxis='spw',
                transform=True,freqframe='LSRK')
         input("Press Enter key to advance to next MS/Caltable...")
+#### END OPTIONAL ###
 
 ### Flag spectral regions around lines and do spectral averaging to make a smaller continuum MS 
 for i in data_params.keys():      
@@ -417,6 +419,7 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 ### 1. Image data to specified nsigma depth, set model column
 ### 2. Calculate self-cal gain solutions
 ### 3. Apply self-cal gain solutions to MS
+### 4. Check S/N before and after
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0

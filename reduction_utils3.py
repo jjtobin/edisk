@@ -1334,11 +1334,13 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       scales=[0,5,30]
    else:
       scales=[0,5]
-
-   if (mode == 'LB+SB') and (imsize==None):
+   
+   if (mode == 'LB+SB') and (imsize is None):
       imsize=5000
-   else:
+   elif imsize is None:
       imsize=1600
+
+
    if cellsize is None:
       if (mode == 'LB+SB'):
          cellsize='0.003arcsec'
