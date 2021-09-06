@@ -564,7 +564,7 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
 def tclean_wrapper(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,
-cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel=''):
+cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel='',pblimit=0.1,pbmask=0.1):
     """
     Wrapper for tclean with keywords set to values desired for the Large Program imaging
     See the CASA 6.1.1 documentation for tclean to get the definitions of all the parameters
@@ -618,8 +618,8 @@ cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel=''):
            usemask=usemask,
            sidelobethreshold=sidelobethreshold,
            smoothfactor=smoothfactor,
-           pbmask=0.1,
-           pblimit=0.1,
+           pbmask=pbmask,
+           pblimit=pblimit,
            nterms = nterms,
            uvrange=uvrange,
            threshold=threshold,
@@ -651,8 +651,8 @@ cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel=''):
                  savemodel = savemodel,
                  sidelobethreshold=sidelobethreshold,
                  smoothfactor=smoothfactor,
-                 pbmask=0.1,
-                 pblimit=0.1,
+                 pbmask=pbmask,
+                 pblimit=pblimit,
                  calcres = False,
                  calcpsf = False,
                  nterms = nterms,
