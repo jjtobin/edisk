@@ -42,7 +42,7 @@ field   = 'IRAS15398-3559'
 prefix  = 'IRAS15398' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/IRAS15398-6.2/'
+WD_path = '/lustre/cv/projects/edisk/IRAS15398/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -71,14 +71,18 @@ with open(prefix+'.pickle', 'rb') as handle:
 #################### SHIFT PHASE CENTERS ######################
 ###############################################################
 
-for i in data_params.keys():
-   data_params[i]['vis_shift']=prefix+'_'+i+'_shift.ms'
-   os.system('rm -rf '+data_params[i]['vis_shift']+'*')
-   fixvis(vis=data_params[i]['vis'], outputvis=data_params[i]['vis_shift'], 
-       field=data_params[i]['field'], 
-       phasecenter='J2000 '+data_params[i]['phasecenter'])
-   fixplanets(vis=data_params[i]['vis_shift'], field=data_params[i]['field'], 
-           direction=data_params[i]['common_dir'])
+selectedVis='vis'
+#selectedVis='vis_shift'
+
+if selectedVis == 'vis_shift':
+   for i in data_params.keys():
+      data_params[i]['vis_shift']=prefix+'_'+i+'_shift.ms'
+      os.system('rm -rf '+data_params[i]['vis_shift']+'*')
+      fixvis(vis=data_params[i]['vis'], outputvis=data_params[i]['vis_shift'], 
+         field=data_params[i]['field'], 
+         phasecenter='J2000 '+data_params[i]['phasecenter'])
+      fixplanets(vis=data_params[i]['vis_shift'], field=data_params[i]['field'], 
+         direction=data_params[i]['common_dir'])
 
 ###############################################################
 ############### SCALE DATA RELATIVE TO ONE EB #################
@@ -86,8 +90,8 @@ for i in data_params.keys():
 
 ### Uses scaling from continuum data
 for i in data_params.keys():
-   rescale_flux(data_params[i]['vis_shift'], [data_params[i]['gencal_scale']])
-   data_params[i]['vis_shift_rescaled']=data_params[i]['vis_shift'].replace('.ms','_rescaled.ms')
+   rescale_flux(data_params[i][selectedVis].replace(WD_path,''), [data_params[i]['gencal_scale']])
+   data_params[i]['vis_rescaled']=data_params[i][selectedVis].replace('.ms','_rescaled.ms')
 
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -98,13 +102,15 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 ### Gain tables and spw mapping saved to data dictionaries during selfcal and used as arguments here
 for i in data_params.keys():
-   applycal(vis=data_params[i]['vis_shift_rescaled'], spw='', 
+   applycal(vis=data_params[i]['vis_rescaled'], spw='', 
          gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp='linearPD', 
          calwt=True, applymode='calonly')
-   split(vis=data_params[i]['vis_shift_rescaled'],outputvis=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
-   data_params[i]['vis_selfcal']=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal')
+   split(vis=data_params[i]['vis_rescaled'],outputvis=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
+   data_params[i]['vis_selfcal']=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal')
    ### cleanup
-   os.system('rm -rf '+data_params[i]['vis_shift_rescaled']+' '+data_params[i]['vis_shift'])
+   os.system('rm -rf '+data_params[i]['vis_rescaled'])
+   if selectedVis=='vis_shift':
+      os.system('rm -rf '+data_params[i]['vis_shift'])
 
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)

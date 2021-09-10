@@ -42,7 +42,7 @@ field   = 'IRAS15398-3559'
 prefix  = 'IRAS15398' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/IRAS15398-6.2/'
+WD_path = '/lustre/cv/projects/edisk/IRAS15398/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -280,8 +280,9 @@ for i in data_params.keys():
 os.system('rm -rf *_rescaled.ms')
 for i in data_params.keys():
    rescale_flux(data_params[i]['vis_avg_shift'], [data_params[i]['gencal_scale']])
+   rescale_flux(data_params[i]['vis_avg'], [data_params[i]['gencal_scale']])
    data_params[i]['vis_avg_shift_rescaled']=data_params[i]['vis_avg_shift'].replace('.ms','_rescaled.ms')
-
+   data_params[i]['vis_avg_rescaled']=data_params[i]['vis_avg'].replace('.ms','_rescaled.ms')
 
 ###############################################################
 ############## PLOT UV DATA TO CHECK RE-SCALING ###############
@@ -318,6 +319,8 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 ################ SELF-CALIBRATION PREPARATION #################
 ###############################################################
+selectedVis='vis_avg_rescaled'
+#selectedVis='vis_avg_shift_rescaled'
 
 
 ### determine best reference antennas based on geometry and flagging
@@ -404,7 +407,7 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=30.0,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=30.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
                noisethreshold=3.0)
@@ -413,7 +416,7 @@ self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode
 ### Plot gain corrections, loop through each
 if not skip_plots:
    for i in data_params.keys():
-       plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
@@ -426,14 +429,14 @@ if not skip_plots:
 
 
 iteration=1
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=15.0,solint='30s',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=15.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
                noisethreshold=3.0)
 
 if not skip_plots:
    for i in data_params.keys():
-       plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
@@ -445,14 +448,14 @@ if not skip_plots:
 #Peak SNR: 153.97
 
 iteration=2
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='30s',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
                noisethreshold=3.0)
 
 if not skip_plots:
    for i in data_params.keys():
-       plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
@@ -465,14 +468,14 @@ if not skip_plots:
 #Peak SNR: 198.61
 
 iteration=3
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='18s',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='18s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
                noisethreshold=3.0)
 
 if not skip_plots:
    for i in data_params.keys():
-       plotms(vis=data_params[i]['vis_avg_shift_rescaled'].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
@@ -487,7 +490,7 @@ if not skip_plots:
 
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
 iteration=4
-self_calibrate(prefix,data_params,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,sidelobethreshold=2.0,
                noisethreshold=3.0,finalimageonly=True)
