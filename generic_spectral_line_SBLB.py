@@ -211,18 +211,20 @@ image_list = {
 
 ### Loop through the spectral line images and make images.
 
+imsize=8000
+cellsize='0.003arcsec'
 for line in image_list:
     for robust in image_list[line]["robust"]:
-        imagename = prefix+f'_SB_'+line+'_robust_'+str(robust)
+        imagename = prefix+f'_SBLB_'+line+'_robust_'+str(robust)
 
         sigma = get_sensitivity(data_params, specmode='cube', \
-                spw=[image_list[line]["linespw"]], chan=450)
+                spw=[image_list[line]["linespw"]], chan=450,robust=robust,imsize=imsize,cellsize=cellsize)
 
         tclean_spectral_line_wrapper(vislist, imagename,
                 image_list[line]["chanstart"], image_list[line]["chanwidth"], 
                 image_list[line]["nchan"], image_list[line]["linefreq"], 
                 image_list[line]["linespw"], SB_scales, threshold=3.0*sigma,
-                imsize=1600, cellsize='0.025arcsec',robust=robust, 
+                imsize=imsize, cellsize=cellsize,robust=robust, 
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
                 phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))

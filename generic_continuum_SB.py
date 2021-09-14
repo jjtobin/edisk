@@ -573,16 +573,18 @@ for i in data_params.keys():
    vislist.append(data_params[i]['vis_final'])
 scales = SB_scales
 
+cellsize='0.025arcsec'
+imsize=1600
 for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
     imagename=prefix+'_SB_continuum_robust_'+str(robust)
     os.system('rm -rf '+imagename+'*')
 
-    sigma = get_sensitivity(data_params, specmode='mfs')
+    sigma = get_sensitivity(data_params, specmode='mfs',robust=robust,cellsize=cellsize, imsize=imsize)
 
     tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
             noisethreshold=3.0, robust=robust, parallel=parallel, 
-            cellsize='0.025arcsec', imsize=1600,phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+            cellsize=cellsize, imsize=imsize,phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 
     imagename=imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)

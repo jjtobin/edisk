@@ -682,7 +682,7 @@ parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggsbwtap
         if 'LB' in vis or 'combined' in vis or 'continuum' in vis:
             imsize = 3000
         elif 'SB' in vis:
-            imsize = 900
+            imsize = 1600
         else:
             print("Error: need to set imsize manually")
 
