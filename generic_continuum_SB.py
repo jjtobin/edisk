@@ -580,7 +580,9 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
     os.system('rm -rf '+imagename+'*')
 
     sigma = get_sensitivity(data_params, specmode='mfs',robust=robust,cellsize=cellsize, imsize=imsize)
-
+    
+    if robust == 2.0 or robust == 1.0:
+       sigma=sigma*1.75
     tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
             noisethreshold=3.0, robust=robust, parallel=parallel, 

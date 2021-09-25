@@ -937,7 +937,10 @@ for robust in [2.0]:
     os.system('rm -rf '+imagename+'*')
 
     sigma = get_sensitivity(data_params, specmode='mfs',imsize=imsize,robust=robust,cellsize=cell)
-
+    # adjust sigma to corrector for the irregular noise in the images if needed
+    # correction factor may vary or may not be needed at all depending on source
+    #if robust == 2.0 or robust == 1.0:
+    #   sigma=sigma*1.75
     tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
             noisethreshold=3.0, robust=robust, parallel=parallel, 

@@ -494,10 +494,12 @@ def avg_cont(ms_dict, output_prefix, flagchannels = '', maxchanwidth = 125, data
     else:
         if os.path.isdir(msfile+'.flagversions/flags.before_cont_flags'):
             flagmanager(vis = msfile, mode = 'delete', versionname = 'before_cont_flags') # clear out old versions of the flags 
+        if os.path.isdir(msfile+'.flagversions/flags.cont_flags'):
+            flagmanager(vis = msfile, mode = 'delete', versionname = 'cont_flags') # clear out old versions of the flags 
 
         flagmanager(vis = msfile, mode = 'save', versionname = 'before_cont_flags', comment = 'Flag states before spectral lines are flagged') #save flag state before flagging spectral lines
         flagdata(vis=msfile, mode='manual', spw=flagchannels, flagbackup=False, field = ms_dict['field']) #flag spectral lines 
-
+        flagmanager(vis = msfile, mode = 'save', versionname = 'cont_flags', comment = 'Flag state after line flagging')
         outputvis = output_prefix+'_'+ms_dict['name']+'_initcont.ms'
         os.system('rm -rf '+outputvis)
         split(vis=msfile,
@@ -1505,7 +1507,7 @@ def rank_refants(vis):
 
      return ','.join(numpy.array(names)[numpy.argsort(score)])
 
-def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcsec',imsize=1600,robust=0.5):
+def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcsec',imsize=1600,robust=0.5,uvtaper=''):
    sensitivities=np.zeros(len(data_params.keys()))
    counter=0
    scalefactor=1.0
@@ -1528,7 +1530,28 @@ def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcs
       im.selectvis(field='',spw=spwstring)
       im.defineimage(mode=specmode,stokes='I',spw=spw,cellx=cellsize,celly=cellsize,nx=imsize,ny=imsize)  
       im.weight(type='briggs',robust=robust)  
-      sens=im.apparentsens()
+      if uvtaper != '':
+         if 'klambda' in uvtaper:
+            uvtaper=uvtaper.replace('klambda','')
+            uvtaperflt=float(uvtaper)
+            bmaj=str(206.0/uvtaperflt)+'arcsec'
+            bmin=bmaj
+            bpa='0.0deg'
+         if 'arcsec' in uvtaper:
+            bmaj=uvtaper
+            bmin=uvtaper
+            bpa='0.0deg'
+         print('uvtaper: '+bmaj+' '+bmin+' '+bpa)
+         im.filter(type='gaussian', bmaj=bmaj, bmin=bmin, bpa=bpa)
+      try:
+          sens=im.apparentsens()
+      except:
+          print('#')
+          print('# Sensisitivity Calculation failed for '+vis)
+          print('# Continuing to next MS') 
+          print('# Data in this spw/MS may be flagged')
+          print('#')
+          continue
       print(vis,'Briggs Sensitivity = ', sens[1])
       print(vis,'Relative to Natural Weighting = ', sens[2])  
       sensitivities[counter]=sens[1]*scalefactor
