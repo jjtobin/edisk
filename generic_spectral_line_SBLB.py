@@ -100,8 +100,10 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 ### Gain tables and spw mapping saved to data dictionaries during selfcal and used as arguments here
 for i in data_params.keys():
+   n_tables=len(data_params[i]['selfcal_tables'])
+   interp_list=['linearPD']*n_tables
    applycal(vis=data_params[i]['vis_rescaled'], spw='', 
-         gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp='linearPD', 
+         gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp=interp_list, 
          calwt=True, applymode='calonly')
    split(vis=data_params[i]['vis_rescaled'],outputvis=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
    data_params[i]['vis_selfcal']=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal')

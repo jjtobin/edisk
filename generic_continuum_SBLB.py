@@ -182,7 +182,7 @@ for i in data_params.keys():
 ### Images are saved in the format prefix+'_name_initcont_exec#.ms'
 outertaper='2000klambda' # taper if necessary to align using larger-scale uv data, small-scale may have subtle shifts from phase noise
 for i in data_params.keys():
-       print('Imaging SB: ',i) 
+       print('Imaging MS: ',i) 
        if 'LB' in i:
           image_each_obs(data_params[i], prefix, scales=LB_scales,  uvtaper=outertaper,
                    nsigma=5.0, sidelobethreshold=2.5, smoothfactor=1.5,interactive=False,parallel=parallel) 
