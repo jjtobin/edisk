@@ -8,6 +8,7 @@ import matplotlib.ticker as ticker
 import astropy.io.fits as fits
 import astropy.stats
 import numpy
+import numpy as np
 import glob
 import os
 import sys
