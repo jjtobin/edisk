@@ -41,7 +41,7 @@ skip_plots = False
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = 'fieldName'
+field   = {'SB':'FieldName_SB', 'LB':'FieldNAme_LB'}
 prefix  = 'fieldName prefix' 
 
 ### always include trailing slashes!!
@@ -59,11 +59,17 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 ### DDT 2019.A.00034.S SB data need 'spws': '25,31,29,27,33,35,37'
 ### LP  2019.1.00261.L SB data need 'spws': '25,27,29,31,33,35,37'
 pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xeba1ac_Xcc28.ms',
-                        'spws': '25,27,29,31,33,35,37'},
+                        'spws': '25,27,29,31,33,35,37',
+                        'field': field['LB'],
+                        'column': 'corrected'},
                 'LB1': {'vis': LB_path+'uid___A002_Xeef629_X3191.ms',
-                        'spws': '25,27,29,31,33,35,37'},
+                        'spws': '25,27,29,31,33,35,37',
+                        'field': field['LB'],
+                        'column': 'corrected'},
                 'LB2': {'vis': LB_path+'uid___A002_Xeef629_X3b39.ms',
-                        'spws': '25,27,29,31,33,35,37'},
+                        'spws': '25,27,29,31,33,35,37',
+                        'field': field['LB'],
+                        'column': 'corrected'},
                }
 
 ### Dictionary defining necessary metadata for each execution
@@ -72,7 +78,7 @@ pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xeba1ac_Xcc28.ms',
 ### Hot corino lines (or others) will get taken care of by using the cont.dat
 data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'name' : 'SB1',
-                       'field': field,
+                       'field': field['SB'],
                        'line_spws': np.array([0,1,2,3,4,6,4,4,4,4,4]), # line SPWs, get from listobs
                        'line_freqs': np.array([218.76006600e9,220.39868420e9,219.94944200e9,219.56035410e9,
                                                217.82215e9,230.538e9,217.94005e9,218.16044e9,217.2386e9,
@@ -90,7 +96,7 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                       }, 
                'LB1': {'vis' : WD_path+prefix+'_LB1.ms',
                        'name' : 'LB1',
-                       'field': field,
+                       'field': field['LB'],
                        'line_spws': np.array([0,1,2,3,4,6,4,4,4,4,4]), # line SPWs, get from listobs
                        'line_freqs': np.array([218.76006600e9,220.39868420e9,219.94944200e9,219.56035410e9,
                                                217.82215e9,230.538e9,217.94005e9,218.16044e9,217.2386e9,
@@ -108,7 +114,7 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                       }, 
                'LB2': {'vis' : WD_path+prefix+'_LB2.ms',
                        'name' : 'LB2',
-                       'field': field,
+                       'field': field['LB'],
                        'line_spws': np.array([0,1,2,3,4,6,4,4,4,4,4]), # line SPWs, get from listobs
                        'line_freqs': np.array([218.76006600e9,220.39868420e9,219.94944200e9,219.56035410e9,
                                                217.82215e9,230.538e9,217.94005e9,218.16044e9,217.2386e9,
@@ -145,7 +151,9 @@ for i in pl_data_params.keys():
       flagmanager(vis=prefix+'_'+i+'.ms', mode="restore", \
                   versionname="starting_flags")
    else:
-      split(vis=pl_data_params[i]['vis'],outputvis=prefix+'_'+i+'.ms',spw=pl_data_params[i]['spws'],field=field,datacolumn='corrected')
+      split(vis=pl_data_params[i]['vis'], outputvis=prefix+'_'+i+'.ms', 
+          spw=pl_data_params[i]['spws'], field=pl_data_params[i]['field'],
+          datacolumn=pl_data_params[i]['column'])
 
 ### Backup the the flagging state at start of reduction
 for i in data_params.keys():
@@ -929,10 +937,9 @@ vislist=[]
 for i in data_params.keys():
    vislist.append(data_params[i]['vis_final'])
 scales = SB_scales
-imsize=14400
+imsize=6000
 cell='0.003arcsec'
 for robust in [-2.0,-1.0,-0.5,0.0,0.5,1.0,2.0]:
-for robust in [2.0]:
     imagename=prefix+'_SBLB_continuum_robust_'+str(robust)
     os.system('rm -rf '+imagename+'*')
 
@@ -948,6 +955,23 @@ for robust in [2.0]:
 
     imagename=imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)
+
+for taper in ['1000klambda', '2000klambda', '3000klambda']:
+  for robust in [1.0, 2.0]:
+    print('Generate Robust '+str(robust)+' taper '+taper+' image')
+    imagename = prefix+'_SBLB_continuum_robust_'+str(robust)+'_taper_'+taper
+    os.system('rm -rf '+imagename+'*')
+    sigma = get_sensitivity(data_params, specmode='mfs',
+                            imsize=imsize, robust=robust, cellsize=cell,uvtaper=taper)
+    tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
+                   smoothfactor=1.5, scales=scales, threshold=2.0*sigma, 
+                   noisethreshold=3.0, robust=robust, parallel=parallel, 
+                   cellsize=cell, imsize=imsize, nterms=1,
+                   uvtaper=[taper], uvrange='>60klambda',
+                   phasecenter=data_params['SB1']['common_dir'].replace('J2000', 'ICRS'))
+    imagename = imagename+'.image.tt0'
+    exportfits(imagename=imagename, fitsimage=imagename+'.fits',
+               overwrite=True, dropdeg=True)
 
 ###############################################################
 ########################### CLEANUP ###########################

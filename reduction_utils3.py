@@ -582,9 +582,9 @@ cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel='',pblimit=
 
     if imsize is None:
         if 'LB' in vis or 'combined' in vis or 'continuum' in vis:
-            imsize = 3000
+            imsize = 6000
         elif 'SB' in vis:
-            imsize = 900
+            imsize = 1600
         else:
             print("Error: need to set imsize manually")
 
@@ -1338,7 +1338,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       scales=[0,5]
    
    if (mode == 'LB+SB') and (imsize is None):
-      imsize=5000
+      imsize=6000
    elif imsize is None:
       imsize=1600
 

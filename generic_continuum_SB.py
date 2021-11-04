@@ -58,7 +58,9 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 ### DDT 2019.A.00034.S SB data need 'spws': '25,31,29,27,33,35,37'
 ### LP  2019.1.00261.L SB data need 'spws': '25,27,29,31,33,35,37'
 pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xeb6c00_X22e.ms',
-                        'spws': '25,27,29,31,33,35,37'},
+                        'spws': '25,27,29,31,33,35,37',
+                        'field': field,
+                        'column': 'corrected'},
                }
 
 ### Dictionary defining necessary metadata for each execution
@@ -120,7 +122,9 @@ for i in pl_data_params.keys():
       flagmanager(vis=prefix+'_'+i+'.ms', mode="restore", \
                   versionname="starting_flags")
    else:
-      split(vis=pl_data_params[i]['vis'],outputvis=prefix+'_'+i+'.ms',spw=pl_data_params[i]['spws'],field=field,datacolumn='corrected')
+      split(vis=pl_data_params[i]['vis'], outputvis=prefix+'_'+i+'.ms', 
+          spw=pl_data_params[i]['spws'], field=pl_data_params[i]['field'],
+          datacolumn=pl_data_params[i]['column'])
 
 ### Backup the the flagging state at start of reduction
 for i in data_params.keys():
