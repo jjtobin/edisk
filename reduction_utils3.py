@@ -842,15 +842,11 @@ def image_each_obs_shift(msfile, prefix, scales, smallscalebias = 0.6, mask = ''
     if 'LB' in msfile and sidelobethreshold>3.0:
        sidelobethreshold=2.0       
     #start of CASA commands
-    num_observations=1
-    for i in range(num_observations):
-        observation = '%d' % i
-        imagename = prefix+'_'+baseline_name+'_initcont_shift'
-        for ext in ['.image', '.mask', '.model', '.pb', '.psf', '.residual', '.sumwt']:
-            os.system('rm -rf '+ imagename + ext)
-        tclean(vis= msfile, 
+    imagename = prefix+'_'+baseline_name+'_initcont_shift'
+    for ext in ['.image', '.mask', '.model', '.pb', '.psf', '.residual', '.sumwt']:
+       os.system('rm -rf '+ imagename + ext)
+    tclean(vis= msfile, 
                imagename = imagename, 
-               observation = observation,
                specmode = 'mfs', 
                deconvolver = 'multiscale',
                scales = scales, 
@@ -924,6 +920,67 @@ def fit_gaussian(imagename, region, dooff = False, mask=''):
         return coords
     elif coordsystem =='ICRS':
         return au.convertColonDelimitersToHMSDMS(J2000coords).replace(',','')
+
+def fit_gaussian_pc(imagename, region, dooff = False, mask=''):
+    """
+    Wrapper for imfit in CASA to fit a single Gaussian component to a selected region of the image
+    Parameters
+    ==========
+    imagename: Name of CASA image (ending in .image) (string)
+    region: CASA region format, e.g., 'circle[[200pix, 200pix], 3arcsec]' (string)
+    dooff: boolean option to allow for fitting a zero-level offset 
+    """
+    imfitdict = imfit(imagename = imagename, region = region, dooff = dooff,mask=mask)
+    # Check if the source was resolved
+    was_resolved = not imfitdict['deconvolved']['component0']['ispoint']
+    # Get the coordinate system
+    coordsystem = imfitdict['deconvolved']['component0']['shape']['direction']['refer']
+    # Get the parameters
+    headerlist = imhead(imagename)
+    phasecenter_ra, phasecenter_dec = headerlist['refval'][:2]
+    phasecenter_ra_deg=phasecenter_ra*180.0/3.141592653589793
+    phasecenter_dec_deg=phasecenter_dec*180.0/3.141592653589793
+    if phasecenter_ra_deg < 0.0:
+       phasecenter_ra_deg = phasecenter_ra_deg+360.0
+    peak_ra = imfitdict['deconvolved']['component0']['shape']['direction']['m0']['value']
+    peak_dec = imfitdict['deconvolved']['component0']['shape']['direction']['m1']['value']
+    peak_ra_deg=peak_ra*180.0/3.141592653589793
+    peak_dec_deg=peak_dec*180.0/3.141592653589793
+    if peak_ra_deg < 0.0:
+       peak_ra_deg = peak_ra_deg+360.0
+
+    xcen, ycen = headerlist['refpix'][:2]
+    deltax, deltay = headerlist['incr'][:2]
+    peak_x = xcen+np.unwrap(np.array([0, peak_ra-phasecenter_ra]))[1]/deltax*np.cos(phasecenter_dec)
+    peak_y = ycen+(peak_dec-phasecenter_dec)/deltay
+    # Print
+    coords=''
+    if coordsystem=='J2000':
+        coords=au.rad2radec(imfitdict = imfitdict, hmsdms = True, delimiter = ' ')
+        print('#Peak of Gaussian component identified with imfit: J2000 %s' % coords)
+
+    elif coordsystem=='ICRS':
+        coords=au.rad2radec(imfitdict = imfitdict, hmsdms = True, delimiter = ' ')
+        print('#Peak of Gaussian component identified with imfit: ICRS %s' % coords)
+        J2000coords = au.ICRSToJ2000(au.rad2radec(imfitdict = imfitdict, hmsdms = True, delimiter = ' '))
+        print('#Peak in J2000 coordinates: %s' % J2000coords)
+    else:
+       print("#If the coordinates aren't in ICRS or J2000, then something weird is going on")
+    # If the object was resolved, print the inclination, PA, major and minor axis
+    if was_resolved:    
+        PA = imfitdict['deconvolved']['component0']['shape']['positionangle']['value']
+        majoraxis = imfitdict['deconvolved']['component0']['shape']['majoraxis']['value']
+        minoraxis = imfitdict['deconvolved']['component0']['shape']['minoraxis']['value']
+
+        print('#PA of Gaussian component: %.2f deg' % PA)
+        print('#Inclination of Gaussian component: %.2f deg' % (np.arccos(minoraxis/majoraxis)*180/np.pi,))
+    print('#Pixel coordinates of peak: x = %.3f y = %.3f' % (peak_x, peak_y))
+
+    if coordsystem =='J2000':
+        return coords,peak_ra_deg,peak_dec_deg,phasecenter_ra_deg,phasecenter_dec_deg
+    elif coordsystem =='ICRS':
+        return au.convertColonDelimitersToHMSDMS(J2000coords).replace(',',''),peak_ra_deg,peak_dec_deg,phasecenter_ra_deg,phasecenter_dec_deg
+
 def split_all_obs(msfile, nametemplate):
     """
 
@@ -1287,6 +1344,7 @@ def estimate_SNR(imagename, disk_mask, noise_mask):
     print("#rms: %.2e mJy/beam" % (rms*1000,))
     SNR = peak_intensity/rms
     print("#Peak SNR: %.2f" % (SNR,))
+    return SNR,rms
 
 def get_station_numbers(msfile, antenna_name):
     """
@@ -1559,7 +1617,128 @@ def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcs
    estsens=np.sum(sensitivities)/float(counter)/(float(counter))**0.5
    return estsens
 
+def get_solints_simple(vislist,scantimesdict,integrationtimes):
+   all_integrations=np.array([])
+   for vis in vislist:
+      targets=integrationtimes[vis].keys()
+      for target in targets:
+         all_integrations=np.append(all_integrations,integrationtimes[vis][target])
+   integration_time=np.max(all_integrations) # use the longest integration time from all MS files
 
+   allscantimes=np.array([])
+   for vis in vislist: # use if we put all scan times from all MSes into single array
+      targets=scantimesdict[vis].keys()
+      for target in targets:
+         allscantimes=np.append(allscantimes,scantimesdict[vis][target])
+      #mix of short and long baseline data could have differing integration times and hence solints
+
+   max_scantime=np.median(allscantimes)
+   median_scantime=np.max(allscantimes)
+   min_scantime=np.min(allscantimes)
+   
+   solints=np.array([])
+   solint=max_scantime/2.0
+   n_scans=len(allscantimes)
+   while solint > 1.90*integration_time:      #1.1*integration_time will ensure that a single int will not be returned such that solint='int' can be appended to the final list.
+      ints_per_solint=solint/integration_time
+      if ints_per_solint.is_integer():
+         solint=solint
+      else:
+         remainder=ints_per_solint-float(int(ints_per_solint))     # calculate delta_T greater than an a fixed multile of integrations
+         solint=solint-remainder*integration_time # add remainder to make solint a fixed number of integrations
+
+      ints_per_solint=float(int(ints_per_solint))
+      #print('Checking solint = ',ints_per_solint*integration_time)
+      delta=test_truncated_scans(ints_per_solint, allscantimes,integration_time) 
+      solint=(ints_per_solint+delta)*integration_time
+      
+      solints=np.append(solints,[solint])                       # add solint to list of solints now that it is an integer number of integrations
+      solint = solint/2.0  
+      #print('Next solint: ',solint)                                        #divide solint by 2.0 for next solint
+
+   solints_list=[]
+   for solint in solints:
+      solint_string='{:0.2f}s'.format(solint)
+      solints_list.append(solint_string)
+   solints_list.insert(0,'inf')
+   solints_list.append('int')
+   gaincal_combine=['spw']*len(solints_list)
+   #insert another solint, but with combine='scan,spw' for long baseline data to align average phases of each EB
+   solints_list.insert(0,'inf')
+   gaincal_combine.insert(0,'spw,scan')
+   return solints_list,gaincal_combine
+
+def fetch_scan_times(vislist,targets):
+   listdict={}
+   scantimesdict={}
+   integrationsdict={}
+   integrationtimesdict={}
+   integrationtime=np.array([])
+   n_spws=np.array([])
+   min_spws=np.array([])
+   spwslist=np.array([])
+   for vis in vislist:
+      listdict[vis]=listobs(vis)
+      scantimesdict[vis]={}
+      integrationsdict[vis]={}
+      integrationtimesdict[vis]={}
+      keylist=list(listdict[vis].keys())  
+      for target in targets:
+         countscans=0
+         scantimes=np.array([])
+         integrations=np.array([])
+         for key in keylist:
+            if 'scan' in key and listdict[vis][key]['0']['FieldName']==target:
+               countscans+=1
+               scantime=(listdict[vis][key]['0']['EndTime']- listdict[vis][key]['0']['BeginTime'])*86400.0
+               ints_per_scan=np.round(scantime/listdict[vis][key]['0']['IntegrationTime'])
+               integrationtime=np.append(integrationtime,np.array([listdict[vis][key]['0']['IntegrationTime']]))
+               #print('Key:', key,scantime)
+               scantimes=np.append(scantimes,np.array([scantime]))
+               integrations=np.append(integrations,np.array([ints_per_scan]))
+               n_spws=np.append(len(listdict[vis][key]['0']['SpwIds']),n_spws)
+               min_spws=np.append(np.min(listdict[vis][key]['0']['SpwIds']),min_spws)
+               spwslist=np.append(listdict[vis][key]['0']['SpwIds'],spwslist)
+               #print(scantimes)
+
+         scantimesdict[vis][target]=scantimes.copy()
+         #assume each band only has a single integration time
+         integrationtimesdict[vis][target]=np.median(integrationtime)
+         integrationsdict[vis][target]=integrations.copy()
+   if np.mean(n_spws) != np.max(n_spws):
+      print('WARNING, INCONSISTENT NUMBER OF SPWS IN SCANS/MSes')
+   if np.max(min_spws) != np.min(min_spws):
+      print('WARNING, INCONSISTENT MINIMUM SPW IN SCANS/MSes')
+   spwslist=np.unique(spwslist).astype(int)
+   return listdict,scantimesdict,integrationsdict,integrationtimesdict, integrationtime,np.max(n_spws),np.min(min_spws),spwslist
+
+def test_truncated_scans(ints_per_solint, allscantimes,integration_time ):
+   delta_ints_per_solint=[0 , -1, 1,-2,2]
+   n_truncated_scans=np.zeros(len(delta_ints_per_solint))
+   n_remaining_ints=np.zeros(len(delta_ints_per_solint))
+   min_index=0
+   for i in range(len(delta_ints_per_solint)):
+      diff_ints_per_scan=((allscantimes-((ints_per_solint+delta_ints_per_solint[i])*integration_time))/integration_time)+0.5
+      diff_ints_per_scan=diff_ints_per_scan.astype(int)
+      trimmed_scans=( (diff_ints_per_scan > 0.0)  & (diff_ints_per_scan < ints_per_solint+delta_ints_per_solint[i])).nonzero()
+      if len(trimmed_scans[0]) >0:
+         n_remaining_ints[i]=np.max(diff_ints_per_scan[trimmed_scans[0]])
+      else:
+         n_remaining_ints[i]=0.0
+      #print((ints_per_solint+delta_ints_per_solint[i])*integration_time,ints_per_solint+delta_ints_per_solint[i],  diff_ints_per_scan)
+      
+      #print('Max ints remaining: ', n_remaining_ints[i])
+      #print('N truncated scans: ', len(trimmed_scans[0]))
+      n_truncated_scans[i]=len(trimmed_scans[0])
+      # check if there are fewer truncated scans in the current trial and if
+      # if one trial has more scans left off or fewer. Favor more left off, such that remainder might be able to 
+      # find a solution
+      # if ((i > 0) and (n_truncated_scans[i] <= n_truncated_scans[min_index]):   # if we don't care about the amount of 
+      #if ((i > 0) and (n_truncated_scans[i] <= n_truncated_scans[min_index]) and (n_remaining_ints[i] > n_remaining_ints[min_index])):
+      if ((i > 0) and (n_truncated_scans[i] <= n_truncated_scans[min_index]) and (n_remaining_ints[i] < n_remaining_ints[min_index])):
+         min_index=i
+      #print(delta_ints_per_solint[min_index])
+   return delta_ints_per_solint[min_index]
 
 
 

@@ -400,12 +400,32 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 ###############################################################
 ###################### SELF-CALIBRATION #######################
 ###############################################################
+fieldlist=[]
+for i in data_params.keys():
+      if ('LB' in i): # skip over LB EBs if in SB-only mode
+         continue
+      fieldlist.append(data_params[i]['field'])
+
 
 ### Initial dirty map to assess DR
-tclean_wrapper(vis=vislist, imagename=prefix+'_dirty', 
-               scales=SB_scales, niter=0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask, 
-             noise_mask=noise_annulus)
+tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
+               scales=SB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
+               noisethreshold=3.0, robust=0.5, parallel=parallel, imsize=1600,cellsize='0.025arcsec',nterms=1,
+               phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial.image.tt0', disk_mask=common_mask, 
+                        noise_mask=noise_annulus)
+
+listdict,scantimesdict,integrationsdict,integrationtimesdict,integrationtimes,n_spws,minspw,spwsarray=fetch_scan_times(vislist,[data_params['SB1']['field']])
+
+solints,gaincal_combine=get_solints_simple(vislist,scantimesdict,integrationtimesdict)
+print('Suggested Solints:')
+print(solints)
+print('Suggested Gaincal Combine params:')
+print(gaincal_combine)
+nsigma_init=np.max([initial_SNR/15.0,5.0]) # restricts initial nsigma to be at least 5
+nsigma_per_solint=10**np.linspace(np.log10(nsigma_init),np.log10(3.0),len(solints))
+print('Suggested nsigma per solint: ')
+print(nsigma_per_solint)
 
 #Ced110IRS4_dirty.image.tt0
 #Beam 0.447 arcsec x 0.259 arcsec (11.47 deg)

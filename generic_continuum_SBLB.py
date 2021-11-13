@@ -41,7 +41,7 @@ skip_plots = False
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = {'SB':'FieldName_SB', 'LB':'FieldNAme_LB'}
+field   = {'SB':'FieldName_SB', 'LB':'FieldName_LB'}
 prefix  = 'fieldName prefix' 
 
 ### always include trailing slashes!!
@@ -60,7 +60,7 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 ### LP  2019.1.00261.L SB data need 'spws': '25,27,29,31,33,35,37'
 pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xeba1ac_Xcc28.ms',
                         'spws': '25,27,29,31,33,35,37',
-                        'field': field['LB'],
+                        'field': field['SB'],
                         'column': 'corrected'},
                 'LB1': {'vis': LB_path+'uid___A002_Xeef629_X3191.ms',
                         'spws': '25,27,29,31,33,35,37',
@@ -431,18 +431,28 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 ###############################################################
 
 ### Initial dirty map to assess DR
-tclean_wrapper(vis=vislist, imagename=prefix+'_dirty', 
-               scales=SB_scales, niter=0,parallel=parallel,cellsize='0.025arcsec',imsize=1600)
-estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask, 
-             noise_mask=noise_annulus)
+tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
+               scales=SB_scales, parallel=parallel, sidelobethreshold=2.0, smoothfactor=1.5, scales=scales, nsigma=3.0, 
+               noisethreshold=3.0, robust=0.05, parallel=parallel, 
+               phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial.image.tt0', disk_mask=common_mask, 
+                        noise_mask=noise_annulus)
+
+listdict,scantimesdict,integrationsdict,integrationtimesdict,integrationtimes,n_spws,minspw,spwsarray=fetch_scan_times(vislist,[data_params['SB1']['field']])
+
+solints,gaincal_combine=get_solints_simple(vislist,scantimesdict,integrationtimesdict)
+print('Suggested Solints:')
+print(solints)
+print('Suggested Gaincal Combine params:')
+print(gaincal_combine)
+nsigma_init=np.max([initial_SNR/15.0,5.0]) # restricts initial nsigma to be at least 5
+nsigma_per_solint=10**np.linspace(np.log10(nsigma_init),np.log10(3.0),len(solints))
+print('Suggested nsigma per solint: ')
+print(nsigma_per_solint)
+
+#setup the same number of iterations as suggested solints
 
 
-#IRS7B_SB-only_ap6.image.tt0
-#Beam 0.272 arcsec x 0.205 arcsec (41.92 deg)
-#Flux inside disk mask: 372.23 mJy
-#Peak intensity of source: 122.69 mJy/beam
-#rms: 1.92e-01 mJy/beam
-#Peak SNR: 640.28
 
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
@@ -456,9 +466,10 @@ estimate_SNR(prefix+'_dirty.image.tt0', disk_mask=common_mask,
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',
+               nsigma=20.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw,scan')
 
 
 ### Plot gain corrections, loop through each
@@ -487,7 +498,7 @@ if not skip_plots:
 
 
 iteration=1
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=20.0,solint='30s',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=20.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
 
@@ -516,7 +527,7 @@ if not skip_plots:
 
 
 iteration=2
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='6s',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='30s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
 
@@ -544,6 +555,32 @@ if not skip_plots:
 
 
 iteration=3
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='18s',
+               noisemasks=[common_mask,noise_annulus],
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
+
+if not skip_plots:
+   for i in data_params.keys():
+     if 'SB' in i:
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
+               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
+       input("Press Enter key to advance to next MS/Caltable...")
+
+#IRS7B_SB-only_p3.image.tt0
+#Beam 0.271 arcsec x 0.204 arcsec (41.26 deg)
+#Flux inside disk mask: 373.91 mJy
+#Peak intensity of source: 121.97 mJy/beam
+#rms: 1.91e-01 mJy/beam
+#Peak SNR: 639.18
+
+#IRS7B_SB-only_p3_post.image.tt0
+#Beam 0.271 arcsec x 0.204 arcsec (41.26 deg)
+#Flux inside disk mask: 373.86 mJy
+#Peak intensity of source: 122.06 mJy/beam
+#rms: 1.91e-01 mJy/beam
+#Peak SNR: 638.37
+
+iteration=4
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
@@ -570,10 +607,9 @@ if not skip_plots:
 #Peak SNR: 638.37
 
 
-
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
 
-iteration=4
+iteration=5
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
@@ -600,7 +636,7 @@ if not skip_plots:
 #rms: 1.92e-01 mJy/beam
 #Peak SNR: 639.71
 
-iteration=5
+iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='18s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
@@ -627,7 +663,7 @@ if not skip_plots:
 #Peak SNR: 639.88
 
 ### Make the final image, will not run another self-calibration
-iteration=6
+iteration=7
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='18s',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
                parallel=parallel,finalimageonly=True)
@@ -653,14 +689,31 @@ LB_contspws = ''
 
 ### Make a list of EBs to image
 vislist=[]
+fieldlist=[]
 for i in data_params.keys():
    vislist.append(data_params[i][selectedVis])
+   fieldlist.append(data_params[i]['field'])
 
 ### Initial dirty map to assess DR
-tclean_wrapper(vis=vislist, imagename=prefix+'_LB+SB_dirty', 
-               scales=SB_scales, niter=0,parallel=parallel,cellsize='0.003arcsec',imsize=15000)
-estimate_SNR(prefix+'_LB+SB_dirty.image.tt0', disk_mask=common_mask, 
-             noise_mask=noise_annulus)
+tclean_wrapper(vis=vislist, imagename=prefix+'_initial_LB+SB',cellsize='0.003arcsec',imsize=6000, 
+               scales=LB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
+               noisethreshold=3.0, robust=0.5, parallel=parallel, nterms=1,
+               phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial_LB+SB.image.tt0', disk_mask=common_mask, 
+                        noise_mask=noise_annulus)
+
+listdict,scantimesdict,integrationsdict,integrationtimesdict,integrationtimes,n_spws,minspw,spwsarray=fetch_scan_times(vislist,fieldlist)
+
+solints,gaincal_combine=get_solints_simple(vislist,scantimesdict,integrationtimesdict)
+print('Suggested Solints:')
+print(solints)
+print('Suggested Gaincal Combine params:')
+print(gaincal_combine)
+nsigma_init=np.max([initial_SNR/15.0,5.0]) # restricts initial nsigma to be at least 5
+nsigma_per_solint=10**np.linspace(np.log10(nsigma_init),np.log10(3.0),len(solints))
+print('Suggested nsigma per solint: ')
+print(nsigma_per_solint)
+
 
 
 #IRS7B_LB+SB_dirty.image.tt0
@@ -967,7 +1020,7 @@ for taper in ['1000klambda', '2000klambda', '3000klambda']:
                    smoothfactor=1.5, scales=scales, threshold=2.0*sigma, 
                    noisethreshold=3.0, robust=robust, parallel=parallel, 
                    cellsize=cell, imsize=imsize, nterms=1,
-                   uvtaper=[taper], uvrange='>60klambda',
+                   uvtaper=[taper], uvrange='',
                    phasecenter=data_params['SB1']['common_dir'].replace('J2000', 'ICRS'))
     imagename = imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',
