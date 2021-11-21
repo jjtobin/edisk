@@ -221,7 +221,7 @@ image_list = {
             linefreq='217.10498000GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda'])
         }
 
-
+'''
 image_list_sb = {
         ### C18O images
         "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
@@ -270,10 +270,11 @@ image_list_sb = {
         "SiO":dict(chanstart='-100km/s', chanwidth='1.34km/s', nchan=150, 
             linefreq='217.10498000GHz', linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec')
         }
-
+'''
 
 ### Loop through the spectral line images and make images.
 
+'''
 
 for line in image_list_sb:
     for robust in image_list_sb[line]["robust"]:
@@ -290,6 +291,21 @@ for line in image_list_sb:
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
                 phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+    if selectedVis=='vis_shift':
+       tclean_spectral_line_wrapper(data_params['SB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
+        image_list_sb[line]["chanstart"], image_list_sb[line]["chanwidth"], 
+        image_list_sb[line]["nchan"], image_list_sb[line]["linefreq"], 
+        image_list_sb[line]["linespw"], SB_scales, threshold=3.0*sigma,
+        imsize=image_list_sb[line]["imsize"],
+        cellsize=image_list_sb[line]["cellsize"], robust=robust, 
+        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
+        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
+        parallel=parallel,niter=0,
+        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+       os.system('mv '+imagename+'.pb orig_pbimages/')
+       os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
+       os.system('rm -rf '+imagename.replace(prefix,'temporary.pbfix')+'*')
+'''
 
 for line in image_list:
     print(line)
@@ -308,6 +324,21 @@ for line in image_list:
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
                 phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+    if selectedVis=='vis_shift':
+       tclean_spectral_line_wrapper(data_params['LB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
+        image_list[line]["chanstart"], image_list[line]["chanwidth"], 
+        image_list[line]["nchan"], image_list[line]["linefreq"], 
+        image_list[line]["linespw"][1], LB_scales, threshold=3.0*sigma,
+        imsize=image_list[line]["imsize"],
+        cellsize=image_list[line]["cellsize"],
+        robust=robust, uvtaper=image_list[line]["uvtaper"],
+        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
+        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
+        parallel=parallel,
+        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+       os.system('mv '+imagename+'.pb orig_pbimages/')
+       os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
+       os.system('rm -rf '+imagename.replace(prefix,'temporary.pbfix')+'*')
 ###############################################################
 ################ CLEANUP AND FITS CONVERSION ##################
 ###############################################################
@@ -322,6 +353,12 @@ os.system("rm -rf *.pbcor* *.fits")
 
 imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
+    if selectedVis=='vis_shift':
+       immath(imagename=[image,image.replace('image', 'pb')],expr='IM0/IM1',outfile=image.replace('image', 'pbcor'),imagemd=image)
+    else:
+       impbcor(imagename=image, pbimage=image.replace('image', 'pb'),
+            outfile=image.replace('image', 'pbcor'))
+
    impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True,dropdeg=True)
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
@@ -340,20 +377,8 @@ for image in imagelist:
 ################# Make Plots of Everything ####################
 ###############################################################
 import sys
-sys.argv = ['../edisk/plot_final_images.py',prefix]
-execfile('../edisk/plot_final_images.py')
-
-
-### Remove rescaled selfcal MSfiles
-os.system('rm -rf *rescaled.ms.*')
-
-### Make a directory to put the final products
-os.system('rm -rf export')
-os.system('mkdir export')
-os.system('mv *.fits export/')
-os.system('mv *.fits.gz export/')
-os.system('mv *.tgz export/')
-
+sys.argv = ['../edisk/plot_final_images_SBLB.py', prefix]
+execfile('../edisk/plot_final_images_SBLB.py')
 
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *rescaled.ms.*')
@@ -365,5 +390,5 @@ os.system('mkdir export')
 os.system('mv *.fits export/')
 os.system('mv *.fits.gz export/')
 os.system('mv *.tgz export/')
-os.system('mv *.pdf export/')
+
 

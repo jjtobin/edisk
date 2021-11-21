@@ -232,6 +232,10 @@ for dataset, line_center in zip(datasets, line_centers):
         freq = numpy.arange(image.shape[0])*header["CDELT3"] + header["CRVAL3"]
 
         # Load the continuum image.
+        data = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
+                  "tt0.fits".format(source, robust))
+        ndim_cont=len(data.shape)
+     
         if ndim_cont == 4:
            cont = fits.getdata("{0:s}_SB_continuum_robust_{1:s}.image."
                   "tt0.fits".format(source, robust))[0,0]
