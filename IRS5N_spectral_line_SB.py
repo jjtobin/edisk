@@ -4,11 +4,11 @@ This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
-SB1: 
+SB1: 2019.1.00261.L
 
 LB1: 
 
-reducer: 
+reducer: Merel van 't Hoff
 """
 
 """ Starting matter """
@@ -38,11 +38,11 @@ skip_plots = False
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = 'fieldName'
-prefix  = 'filename prefix' 
+field   = 'IRS5N'
+prefix  = 'IRS5N' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/sourceDirectory/'
+WD_path = '/lustre/cv/projects/edisk/IRS5N-validation/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -51,15 +51,15 @@ SB_scales = [0, 5] #[0, 5, 10, 20]
 LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 
 ### automasking parameters for very extended emission
-#sidelobethreshold=2.0
-#noisethreshold=3.75
-#lownoisethreshold=1.0
-#smoothfactor=2.0
-### automasking parameters for compact emission (uncomment to use)
 sidelobethreshold=2.0
-noisethreshold=4.0
-lownoisethreshold=1.5 
-smoothfactor=1.0
+noisethreshold=4.0 # MvtH: noisethreshold=3.0 moved to LineImages2
+lownoisethreshold=1.0
+smoothfactor=2.0
+### automasking parameters for compact emission (uncomment to use) # MvtH: moved to LineImages1
+#sidelobethreshold=2.0
+#noisethreshold=4.0
+#lownoisethreshold=1.5 
+#smoothfactor=1.0
 
 #read in final data_params from continuum to ensure we get the phase centers for each MS
 with open(prefix+'.pickle', 'rb') as handle:
@@ -231,12 +231,32 @@ for line in image_list:
                 lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
                 phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 
+### MvtH try tapering
 
+cellsize='0.025arcsec'
+imsize=1600
+uvtaper = '1000klambda'
+
+for line in image_list:
+    for robust in [0.5]:
+        imagename = prefix+f'_SB_'+line+'_robust_'+str(robust)+'_taper'+str(uvtaper)
+
+        sigma = get_sensitivity(data_params, specmode='cube', \
+                spw=[image_list[line]["linespw"]], chan=450,robust=robust,imsize=imsize,cellsize=cellsize)
+
+        tclean_spectral_line_wrapper(vislist, imagename,
+                image_list[line]["chanstart"], image_list[line]["chanwidth"], 
+                image_list[line]["nchan"], image_list[line]["linefreq"], 
+                image_list[line]["linespw"], SB_scales, threshold=3.0*sigma,
+                imsize=imsize, cellsize=cellsize,robust=robust, 
+                sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
+                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
+                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'),
+		uvtaper=uvtaper)
 
 ###############################################################
 ################ CLEANUP AND FITS CONVERSION ##################
 ###############################################################
-
 
 import glob
 ### Remove extra image products
@@ -261,6 +281,10 @@ imagelist=glob.glob('*.pb') + glob.glob('*.pb.tt0')
 for image in imagelist:
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
    os.system('gzip '+image+'.fits')
+
+
+
+
 
 ###############################################################
 ################# Make Plots of Everything ####################

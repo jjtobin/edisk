@@ -48,7 +48,7 @@ field   = {'SB':'L1489_IRS', 'LB':'L1489IRS'}
 prefix  = 'L1489IRS' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/L1489IRS-try2/'
+WD_path = '/lustre/cv/projects/edisk/L1489IRS-try3/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
