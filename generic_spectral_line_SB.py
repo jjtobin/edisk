@@ -278,6 +278,7 @@ os.system('rm -rf scale*')
 os.system('rm -rf export')
 os.system('mkdir export')
 os.system('mv *.fits export/')
+os.system('mv *.fits.gz export/')
 os.system('mv *.tgz export/')
 os.system('mv *.pdf export/')
 

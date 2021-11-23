@@ -703,7 +703,7 @@ for i in data_params.keys():
 scales = SB_scales
 
 cellsize='0.025arcsec'
-imsize=1000 #1600
+imsize=1600
 for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
     imagename=prefix+'_SB_continuum_robust_'+str(robust)
     os.system('rm -rf '+imagename+'*')
