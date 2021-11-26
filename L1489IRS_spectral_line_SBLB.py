@@ -289,7 +289,7 @@ for line in image_list_sb:
        tclean_spectral_line_wrapper(data_params['SB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
         image_list_sb[line]["chanstart"], image_list_sb[line]["chanwidth"], 
         image_list_sb[line]["nchan"], image_list_sb[line]["linefreq"], 
-        image_list_sb[line]["linespw"], SB_scales, threshold=3.0*sigma,
+        image_list_sb[line]["linespw"], SB_scales, threshold=1000000.0*sigma,
         imsize=image_list_sb[line]["imsize"],
         cellsize=image_list_sb[line]["cellsize"], robust=robust, 
         sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
@@ -325,13 +325,13 @@ for line in image_list:
        tclean_spectral_line_wrapper(data_params['LB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
         image_list[line]["chanstart"], image_list[line]["chanwidth"], 
         image_list[line]["nchan"], image_list[line]["linefreq"], 
-        image_list[line]["linespw"][1], LB_scales, threshold=3.0*sigma,
+        image_list[line]["linespw"][1], LB_scales, threshold=1000000.0*sigma,
         imsize=image_list[line]["imsize"],
         cellsize=image_list[line]["cellsize"],
         robust=robust, uvtaper=image_list[line]["uvtaper"],
         sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
         lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
-        parallel=parallel,
+        parallel=parallel,niter=0,
         phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
        os.system('mv '+imagename+'.pb orig_pbimages/')
        os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
@@ -360,7 +360,7 @@ for line in image_list_lb:
        tclean_spectral_line_wrapper(data_params['LB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
         image_list_lb[line]["chanstart"], image_list_lb[line]["chanwidth"], 
         image_list_lb[line]["nchan"], image_list_lb[line]["linefreq"], 
-        image_list_lb[line]["linespw"], LB_scales, threshold=3.0*sigma,
+        image_list_lb[line]["linespw"], LB_scales, threshold=1000000.0*sigma,
         imsize=image_list_lb[line]["imsize"],
         cellsize=image_list_lb[line]["cellsize"],
         robust=robust, uvtaper=image_list_lb[line]["uvtaper"],
