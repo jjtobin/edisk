@@ -384,6 +384,9 @@ execfile('../edisk/plot_final_images_SBLB.py')
 os.system('rm -rf *rescaled.ms.*')
 os.system('rm -rf scale*')
 
+### Remove extra image products
+os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
+
 ### Make a directory to put the final products
 os.system('rm -rf export')
 os.system('mkdir export')
