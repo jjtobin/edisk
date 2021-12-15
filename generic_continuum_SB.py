@@ -614,7 +614,18 @@ for robust in [2.0,1.0,0.5,0.0,-0.5,-1.0,-2.0]:
 
     imagename=imagename+'.image.tt0'
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)
-
+if selectedVis=='vis_avg_shift_rescaled':
+   tclean_wrapper(vis=data_params['LB1']['vis'].replace('.ms','_initcont.ms'), imagename='temporary.pbfix',
+                   threshold=0.0,niter=0, scales=[0],
+                   robust=0.5, parallel=parallel, 
+                   cellsize=cell, imsize=imsize, nterms=1,
+                   phasecenter=data_params['LB1']['common_dir'])
+   pblist=glob.glob('*continuum*.pb.tt0') 
+   os.system('mkdir orig_pbimages')
+   for pbimage in pblist:
+      os.system('mv '+pbimage+' orig_pbimages')
+      os.system('cp -r temporary.pbfix.pb.tt0 '+pbimage)
+   os.system('rm -rf temporary.pbfix.*')
 ###############################################################
 ########################### CLEANUP ###########################
 ###############################################################

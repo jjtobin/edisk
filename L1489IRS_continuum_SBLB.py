@@ -858,7 +858,7 @@ if selectedVis=='vis_avg_shift_rescaled':
    pblist=glob.glob('*continuum*.pb.tt0') 
    os.system('mkdir orig_pbimages')
    for pbimage in pblist:
-      os.system('mv '+pbimage+' orig_pbimages')
+      os.system('mv '+pbimage+' orig_pbimages/')
       os.system('cp -r temporary.pbfix.pb.tt0 '+pbimage)
    os.system('rm -rf temporary.pbfix.*')
 
