@@ -170,11 +170,11 @@ outertaper='2000klambda' # taper if necessary to align using larger-scale uv dat
 for i in data_params.keys():      
    print('Imaging MS: ',i) 
    if 'LB' in i:
-      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initcont', sidelobethreshold=2.0, 
+      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initial_cont', sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel, 
             uvtaper=[outertaper],nterms=1)
    else:
-      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initcont', sidelobethreshold=2.5, 
+      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initial_cont', sidelobethreshold=2.5, 
             smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel,nterms=1)
 
        #check masks to ensure you are actually masking the image, lower sidelobethreshold if needed
@@ -196,7 +196,7 @@ fit_region = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
 
 for i in data_params.keys():
        print(i)
-       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont.image.tt0', region=fit_region,mask=prefix+'_'+i+'_initcont.mask')
+       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initial_cont.image.tt0', region=fit_region,mask=prefix+'_'+i+'_initial_cont.mask')
 
 
 ### Check phase center fits in viewer, tf centers appear too shifted from the Gaussian fit, 
@@ -240,17 +240,17 @@ for i in data_params.keys():
 for i in data_params.keys():
    print('Imaging MS: ',i) 
    if 'LB' in i:
-      tclean_wrapper(vis=data_params[i]['vis_avg_shift'], imagename=prefix+'_'+i+'_initcont_shift', sidelobethreshold=2.0, 
+      tclean_wrapper(vis=data_params[i]['vis_avg_shift'], imagename=prefix+'_'+i+'_initcont_shifted', sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel, 
             uvtaper=[outertaper],nterms=1)
    else:
-       tclean_wrapper(vis=data_params[i]['vis_avg_shift'], imagename=prefix+'_'+i+'_initcont_shift', sidelobethreshold=2.5, 
+       tclean_wrapper(vis=data_params[i]['vis_avg_shift'], imagename=prefix+'_'+i+'_initcont_shifted', sidelobethreshold=2.5, 
             smoothfactor=1.5, scales=SB_scales, nsigma=5.0, robust=0.5, parallel=parallel,nterms=1)
 
 for i in data_params.keys():
       print(i)     
-      data_params[i]['phasecenter_new']=fit_gaussian(prefix+'_'+i+'_initcont_shift.image.tt0',\
-                                                     region=fit_region,mask=prefix+'_'+i+'_initcont_shift.mask')
+      data_params[i]['phasecenter_new']=fit_gaussian(prefix+'_'+i+'_initcont_shifted.image.tt0',\
+                                                     region=fit_region,mask=prefix+'_'+i+'_initcont_shifted.mask')
       print('Phasecenter new: ',data_params[i]['phasecenter_new'])
       print('Phasecenter old: ',data_params[i]['phasecenter'])
 
@@ -440,12 +440,12 @@ print(nsigma_per_solint)
 
 
 
-#IRS7B_LB+SB_dirty.image.tt0
-#Beam 0.075 arcsec x 0.058 arcsec (82.08 deg)
-#Flux inside disk mask: 836.78 mJy
-#Peak intensity of source: 33.76 mJy/beam
-#rms: 2.21e-01 mJy/beam
-#Peak SNR: 153.01
+#OphIRS43_initial_LB+SB.image.tt0
+#Beam 0.063 arcsec x 0.042 arcsec (66.87 deg)
+#Flux inside disk mask: 15.86 mJy
+#Peak intensity of source: 3.95 mJy/beam
+#rms: 3.38e-02 mJy/beam
+#Peak SNR: 116.99
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
 ### only images >0 have self-calibration applied
@@ -465,7 +465,7 @@ print(nsigma_per_solint)
 ########################## IF ALL ELSE FAILS, SIMPLY START WITH solint='inf' ##############################
 
 iteration=0
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=40.0,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=8.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel,smoothfactor=2.0,imsize=14400)
 
@@ -760,8 +760,8 @@ os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workd
 ### put selfcalibration intermediate images somewhere safe
 os.system('rm -rf initial_images')
 os.system('mkdir initial_images')
-os.system('mv *initcont*.image *_p*.image* *_ap*.image* initial_images')
-os.system('mv *initcont*.mask *_p*.mask *_ap*.mask initial_images')
+os.system('mv *initial_cont*.image *_p*.image* *_ap*.image* initial_images')
+os.system('mv *initial_cont*.mask *_p*.mask *_ap*.mask initial_images')
 os.system('rm -rf *_p*.alpha* *_p*.pb.tt0 *_ap*.alpha* *_ap*.pb.tt0')
 
 ### Remove intermediate selfcal MSfiles
