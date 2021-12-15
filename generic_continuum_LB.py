@@ -41,8 +41,8 @@ skip_plots = False
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = {'SB':'FieldName_SB', 'LB':'FieldName_LB'}
-prefix  = 'fieldName prefix' 
+field   = {'SB':'SB source', 'LB':'LB source'}
+prefix  = 'filenamePrefix' 
 
 ### always include trailing slashes!!
 WD_path = '/lustre/cv/projects/edisk/sourceDirectory/'
@@ -58,11 +58,11 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 ### is different for data that were originally part of the DDT than the LP
 ### DDT 2019.A.00034.S SB data need 'spws': '25,31,29,27,33,35,37'
 ### LP  2019.1.00261.L SB data need 'spws': '25,27,29,31,33,35,37'
-pl_data_params={'LB1': {'vis': LB_path+'uid___A002_Xeef629_X3191.ms',
+pl_data_params={'LB1': {'vis': LB_path+'uid___A002_Xf1948b_X3f5b.ms',
                         'spws': '25,27,29,31,33,35,37',
                         'field': field['LB'],
                         'column': 'corrected'},
-                'LB2': {'vis': LB_path+'uid___A002_Xeef629_X3b39.ms',
+                'LB2': {'vis': LB_path+'uid___A002_Xf20692_X911a.ms',
                         'spws': '25,27,29,31,33,35,37',
                         'field': field['LB'],
                         'column': 'corrected'},
@@ -87,8 +87,8 @@ data_params = {'LB1': {'vis' : WD_path+prefix+'_LB1.ms',
                        'cont_spws':  np.array([0,1,2,3,4,5,6]),  #spws to use for continuum
                        'cont_avg_width':  np.array([480,480,480,480,60,60,60]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
-                       'timerange': '2021/08/10/01:47:00~2021/08/10/02:50:00',
-                       'contdotdat' : 'SB/cont.dat'
+                       'timerange': '2021/10/10/22:13:00~2021/10/10/23:21:00',
+                       'contdotdat' : 'LB/cont.dat'
                       }, 
                'LB2': {'vis' : WD_path+prefix+'_LB2.ms',
                        'name' : 'LB2',
@@ -105,8 +105,8 @@ data_params = {'LB1': {'vis' : WD_path+prefix+'_LB1.ms',
                        'cont_spws':  np.array([0,1,2,3,4,5,6]),  #spws to use for continuum
                        'cont_avg_width':  np.array([480,480,480,480,60,60,60]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
-                       'timerange': '2021/08/10/04:32:00~2021/08/10/05:32:00',
-                       'contdotdat' : 'SB/cont.dat'
+                       'timerange': '2021/10/25/19:3226:00~2021/10/25/20:26:00',
+                       'contdotdat' : 'LB/cont.dat'
                       }, 
                }
 
@@ -170,11 +170,11 @@ outertaper='2000klambda' # taper if necessary to align using larger-scale uv dat
 for i in data_params.keys():      
    print('Imaging MS: ',i) 
    if 'LB' in i:
-      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initcont_exec0', sidelobethreshold=2.0, 
+      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initcont', sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel, 
             uvtaper=[outertaper],nterms=1)
    else:
-      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initcont_exec0', sidelobethreshold=2.5, 
+      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initcont', sidelobethreshold=2.5, 
             smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel,nterms=1)
 
        #check masks to ensure you are actually masking the image, lower sidelobethreshold if needed
@@ -186,8 +186,8 @@ fit_region=''
 
 ###specify manual mask on brightest source if Gaussian fitting fails due to confusion
 
-mask_ra  =  '19h01m56.419s'.replace('h',':').replace('m',':').replace('s','')
-mask_dec = '-36d57m28.690s'.replace('d','.').replace('m','.').replace('s','')
+mask_ra  =  '16h27m26.909s'.replace('h',':').replace('m',':').replace('s','')
+mask_dec = '-24d40m50.848s'.replace('d','.').replace('m','.').replace('s','')
 mask_pa  = 90.0 	# position angle of mask in degrees
 mask_maj = 0.76	# semimajor axis of mask in arcsec
 mask_min = 0.75 	# semiminor axis of mask in arcsec
@@ -196,7 +196,7 @@ fit_region = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
 
 for i in data_params.keys():
        print(i)
-       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont_exec0.image.tt0', region=fit_region,mask=prefix+'_'+i+'_initcont_exec0.mask')
+       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont.image.tt0', region=fit_region,mask=prefix+'_'+i+'_initcont.mask')
 
 
 ### Check phase center fits in viewer, tf centers appear too shifted from the Gaussian fit, 
@@ -211,7 +211,7 @@ for i in data_params.keys():
 
 for i in data_params.keys():
        #################### MANUALLY SET THIS ######################
-       data_params[i]['common_dir']='J2000 19h01m56.419063s -36d57m28.67292s'
+       data_params[i]['common_dir']='J2000 16h27m26.906s -24d40m50.825s'
 
 ### save updated data params to a pickle
 
@@ -284,7 +284,7 @@ if not skip_plots:
 ### Using SB1 as reference because it looks the nicest by far
 
 #################### MANUALLY SET THIS ######################
-refdata='LB1'
+refdata='LB2'
 
 reference=prefix+'_'+refdata+'_initcont_shift.vis.npz'
 for i in data_params.keys():
@@ -330,7 +330,7 @@ if not skip_plots:
                      fluxscale=[1.0]*len(export_vislist_rescaled), PA=PA, incl=incl, 
                      show_err=False)
    ### Make sure differences are no longer significant
-   refdata='LB1'
+   refdata='LB2'
    reference=prefix+'_'+refdata+'_initcont_shift.vis.npz'
    for i in data_params.keys():
       if i != refdata:
