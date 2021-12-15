@@ -189,14 +189,15 @@ for i in data_params.keys():
 ### Image each dataset individually to get source position in each image
 ### Images are saved in the format prefix+'_name_initcont_exec#.ms'
 outertaper='2000klambda' # taper if necessary to align using larger-scale uv data, small-scale may have subtle shifts from phase noise
-for i in data_params.keys():
-       print('Imaging MS: ',i) 
-       if 'LB' in i:
-          image_each_obs(data_params[i], prefix, scales=LB_scales,  uvtaper=outertaper,
-                   nsigma=5.0, sidelobethreshold=2.5, smoothfactor=1.5,interactive=False,parallel=parallel) 
-       else:
-          image_each_obs(data_params[i], prefix, scales=SB_scales, 
-                   nsigma=5.0, sidelobethreshold=2.5, interactive=False,parallel=parallel)
+for i in data_params.keys():      
+   print('Imaging MS: ',i) 
+   if 'LB' in i:
+      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initial_cont', sidelobethreshold=2.0, 
+            smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel, 
+            uvtaper=[outertaper],nterms=1)
+   else:
+      tclean_wrapper(vis=data_params[i]['vis_avg'], imagename=prefix+'_'+i+'_initial_cont', sidelobethreshold=2.5, 
+            smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel,nterms=1)
 
        #check masks to ensure you are actually masking the image, lower sidelobethreshold if needed
 
@@ -207,8 +208,8 @@ fit_region=''
 
 ###specify manual mask on brightest source if Gaussian fitting fails due to confusion
 
-mask_ra  =  '19h01m56.419s'.replace('h',':').replace('m',':').replace('s','')
-mask_dec = '-36d57m28.690s'.replace('d','.').replace('m','.').replace('s','')
+mask_ra  =  '16h27m26.909s'.replace('h',':').replace('m',':').replace('s','')
+mask_dec = '-24d40m50.848s'.replace('d','.').replace('m','.').replace('s','')
 mask_pa  = 90.0 	# position angle of mask in degrees
 mask_maj = 0.76	# semimajor axis of mask in arcsec
 mask_min = 0.75 	# semiminor axis of mask in arcsec
@@ -217,7 +218,7 @@ fit_region = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
 
 for i in data_params.keys():
        print(i)
-       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initcont_exec0.image', region=fit_region,mask=prefix+'_'+i+'_initcont_exec0.mask')
+       data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initial_cont.image.tt0', region=fit_region,mask=prefix+'_'+i+'_initial_cont.mask')
 
 
 ### Check phase center fits in viewer, tf centers appear too shifted from the Gaussian fit, 
@@ -259,20 +260,19 @@ for i in data_params.keys():
 ############### REIMAGING TO CHECK ALIGNMENT ##################
 ###############################################################
 for i in data_params.keys():
-       print(i)
-       if 'SB' in i:
-          scales=SB_scales
-       else:
-          scales=LB_scales
-       for suffix in ['image','mask','mode','psf','pb','residual','sumwt']:
-          os.system('rm -rf '+prefix+'_'+i+'_initcont_shift.'+suffix)
-       image_each_obs_shift(data_params[i]['vis_avg_shift'], prefix, scales=scales, 
-                   nsigma=5.0, sidelobethreshold=2.5, interactive=False,parallel=parallel)
+   print('Imaging MS: ',i) 
+   if 'LB' in i:
+      tclean_wrapper(vis=data_params[i]['vis_avg_shift'], imagename=prefix+'_'+i+'_initial_cont_shifted', sidelobethreshold=2.0, 
+            smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel, 
+            uvtaper=[outertaper],nterms=1)
+   else:
+       tclean_wrapper(vis=data_params[i]['vis_avg_shift'], imagename=prefix+'_'+i+'_initial_cont_shifted', sidelobethreshold=2.5, 
+            smoothfactor=1.5, scales=SB_scales, nsigma=5.0, robust=0.5, parallel=parallel,nterms=1)
 
 for i in data_params.keys():
       print(i)     
-      data_params[i]['phasecenter_new']=fit_gaussian(prefix+'_'+i+'_initcont_shift.image',\
-                                                     region=fit_region,mask=prefix+'_'+i+'_initcont_shift.mask')
+      data_params[i]['phasecenter_new']=fit_gaussian(prefix+'_'+i+'_initial_cont_shifted.image.tt0',\
+                                                     region=fit_region,mask=prefix+'_'+i+'_initial_cont_shifted.mask')
       print('Phasecenter new: ',data_params[i]['phasecenter_new'])
       print('Phasecenter old: ',data_params[i]['phasecenter'])
 

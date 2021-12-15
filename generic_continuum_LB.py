@@ -477,19 +477,20 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-#IRS7B_LB+SB_p0.image.tt0
-#Beam 0.078 arcsec x 0.060 arcsec (80.42 deg)
-#Flux inside disk mask: 431.65 mJy
-#Peak intensity of source: 26.60 mJy/beam
-#rms: 6.97e-02 mJy/beam
-#Peak SNR: 381.87
+#OphIRS43_LB+SB_p0.image.tt0
+#Beam 0.065 arcsec x 0.043 arcsec (67.84 deg)
+#Flux inside disk mask: 12.85 mJy
+#Peak intensity of source: 4.01 mJy/beam
+#rms: 3.73e-02 mJy/beam
+#Peak SNR: 107.72
 
-#IRS7B_LB+SB_p0_post.image.tt0
-#Beam 0.078 arcsec x 0.060 arcsec (80.42 deg)
-#Flux inside disk mask: 431.56 mJy
-#Peak intensity of source: 27.08 mJy/beam
-#rms: 6.09e-02 mJy/beam
-#Peak SNR: 444.40
+
+#OphIRS43_LB+SB_p0_post.image.tt0
+#Beam 0.065 arcsec x 0.043 arcsec (67.84 deg)
+#Flux inside disk mask: 12.88 mJy
+#Peak intensity of source: 4.08 mJy/beam
+#rms: 3.72e-02 mJy/beam
+#Peak SNR: 109.80
 
 
 iteration=1
