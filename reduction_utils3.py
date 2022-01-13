@@ -1373,12 +1373,13 @@ def get_station_numbers(msfile, antenna_name):
             print("#Observation ID %d: %s@%s" % (j, antenna_name, ant_stations[i]))
 
 
-def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode='SB-only',iteration=0,selfcalmode='p',prevselfcalmode=None,nsigma=50.0,solint='inf',
+def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode='SB-only',iteration=0,selfcalmode='p',
+                  prevselfcalmode=None,nsigma=50.0,solint='inf',
                   noisemasks=['',''],parallel=False,SB_contspws='',
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
                   sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5,smoothfactor=1.0,combine='spw',skipImage=False,nterms=2,
-                  evalImage=True):
+                  evalImage=True,robust=0.5):
    ### Use skipImage with care
    contspws=''
    spwmap=[0,0,0,0,0]
@@ -1451,7 +1452,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       os.system('rm -rf '+prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'*')
       tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration),scales=scales, nsigma=nsigma,
                   savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
-                  noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms)
+                  noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,robust=robust)
 
 
    if finalimageonly==True: # break out of function if we just wanted final image and no more gain solutions
@@ -1474,6 +1475,9 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
                     caltable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
                     gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
                     minsnr=2.0, minblperant=4,combine=combine)
+         plot_ants_flagging_colored('plot_ants_'+data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.png'),\
+                                    data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'),\
+                                    data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
       elif selfcalmode=='ap':
          gaincal(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
@@ -1481,6 +1485,9 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
                     minsnr=4.0, minblperant=4,combine=combine,solnorm=True)
          flagdata(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'),mode='clip',
                   clipoutside=True,clipminmax =[0.5,1.5],datacolumn='CPARAM')
+         plot_ants_flagging_colored('plot_ants_'+data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.png'),\
+                                    data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'),\
+                                    data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
       # Add caltable to the dictionary for use later
       data_params[i]['selfcal_tables'].append(data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
 
@@ -1513,7 +1520,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
          tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'_post',scales=scales, nsigma=nsigma,
                   savemodel='none',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
                   noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,
-                  niter=0,startmodel=startmodel)
+                  niter=0,startmodel=startmodel,robust=robust)
          estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'_post'+'.image.tt0', disk_mask=noisemasks[0], 
              noise_mask=noisemasks[1])
 
@@ -1739,6 +1746,101 @@ def test_truncated_scans(ints_per_solint, allscantimes,integration_time ):
          min_index=i
       #print(delta_ints_per_solint[min_index])
    return delta_ints_per_solint[min_index]
+
+
+def plot_ants_flagging_colored(filename,vis,gaintable):
+   names, offset_x,offset_y, offsets, nflags, nunflagged,fracflagged=get_flagged_solns_per_ant(gaintable,vis)
+   import matplotlib
+   matplotlib.use('Agg')
+   import matplotlib.pyplot as plt
+   ants_zero_flagging=np.where(fracflagged == 0.0)
+   ants_lt10pct_flagging=((fracflagged <= 0.1) & (fracflagged > 0.0)).nonzero()
+   ants_lt25pct_flagging=((fracflagged <= 0.25) & (fracflagged > 0.10)).nonzero()
+   ants_lt50pct_flagging=((fracflagged <= 0.5) & (fracflagged > 0.25)).nonzero()
+   ants_lt75pct_flagging=((fracflagged <= 0.75) & (fracflagged > 0.5)).nonzero()
+   ants_gt75pct_flagging=np.where(fracflagged > 0.75)
+   fig, ax = plt.subplots(1,1,figsize=(12, 12))
+   ax.scatter(offset_x[ants_zero_flagging[0]],offset_y[ants_zero_flagging[0]],marker='o',color='green',label='No Flagging',s=120)
+   ax.scatter(offset_x[ants_lt10pct_flagging[0]],offset_y[ants_lt10pct_flagging[0]],marker='o',color='blue',label='<10% Flagging',s=120)
+   ax.scatter(offset_x[ants_lt25pct_flagging[0]],offset_y[ants_lt25pct_flagging[0]],marker='o',color='yellow',label='<25% Flagging',s=120)
+   ax.scatter(offset_x[ants_lt50pct_flagging[0]],offset_y[ants_lt50pct_flagging[0]],marker='o',color='magenta',label='<50% Flagging',s=120)
+   ax.scatter(offset_x[ants_lt75pct_flagging[0]],offset_y[ants_lt75pct_flagging[0]],marker='o',color='cyan',label='<75% Flagging',s=120)
+   ax.scatter(offset_x[ants_gt75pct_flagging[0]],offset_y[ants_gt75pct_flagging[0]],marker='o',color='black',label='>75% Flagging',s=120)
+   ax.legend(fontsize=20)
+   for i in range(len(names)):
+      ax.text(offset_x[i],offset_y[i],names[i])
+   ax.set_xlabel('Latitude Offset (m)',fontsize=20)
+   ax.set_ylabel('Longitude Offset (m)',fontsize=20)
+   ax.set_title('Antenna Positions colorized by Selfcal Flagging',fontsize=20)
+   plt.savefig(filename,dpi=200.0)
+   plt.close()
+
+def plot_image(filename,outname,min=None,max=None):
+   header=imhead(filename)
+   size=np.max(header['shape'])
+   if min == None:
+      imview(raster={'file': filename, 'scaling': -1},\
+          zoom={'blc': [int(size/4),int(size/4)],\
+                'trc': [int(size-size/4),int(size-size/4)]},\
+          out={'file': outname, 'orient': 'landscape'})
+   else:
+      imview(raster={'file': filename, 'scaling': -1, 'range': [min,max]},\
+          zoom={'blc': [int(size/4),int(size/4)],\
+                'trc': [int(size-size/4),int(size-size/4)]},\
+          out={'file': outname, 'orient': 'landscape'})
+   #make image square since imview makes it a strange dimension
+   im = Image.open(outname)
+   width, height = im.size
+   if height > width:
+      remainder=height-width
+      trim_amount=int(remainder/2.0)
+      im1=im.crop((0,trim_amount,width-1,height-trim_amount-1))
+   else:
+      remainder=width-height
+      trim_amount=int(remainder/2.0)
+      im1=im.crop((trim_amount,height-1,width,width-trim_amount-1,0))
+   im1.save(outname)
+
+def get_flagged_solns_per_ant(gaintable,vis):
+     # Get the antenna names and offsets.
+
+     msmd = casatools.msmetadata()
+     tb = casatools.table()
+
+     msmd.open(vis)
+     names = msmd.antennanames()
+     offset = [msmd.antennaoffset(name) for name in names]
+     msmd.close()
+
+     # Calculate the mean longitude and latitude.
+
+     mean_longitude = numpy.mean([offset[i]["longitude offset"]\
+             ['value'] for i in range(len(names))])
+     mean_latitude = numpy.mean([offset[i]["latitude offset"]\
+             ['value'] for i in range(len(names))])
+
+     # Calculate the offsets from the center.
+
+     offsets = [numpy.sqrt((offset[i]["longitude offset"]['value'] -\
+             mean_longitude)**2 + (offset[i]["latitude offset"]\
+             ['value'] - mean_latitude)**2) for i in \
+             range(len(names))]
+     offset_y=[(offset[i]["latitude offset"]['value']) for i in \
+             range(len(names))]
+     offset_x=[(offset[i]["longitude offset"]['value']) for i in \
+             range(len(names))]
+     # Calculate the number of flags for each antenna.
+
+     nflags = [tb.calc('[select from '+gaintable+' where ANTENNA1=='+\
+             str(i)+' giving  [ntrue(FLAG)]]')['0'].sum() for i in \
+             range(len(names))]
+     nunflagged = [tb.calc('[select from '+gaintable+' where ANTENNA1=='+\
+             str(i)+' giving  [nfalse(FLAG)]]')['0'].sum() for i in \
+             range(len(names))]
+
+     fracflagged=np.array(nflags)/(np.array(nflags)+np.array(nunflagged))
+     # Calculate a score based on those two.
+     return names, np.array(offset_x),np.array(offset_y),offsets, nflags, nunflagged,fracflagged
 
 
 
