@@ -225,7 +225,7 @@ for dataset, line_center in zip(datasets, line_centers):
 
     for robust in robust_list:
         # Load in the image.
-        if taper in robust:
+        if 'taper' in robust:
            continue
         image, header = fits.getdata("{0:s}_SB_{1:s}_robust_{2:s}.image."
                 "fits".format(source, dataset, robust), header=True)
