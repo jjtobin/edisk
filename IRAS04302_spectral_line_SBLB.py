@@ -33,16 +33,16 @@ execfile('../reduction_utils3.py', globals())
 parallel=True
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = 'fieldName'
-prefix  = 'filename prefix' 
+field   = 'IRAS04302+2247'
+prefix  = 'IRAS04302' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/sourceDirectory/'
+WD_path = '/lustre/cv/projects/edisk/IRAS04302-validation/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -154,10 +154,10 @@ for i in data_params.keys():
 
 
 ### generate list of MS files to image
-vislist=[]
-for i in data_params.keys():
-   if 'SB' in i:
-      vislist.append(data_params[i]['vis_contsub'])
+#vislist=[]
+#for i in data_params.keys():
+#   if 'SB' in i:
+#      vislist.append(data_params[i]['vis_contsub'])
 
 ### Dictionary defining the spectral line imaging parameters.
 
@@ -175,11 +175,11 @@ image_list = {
         ### C18O images
         "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[0.5,-0.5,0.],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 13CO images
         "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='220.39868420GHz', linespw='1', 
-            robust=[0.5,-0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 12CO images
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
             nchan=315, linefreq='230.538GHz', linespw='6',
@@ -358,9 +358,9 @@ for image in imagelist:
        impbcor(imagename=image, pbimage=image.replace('image', 'pb'),
             outfile=image.replace('image', 'pbcor'))
 
-   impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
-   exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True,dropdeg=True)
-   exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
+    impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
+    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True,dropdeg=True)
+    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
 imagelist=glob.glob('*.mask')
 for image in imagelist:

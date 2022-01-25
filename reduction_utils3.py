@@ -1379,7 +1379,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
                   sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5,smoothfactor=1.0,combine='spw',skipImage=False,nterms=2,
-                  evalImage=True,robust=0.5):
+                  evalImage=True,robust=0.5,minsnr=2.0,uvrange='',minsnr_ap=4.0,uvtaper=''):
    ### Use skipImage with care
    contspws=''
    spwmap=[0,0,0,0,0]
@@ -1452,7 +1452,8 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       os.system('rm -rf '+prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'*')
       tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration),scales=scales, nsigma=nsigma,
                   savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
-                  noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,robust=robust)
+                  noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,
+                  robust=robust,uvtaper=[uvtaper])
 
 
    if finalimageonly==True: # break out of function if we just wanted final image and no more gain solutions
@@ -1474,7 +1475,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
          gaincal(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
                     gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
-                    minsnr=2.0, minblperant=4,combine=combine)
+                    minsnr=minsnr, minblperant=4,combine=combine,uvrange=uvrange)
          plot_ants_flagging_colored('plot_ants_'+data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.png'),\
                                     data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'),\
                                     data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
@@ -1482,7 +1483,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
          gaincal(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
                     gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
-                    minsnr=4.0, minblperant=4,combine=combine,solnorm=True)
+                    minsnr=minsnr_ap, minblperant=4,combine=combine,solnorm=True,uvrange=uvrange)
          flagdata(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'),mode='clip',
                   clipoutside=True,clipminmax =[0.5,1.5],datacolumn='CPARAM')
          plot_ants_flagging_colored('plot_ants_'+data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.png'),\
@@ -1520,7 +1521,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
          tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'_post',scales=scales, nsigma=nsigma,
                   savemodel='none',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
                   noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,
-                  niter=0,startmodel=startmodel,robust=robust)
+                  niter=0,startmodel=startmodel,robust=robust,uvtaper=[uvtaper])
          estimate_SNR(prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'_post'+'.image.tt0', disk_mask=noisemasks[0], 
              noise_mask=noisemasks[1])
 

@@ -157,7 +157,6 @@ for i in data_params.keys():
 ### generate list of MS files to image
 vislist=[]
 for i in data_params.keys():
-   if 'SB' in i:
       vislist.append(data_params[i]['vis_contsub'])
 
 ### Dictionary defining the spectral line imaging parameters.
