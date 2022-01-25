@@ -1047,8 +1047,8 @@ os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workd
 ### put selfcalibration intermediate images somewhere safe
 os.system('rm -rf initial_images')
 os.system('mkdir initial_images')
-os.system('mv *initcont*.image *_p*.image* *_ap*.image* initial_images')
-os.system('mv *initcont*.mask *_p*.mask *_ap*.mask initial_images')
+os.system('mv *initial*.image *_p*.image* *_ap*.image* initial_images')
+os.system('mv *initial*.mask *_p*.mask *_ap*.mask initial_images')
 os.system('rm -rf *_p*.alpha* *_p*.pb.tt0 *_ap*.alpha* *_ap*.pb.tt0')
 
 ### Remove intermediate selfcal MSfiles
