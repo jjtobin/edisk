@@ -237,6 +237,7 @@ for dataset, line_center in zip(datasets, line_centers):
         elif ndim_cont ==2:
            cont,cont_header = fits.getdata("{0:s}_SBLB_continuum_robust_{1:s}.image."
                   "tt0.fits".format(source, '0.5'), header=True) #[0,0]
+
         # Get the center of the source(s).
 
         x0, y0 = 0., 0.
@@ -257,26 +258,79 @@ for dataset, line_center in zip(datasets, line_centers):
             N = image.shape[1]
             N_cont = cont.shape[1]
             pixelsize = numpy.abs(header["CDELT2"])*numpy.pi/180. / arcsec
-            pixelsize_cont = numpy.abs(cont_header["CDELT2"])*numpy.pi/180. / arcsec
+            pixelsize_cont = numpy.abs(cont_header["CDELT2"])*numpy.pi/180. / \
+                    arcsec
 
             xmin, xmax = int(round(N/2-x0/pixelsize+ticks[0]/pixelsize)), \
                     int(round(N/2-x0/pixelsize+ticks[-1]/pixelsize))
             ymin, ymax = int(round(N/2+y0/pixelsize+ticks[0]/pixelsize)), \
                     int(round(N/2+y0/pixelsize+ticks[-1]/pixelsize))
-            xmin_cont, xmax_cont = int(round(N_cont/2-x0/pixelsize_cont+ticks[0]/pixelsize_cont)), \
-                    int(round(N_cont/2-x0/pixelsize_cont+ticks[-1]/pixelsize_cont))
-            ymin_cont, ymax_cont = int(round(N_cont/2+y0/pixelsize_cont+ticks[0]/pixelsize_cont)), \
-                    int(round(N_cont/2+y0/pixelsize_cont+ticks[-1]/pixelsize_cont))
+
+            xphysical = numpy.linspace(ticks.min(), ticks.max(), xmax - xmin)
 
             npix = min(xmax - xmin, N)
+            index_lower, index_upper = 0, xphysical.size
             if xmin < 0:
-                xmin, xmax = 0, npix
+                index_lower = -xmin
+                xmin = 0
             if xmax > N:
-                xmin, xmax = N - npix, N
+                index_upper = N - xmax
+                xmax = N
+            xphysical = xphysical[index_lower:index_upper]
+
+            yphysical = numpy.linspace(ticks.min(), ticks.max(), ymax - ymin)
+            index_lower, index_upper = 0, yphysical.size
             if ymin < 0:
-                ymin, ymax = 0, npix
+                index_lower = -ymin
+                ymin = 0
             if ymax > N:
-                ymin, ymax = N - npix, N
+                index_upper = N - ymax
+                ymax = N
+            yphysical = yphysical[index_lower:index_upper]
+
+            # Get the continuum pixel coordinates relative to the spectral line
+            # pixels, because the continuum pixels are smaller.
+
+            xmin_cont, xmax_cont = int(round(N_cont/2-x0/pixelsize_cont+ \
+                    ticks[0]/pixelsize_cont)), int(round(N_cont/2- \
+                    x0/pixelsize_cont+ticks[-1]/pixelsize_cont))
+            ymin_cont, ymax_cont = int(round(N_cont/2+y0/pixelsize_cont+\
+                    ticks[0]/pixelsize_cont)), int(round(N_cont/2+\
+                    y0/pixelsize_cont+ticks[-1]/pixelsize_cont))
+
+            xphysical_cont = numpy.linspace(ticks.min(), ticks.max(), \
+                    xmax_cont - xmin_cont)
+            yphysical_cont = numpy.linspace(ticks.min(), ticks.max(), \
+                    ymax_cont - ymin_cont)
+
+            npix_cont = min(xmax_cont - xmin_cont, N_cont)
+            index_lower, index_upper = 0, xphysical_cont.size
+            if xmin_cont < 0:
+                index_lower = -xmin_cont
+                xmin_cont = 0
+            if xmax_cont > N_cont:
+                index_upper = N_cont - xmax_cont
+                xmax_cont = N_cont
+            xphysical_cont = xphysical_cont[index_lower:index_upper]
+
+            index_lower, index_upper = 0, yphysical_cont.size
+            if ymin_cont < 0:
+                index_lower = -ymin_cont
+                ymin_cont = 0
+            if ymax_cont > N_cont:
+                index_upper = N_cont - ymax_cont
+                ymax_cont = N_cont
+            yphysical_cont = yphysical_cont[index_lower:index_upper]
+
+            xcont_start = numpy.argmin(numpy.abs(xphysical - \
+                    xphysical_cont.min()))
+            ycont_start = numpy.argmin(numpy.abs(yphysical - \
+                    yphysical_cont.min()))
+
+            xpixel_cont = xcont_start + numpy.arange(xmax_cont - \
+                    xmin_cont)*pixelsize_cont / pixelsize
+            ypixel_cont = ycont_start + numpy.arange(ymax_cont - \
+                    ymin_cont)*pixelsize_cont / pixelsize
 
             # Make a figure to put it in.
 
@@ -320,7 +374,8 @@ for dataset, line_center in zip(datasets, line_centers):
 
                     # Contour the continuum data.
 
-                    ax[i,j].contour(cont[ymin_cont:ymax_cont,xmin_cont:xmax_cont], \
+                    ax[i,j].contour(xpixel_cont, ypixel_cont, \
+                            cont[ymin_cont:ymax_cont,xmin_cont:xmax_cont], \
                             colors="white", levels=numpy.nanmax(cont)*\
                             (numpy.arange(5)+0.5)/5., linewidths=0.5, \
                             alpha=0.25)
