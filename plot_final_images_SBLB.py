@@ -232,11 +232,11 @@ for dataset, line_center in zip(datasets, line_centers):
 
         # Load the continuum image.
         if ndim_cont == 4:
-           cont = fits.getdata("{0:s}_SBLB_continuum_robust_{1:s}.image."
-                  "tt0.fits".format(source, '0.5'))[0,0]
+           cont,cont_header = fits.getdata("{0:s}_SBLB_continuum_robust_{1:s}.image."
+                  "tt0.fits".format(source, '0.5'), header=True)[0,0]
         elif ndim_cont ==2:
-           cont = fits.getdata("{0:s}_SBLB_continuum_robust_{1:s}.image."
-                  "tt0.fits".format(source, '0.5')) #[0,0]
+           cont,cont_header = fits.getdata("{0:s}_SBLB_continuum_robust_{1:s}.image."
+                  "tt0.fits".format(source, '0.5'), header=True) #[0,0]
         # Get the center of the source(s).
 
         x0, y0 = 0., 0.
@@ -256,11 +256,16 @@ for dataset, line_center in zip(datasets, line_centers):
 
             N = image.shape[1]
             pixelsize = numpy.abs(header["CDELT2"])*numpy.pi/180. / arcsec
+            pixelsize_cont = numpy.abs(cont_header["CDELT2"])*numpy.pi/180. / arcsec
 
             xmin, xmax = int(round(N/2-x0/pixelsize+ticks[0]/pixelsize)), \
                     int(round(N/2-x0/pixelsize+ticks[-1]/pixelsize))
             ymin, ymax = int(round(N/2+y0/pixelsize+ticks[0]/pixelsize)), \
                     int(round(N/2+y0/pixelsize+ticks[-1]/pixelsize))
+            xmin_cont, xmax_cont = int(round(N/2-x0/pixelsize+ticks[0]/pixelsize)), \
+                    int(round(N/2-x0/pixelsize+ticks[-1]/pixelsize))
+            ymin_cont, ymax_cont = int(round(N/2+y0/pixelsize_cont+ticks[0]/pixelsize_cont)), \
+                    int(round(N/2+y0/pixelsize_cont+ticks[-1]/pixelsize_cont))
 
             npix = min(xmax - xmin, N)
             if xmin < 0:

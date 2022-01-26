@@ -467,7 +467,7 @@ print(nsigma_per_solint)
 iteration=0
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=8.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel,smoothfactor=2.0,imsize=14400)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel,smoothfactor=2.0)
 
 
 ### Plot gain corrections, loop through each
@@ -496,7 +496,7 @@ if not skip_plots:
 iteration=1
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=30.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw',parallel=parallel,smoothfactor=2.0,imsize=14400)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw',parallel=parallel,smoothfactor=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -522,7 +522,7 @@ if not skip_plots:
 iteration=2
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=20.0,solint='27.18s',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='spw',smoothfactor=2.0,imsize=14400)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='spw',smoothfactor=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -547,7 +547,7 @@ if not skip_plots:
 iteration=3
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=10.0,solint='9.06',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,imsize=14400)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -572,7 +572,7 @@ if not skip_plots:
 iteration=4
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=5.0,solint='int',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,imsize=14400)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -600,7 +600,7 @@ if not skip_plots:
 iteration=5
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,imsize=14400)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -626,7 +626,7 @@ if not skip_plots:
 iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,finalimageonly=True,imsize=14400)
+               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,finalimageonly=True)
 
 #IRS7B_LB+SB_p6.image.tt0
 #Beam 0.078 arcsec x 0.060 arcsec (80.42 deg)
@@ -643,7 +643,7 @@ self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,s
 iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='spw',smoothfactor=2.0,imsize=14400)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='spw',smoothfactor=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -668,7 +668,7 @@ if not skip_plots:
 iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,finalimageonly=True,imsize=14400)
+               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,finalimageonly=True)
 #IRS7B_LB+SB_ap7.image.tt0
 #Beam 0.080 arcsec x 0.061 arcsec (80.32 deg)
 #Flux inside disk mask: 375.08 mJy

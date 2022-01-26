@@ -1157,7 +1157,7 @@ def deproject_vis(data, bins=np.array([0.]), incl=0., PA=0., offx=0., offy=0.,
 
     return output
 
-def plot_deprojected(filelist, incl = 0, PA = 0, offx = 0, offy = 0, fluxscale = None, uvbins = None, show_err = True):
+def plot_deprojected(filelist, incl = 0, PA = 0, offx = 0, offy = 0, fluxscale = None, uvbins = None, show_err = True,outfile=''):
     """
     Plots real and imaginary deprojected visibilities from a list of .npz files
 
@@ -1223,7 +1223,10 @@ def plot_deprojected(filelist, incl = 0, PA = 0, offx = 0, offy = 0, fluxscale =
     ax[0].set_ylabel('average real [Jy]')
     ax[1].set_ylabel('average imag [Jy]')
     ax[0].legend()
+    if outfile !='':
+       plt.savefig(outfile,dpi=200.0)
     plt.show(block = False)
+    
 
 def estimate_flux_scale(reference, comparison, incl = 0, PA = 0, uvbins = None, offx = 0, offy = 0):
     """
