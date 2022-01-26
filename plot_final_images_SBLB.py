@@ -255,6 +255,7 @@ for dataset, line_center in zip(datasets, line_centers):
             # Plot the image.
 
             N = image.shape[1]
+            N_cont = cont.shape[1]
             pixelsize = numpy.abs(header["CDELT2"])*numpy.pi/180. / arcsec
             pixelsize_cont = numpy.abs(cont_header["CDELT2"])*numpy.pi/180. / arcsec
 
@@ -262,10 +263,10 @@ for dataset, line_center in zip(datasets, line_centers):
                     int(round(N/2-x0/pixelsize+ticks[-1]/pixelsize))
             ymin, ymax = int(round(N/2+y0/pixelsize+ticks[0]/pixelsize)), \
                     int(round(N/2+y0/pixelsize+ticks[-1]/pixelsize))
-            xmin_cont, xmax_cont = int(round(N/2-x0/pixelsize+ticks[0]/pixelsize)), \
-                    int(round(N/2-x0/pixelsize+ticks[-1]/pixelsize))
-            ymin_cont, ymax_cont = int(round(N/2+y0/pixelsize_cont+ticks[0]/pixelsize_cont)), \
-                    int(round(N/2+y0/pixelsize_cont+ticks[-1]/pixelsize_cont))
+            xmin_cont, xmax_cont = int(round(N_cont/2-x0/pixelsize_cont+ticks[0]/pixelsize_cont)), \
+                    int(round(N_cont/2-x0/pixelsize_cont+ticks[-1]/pixelsize_cont))
+            ymin_cont, ymax_cont = int(round(N_cont/2+y0/pixelsize_cont+ticks[0]/pixelsize_cont)), \
+                    int(round(N_cont/2+y0/pixelsize_cont+ticks[-1]/pixelsize_cont))
 
             npix = min(xmax - xmin, N)
             if xmin < 0:
@@ -319,7 +320,7 @@ for dataset, line_center in zip(datasets, line_centers):
 
                     # Contour the continuum data.
 
-                    ax[i,j].contour(cont[ymin:ymax,xmin:xmax], \
+                    ax[i,j].contour(cont[ymin_cont:ymax_cont,xmin_cont:xmax_cont], \
                             colors="white", levels=numpy.nanmax(cont)*\
                             (numpy.arange(5)+0.5)/5., linewidths=0.5, \
                             alpha=0.25)
