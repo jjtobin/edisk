@@ -207,7 +207,7 @@ for i in data_params.keys():
 fit_region=''
 
 ###specify manual mask on brightest source if Gaussian fitting fails due to confusion
-
+'''
 mask_ra  =  '16h27m26.909s'.replace('h',':').replace('m',':').replace('s','')
 mask_dec = '-24d40m50.848s'.replace('d','.').replace('m','.').replace('s','')
 mask_pa  = 90.0 	# position angle of mask in degrees
@@ -215,7 +215,7 @@ mask_maj = 0.76	# semimajor axis of mask in arcsec
 mask_min = 0.75 	# semiminor axis of mask in arcsec
 fit_region = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
               (mask_ra, mask_dec, mask_maj, mask_min, mask_pa)
-
+'''
 for i in data_params.keys():
        print(i)
        data_params[i]['phasecenter']=fit_gaussian(prefix+'_'+i+'_initial_cont.image.tt0', region=fit_region,mask=prefix+'_'+i+'_initial_cont.mask')
