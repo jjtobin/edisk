@@ -430,9 +430,9 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 ###################### SELF-CALIBRATION #######################
 ###############################################################
 
-### Initial dirty map to assess DR
+### Initial map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
-               scales=SB_scales, parallel=parallel, sidelobethreshold=2.0, smoothfactor=1.5, scales=scales, nsigma=3.0, 
+               scales=SB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
                noisethreshold=3.0, robust=0.05, parallel=parallel, 
                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial.image.tt0', disk_mask=common_mask, 
@@ -694,7 +694,7 @@ for i in data_params.keys():
    vislist.append(data_params[i][selectedVis])
    fieldlist.append(data_params[i]['field'])
 
-### Initial dirty map to assess DR
+### Initial map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial_LB+SB',cellsize='0.003arcsec',imsize=6000, 
                scales=LB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
                noisethreshold=3.0, robust=0.5, parallel=parallel, nterms=1,

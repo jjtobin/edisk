@@ -407,7 +407,7 @@ for i in data_params.keys():
       fieldlist.append(data_params[i]['field'])
 
 
-### Initial dirty map to assess DR
+### Initial map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
                scales=SB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
                noisethreshold=3.0, robust=0.5, parallel=parallel, imsize=1600,cellsize='0.025arcsec',nterms=1,
