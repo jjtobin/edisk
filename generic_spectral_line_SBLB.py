@@ -205,7 +205,7 @@ image_list = {
             nchan=23, linefreq='217.82215GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### c-C3H2 217.94 GHz Images
         "cC3H2_217.94":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='217.94005GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.015arcsec',uvtaper=['2000klambda']),
+            nchan=23, linefreq='217.94005GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### c-C3H2 218.16 GHz Images
         "cC3H2_218.16":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
             nchan=23, linefreq='218.16044GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
