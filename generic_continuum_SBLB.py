@@ -319,8 +319,31 @@ for i in data_params.keys():
       data_params[i]['gencal_scale']=1.0
    print(' ')
 
-#No rescaling here since just one dataset
-#Go ahead with rescaling anyway to keep the flow of the script
+#################### MANUALLY SET THIS ######################
+##DOES THE AMP VS. UV-DISTANCE LOOK VERY DISSIMILAR BETWEEN DIFFERENT EBS?
+##IF SO, UNCOMMENT AND RUN THIS BLOCK TO REMOVE SCALING AND PROCEED WITH 2- METHOD PASS
+
+#for i in data_params.keys():
+#   data_params[i]['gencal_scale']=1.0
+
+
+###############################################################
+#################### MANUALLY SET THIS ########################
+######### IF ON SECOND PASS WHERE SCALING IS KNOWN ############
+################ PLACE SCALING COMMANDS HERE ##################
+###############################################################
+
+#if os.path.exists('gencal_scale.pickle'):
+#   with open('gencal_scale.pickle', 'rb') as handle:
+#      gencal_scale=pickle.load(handle)
+#   for i in data_params.keys():
+#      data_params[i]['gencal_scale']=gencal_scale[i]
+
+#data_params["SB1"]["gencal_scale"]=0.956
+#data_params["LB1"]["gencal_scale"]=1.011
+#data_params["LB2"]["gencal_scale"]=1.003
+#data_params["LB3"]["gencal_scale"]=1.000
+
 
 
 ###############################################################
@@ -963,6 +986,67 @@ for i in data_params.keys():
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+
+###############################################################
+############ SHIFT PHASE CENTERS TO CHECK SCALING #############
+###############################################################
+
+for i in data_params.keys():
+   print(i)
+   data_params[i]['vis_avg_shift_selfcal']=prefix+'_'+i+'_selfcal_cont_shift.ms'
+   os.system('rm -rf '+data_params[i]['vis_avg_shift_selfcal'])
+   fixvis(vis=data_params[i]['vis_avg_selfcal'], outputvis=data_params[i]['vis_avg_shift_selfcal'], 
+       field=data_params[i]['field'], 
+       phasecenter='J2000 '+data_params[i]['phasecenter'])
+   ### fix planets may throw an error, usually safe to ignore
+   fixplanets(vis=data_params[i]['vis_avg_shift_selfcal'], field=data_params[i]['field'], 
+           direction=data_params[i]['common_dir'])
+
+###############################################################
+############### PLOT UV DATA TO CHECK SCALING #################
+###############################################################
+
+### Assign rough emission geometry parameters; keep 0, 0
+PA, incl = 0, 0
+
+### Export MS contents into Numpy save files 
+export_vislist=[]
+for i in data_params.keys():
+   export_MS(data_params[i]['vis_avg_shift_selfcal'])
+   export_vislist.append(data_params[i]['vis_avg_shift_selfcal'].replace('.ms','.vis.npz'))
+
+if not skip_plots:
+    ### Plot deprojected visibility profiles for all data together """
+    plot_deprojected(export_vislist,
+                     fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
+                     show_err=False,outfile='amp-vs-uv-distance-post-selfcal.png')
+
+#################### MANUALLY SET THIS ######################
+refdata='LB3'
+
+reference=prefix+'_'+refdata+'_selfcal_cont_shift.vis.npz'
+for i in data_params.keys():
+   print(i)
+   if i != refdata:
+      data_params[i]['gencal_scale_selfcal']=estimate_flux_scale(reference=reference, 
+                        comparison=prefix+'_'+i+'_selfcal_cont_shift.vis.npz', 
+                        incl=incl, PA=PA)
+   else:
+      data_params[i]['gencal_scale_selfcal']=1.0
+   print(' ')
+
+gencal_scale={}
+
+print('IF AND ONLY IF SCALING WAS NOT ALREADY SET IN SCRIPT')
+print('COPY AND PLACE WHERE DESIGNATED FOR SCALING TOWARD TOP OF SCRIPT')
+for i in data_params.keys():
+   gencal_scale[i]=data_params[i]['gencal_scale_selfcal']
+   print('data_params["{}"]["gencal_scale"]={:0.3f}'.format(i,data_params[i]['gencal_scale_selfcal']))
+
+#WRITE OUT PICKLE FILE FOR SCALING IF MISSED
+if not os.path.exists('gencal_scale.pickle'):
+   with open('gencal_scale.pickle', 'wb') as handle:
+      pickle.dump(gencal_scale, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 ###############################################################
