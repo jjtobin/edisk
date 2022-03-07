@@ -1222,7 +1222,7 @@ def plot_deprojected(filelist, incl = 0, PA = 0, offx = 0, offy = 0, fluxscale =
     plt.xlabel('deprojected baseline length [kilo$\lambda$]')
     ax[0].set_ylabel('average real [Jy]')
     ax[1].set_ylabel('average imag [Jy]')
-    ax[0].legend()
+    ax[0].legend(fontsize=4)
     if outfile !='':
        plt.savefig(outfile,dpi=200.0)
     plt.show(block = False)
@@ -1304,6 +1304,11 @@ def estimate_flux_scale(reference, comparison, incl = 0, PA = 0, uvbins = None, 
     plt.xlabel('UV distance (kilolambda)')
     plt.legend()
     plt.show(block = False)
+    dataset_strings=comparison.split('_')
+    dataset=dataset_strings[1]
+    reference_strings=reference.split('_')
+    reference_data=reference_strings[1]
+    plt.savefig('estimate_fluxscale_'+dataset+'_ref_'+reference_data+'.png',dpi=200)
     return np.sqrt(ratio_avg)
 
 def rescale_flux(vis, gencalparameter):
