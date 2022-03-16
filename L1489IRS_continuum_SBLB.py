@@ -966,7 +966,7 @@ if not skip_plots:
                      show_err=False,outfile='amp-vs-uv-distance-post-selfcal.png')
 
 #################### MANUALLY SET THIS ######################
-refdata='LB3'
+refdata='SB1'
 
 reference=prefix+'_'+refdata+'_selfcal_cont_shift.vis.npz'
 for i in data_params.keys():

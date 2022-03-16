@@ -21,7 +21,7 @@ import glob
 import numpy as np
 import sys
 import pickle
-execfile('../../edisk/reduction_utils3.py', globals())
+execfile('../edisk/reduction_utils3.py', globals())
 
 
 ###############################################################
@@ -38,7 +38,7 @@ execfile('../../edisk/reduction_utils3.py', globals())
 parallel=True
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
@@ -47,7 +47,7 @@ field   = 'IRAS32'
 prefix  = 'IRAS32' 
 
 ### always include trailing slashes!!
-WD_path = '/DATA/frankie/edisk/iras32/sources/'
+WD_path = '/lustre/cv/projects/edisk/IRAS32/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 

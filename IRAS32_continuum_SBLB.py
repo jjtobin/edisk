@@ -17,7 +17,7 @@ reducer: Frankie Encalada
 """
 
 ### Import statements
-sys.path.append('/DATA/frankie/edisk/edisk')
+#sys.path.append('/DATA/frankie/edisk/edisk')
 import analysisUtils as au
 import analysisUtils as aU
 import string
@@ -26,7 +26,7 @@ import glob
 import numpy as np
 import sys
 import pickle
-execfile('../../edisk/reduction_utils3.py', globals())
+execfile('../edisk/reduction_utils3.py', globals())
 
 
 ###############################################################
@@ -38,7 +38,7 @@ execfile('../../edisk/reduction_utils3.py', globals())
 parallel=True  
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = False	
+skip_plots = True	
 
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
@@ -47,7 +47,7 @@ field   = {'SB':'IRAS32', 'LB':'IRAS32'}
 prefix  = 'IRAS32' 
 
 ### always include trailing slashes!!
-WD_path = '/DATA/frankie/edisk/iras32/sources/'
+WD_path = '/lustre/cv/projects/edisk/IRAS32/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -523,8 +523,8 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 
 ### Initial dirty map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
-               scales=SB_scales, parallel=parallel, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
-               noisethreshold=3.0, robust=0.05, parallel=parallel, 
+               scales=SB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
+               noisethreshold=3.0, robust=0.5, parallel=parallel, 
                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial.image.tt0', disk_mask=common_mask, 
                         noise_mask=noise_annulus)
