@@ -524,7 +524,7 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 ### Initial dirty map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
                scales=SB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
-               noisethreshold=3.0, robust=0.5, parallel=parallel, 
+               noisethreshold=3.0, robust=0.5,cellsize='0.025arcsec',imsize=1600, parallel=parallel, 
                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial.image.tt0', disk_mask=common_mask, 
                         noise_mask=noise_annulus)
@@ -543,19 +543,19 @@ print(nsigma_per_solint)
 
 #setup the same number of iterations as suggested solints
 
-#IRAS32_initial_LB+SB.image.tt0
-#Beam 0.053 arcsec x 0.036 arcsec (75.85 deg)
-#Flux inside disk mask: 106.20 mJy
-#Peak intensity of source: 7.29 mJy/beam
-#rms: 2.38e-02 mJy/beam
-#Peak SNR: 305.55
+#IRAS32_initial.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 94.59 mJy
+#Peak intensity of source: 43.75 mJy/beam
+#rms: 9.52e-02 mJy/beam
+#Peak SNR: 459.74
 
 #Suggested Solints:
-#['inf', 'inf', '18.14s', 'int']
+#['inf', 'inf', '90.72s', '42.34s', '18.14s', 'int']
 #Suggested Gaincal Combine params:
-#['spw,scan', 'spw', 'spw', 'spw']
+#['spw,scan', 'spw', 'spw', 'spw', 'spw', 'spw']
 #Suggested nsigma per solint: 
-#[20.36977277 10.7571661   5.68080085  3.        ]
+#[30.64942957 19.25582666 12.09767574  7.60049209  4.77508914  3.        ]
 
 
 # stopped here for now. need some info before i move on.
@@ -573,7 +573,7 @@ print(nsigma_per_solint)
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',
-               nsigma=20.4,solint='inf',
+               nsigma=30.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw,scan')
 
@@ -586,19 +586,22 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-### Make note of key metrics of image in each round
+#IRAS32_SB-only_p0.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 103.43 mJy
+#Peak intensity of source: 44.34 mJy/beam
+#rms: 1.04e-01 mJy/beam
+#Peak SNR: 425.94
+
 #IRAS32_SB-only_p0_post.image.tt0
 #Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
-#Flux inside disk mask: 103.50 mJy
-#Peak intensity of source: 44.21 mJy/beam
-#rms: 7.86e-02 mJy/beam
-#Peak SNR: 562.13
-
-
-
+#Flux inside disk mask: 106.63 mJy
+#Peak intensity of source: 45.12 mJy/beam
+#rms: 8.28e-02 mJy/beam
+#Peak SNR: 545.01
 
 iteration=1
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=10.8,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=19.25,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
 
@@ -609,20 +612,64 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True, plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
+#IRAS32_SB-only_p1.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 104.68 mJy
+#Peak intensity of source: 44.88 mJy/beam
+#rms: 7.87e-02 mJy/beam
+#Peak SNR: 570.37
 
 #IRAS32_SB-only_p1_post.image.tt0
 #Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
-#Flux inside disk mask: 101.44 mJy
-#Peak intensity of source: 44.97 mJy/beam
-#rms: 3.92e-02 mJy/beam
-#Peak SNR: 1146.09
-
-
+#Flux inside disk mask: 104.68 mJy
+#Peak intensity of source: 45.87 mJy/beam
+#rms: 4.26e-02 mJy/beam
+#Peak SNR: 1075.59
 
 
 
 iteration=2
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=5.7,solint='18.14s',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=12.0,solint='90.72s',
+               noisemasks=[common_mask,noise_annulus],
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
+
+if not skip_plots:
+   for i in data_params.keys():
+     if 'SB' in i:
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
+               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
+       input("Press Enter key to advance to next MS/Caltable...")
+
+#IRAS32_SB-only_p2.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 101.51 mJy
+#Peak intensity of source: 45.66 mJy/beam
+#rms: 3.89e-02 mJy/beam
+#Peak SNR: 1175.23
+
+#IRAS32_SB-only_p2_post.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 101.55 mJy
+#Peak intensity of source: 45.84 mJy/beam
+#rms: 3.86e-02 mJy/beam
+#Peak SNR: 1187.49
+
+
+
+iteration=3
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=7.6,solint='42.34s',
+               noisemasks=[common_mask,noise_annulus],
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
+
+if not skip_plots:
+   for i in data_params.keys():
+     if 'SB' in i:
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
+               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
+       input("Press Enter key to advance to next MS/Caltable...")
+
+iteration=4
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=4.8,solint='18.14s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
 
@@ -634,16 +681,8 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 
-#IRAS32_SB-only_p2_post.image.tt0
-#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
-#Flux inside disk mask: 97.08 mJy
-#Peak intensity of source: 45.47 mJy/beam
-#rms: 3.71e-02 mJy/beam
-#Peak SNR: 1224.92
 
-
-
-iteration=3
+iteration=5
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
@@ -656,12 +695,6 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 
-#IRAS32_SB-only_p3_post.image.tt0
-#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
-#Flux inside disk mask: 95.32 mJy
-#Peak intensity of source: 45.56 mJy/beam
-#rms: 3.71e-02 mJy/beam
-#Peak SNR: 1229.25
 
 
 
@@ -686,7 +719,7 @@ if not skip_plots:
 
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
 
-iteration=4
+iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
@@ -708,7 +741,7 @@ if not skip_plots:
 
 
 
-iteration=5
+iteration=7
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,finalimageonly=True)

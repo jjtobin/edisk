@@ -456,7 +456,7 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 ### Initial map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
                scales=SB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
-               noisethreshold=3.0, robust=0.5, parallel=parallel, 
+               noisethreshold=3.0, robust=0.5, parallel=parallel,cellsize='0.025arcsec',imsize=1600, 
                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial.image.tt0', disk_mask=common_mask, 
                         noise_mask=noise_annulus)
