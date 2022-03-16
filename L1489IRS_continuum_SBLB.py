@@ -26,7 +26,7 @@ import glob
 import numpy as np
 import sys
 import pickle
-execfile('/home/yamato/Project/edisk/reduction_utils3.py', globals())
+execfile('../edisk/reduction_utils3.py', globals())
 
 
 
@@ -1004,8 +1004,7 @@ for taper in ['1000klambda', '2000klambda', '3000klambda']:
 if selectedVis=='vis_avg_shift_rescaled':
    tclean_wrapper(vis=data_params['LB1']['vis'].replace('.ms','_initcont.ms'), imagename='temporary.pbfix',
                    threshold=0.0,niter=0, scales=[0],
-                   robust=0.5, parallel=parallel, 
-      　　             cellsize=cell, imsize=imsize, nterms=1,
+                   robust=0.5, parallel=parallel,cellsize=cell, imsize=imsize, nterms=1,
                    phasecenter=data_params['LB1']['common_dir'])
    pblist=glob.glob('*continuum*.pb.tt0') 
    os.system('mkdir orig_pbimages')
