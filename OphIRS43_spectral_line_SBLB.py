@@ -50,7 +50,7 @@ field   = {'SB':'OphIRS43', 'LB':'OphIRS43'}
 prefix  = 'OphIRS43'
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/OphIRS43/'
+WD_path = '/lustre/cv/projects/edisk/OphIRS43-validation/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -229,92 +229,6 @@ image_list = {
             linefreq='217.10498000GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda'])
         }
 
-'''
-image_list_sb = {
-        ### C18O images
-        "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
-            nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[1.0],imsize=1600,cellsize='0.025arcsec'),
-        ### 13CO images
-        "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
-            nchan=120, linefreq='220.39868420GHz', linespw='1', 
-            robust=[1.0],imsize=1600,cellsize='0.025arcsec'),
-        ### 12CO images
-        "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
-            nchan=315, linefreq='230.538GHz', linespw='6',
-            robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### SO Images
-        "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
-            nchan=120, linefreq='219.94944200GHz', linespw='2',
-            robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### H2CO 3(2,1)-2(2,0) Images
-        "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-5.5km/s', 
-            chanwidth='0.167km/s', nchan=120, linefreq='218.76006600GHz', 
-            linespw='0', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### H2CO 3(0,3)-2(0,2) Images
-        "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-10km/s',
-            chanwidth='1.34km/s', nchan=23, linefreq='218.22219200GHz', 
-            linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### H2CO 3(2,2)-2(2,1) Images
-        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-10km/s', 
-            chanwidth='1.34km/s', nchan=23, linefreq='218.47563200GHz',
-            linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### c-C3H2 217.82 GHz Images
-        "c-C3H2_217.82":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='217.82215GHz', linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### c-C3H2 217.94 GHz Images
-        "cC3H2_217.94":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='217.94005GHz', linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### c-C3H2 218.16 GHz Images
-        "cC3H2_218.16":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='218.16044GHz', linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### DCN Images
-        "DCN":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23, 
-            linefreq='217.2386GHz', linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### CH3OH Images
-        "CH3OH":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23, 
-            linefreq='218.44006300GHz', linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec'),
-        ### SiO Images
-        "SiO":dict(chanstart='-100km/s', chanwidth='1.34km/s', nchan=150, 
-            linefreq='217.10498000GHz', linespw='4', robust=[2.0],imsize=1600,cellsize='0.025arcsec')
-        }
-'''
-
-### Loop through the spectral line images and make images.
-
-'''
-
-for line in image_list_sb:
-    for robust in image_list_sb[line]["robust"]:
-        imagename = prefix+f'_SB_'+line+'_robust_'+str(robust)
-        data_params_sb = {k: v for k, v in data_params.items() if k.startswith('SB')}
-        sigma = get_sensitivity(data_params_sb, specmode='cube', \
-                spw=[image_list_sb[line]["linespw"]], chan=450)
-
-        tclean_spectral_line_wrapper(vislist_sb, imagename,
-                image_list_sb[line]["chanstart"], image_list_sb[line]["chanwidth"], 
-                image_list_sb[line]["nchan"], image_list_sb[line]["linefreq"], 
-                image_list_sb[line]["linespw"], SB_scales, threshold=3.0*sigma,
-                imsize=image_list_sb[line]["imsize"], cellsize=image_list_sb[line]["cellsize"],robust=robust, 
-                sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
-                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
-    if selectedVis=='vis_shift':
-       tclean_spectral_line_wrapper(data_params['SB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
-        image_list_sb[line]["chanstart"], image_list_sb[line]["chanwidth"], 
-        image_list_sb[line]["nchan"], image_list_sb[line]["linefreq"], 
-        image_list_sb[line]["linespw"], SB_scales, threshold=3.0*sigma,
-        imsize=image_list_sb[line]["imsize"],
-        cellsize=image_list_sb[line]["cellsize"], robust=robust, 
-        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
-        parallel=parallel,niter=0,
-        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
-       os.system('mv '+imagename+'.pb orig_pbimages/')
-       os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
-       os.system('rm -rf '+imagename.replace(prefix,'temporary.pbfix')+'*')
-'''
-
 for line in image_list:
     print(line)
     for robust in image_list[line]["robust"]:
@@ -365,7 +279,6 @@ for image in imagelist:
 		immath(imagename=[image,image.replace('image', 'pb')],expr='IM0/IM1',outfile=image.replace('image', 'pbcor'),imagemd=image)
 	else:
 		impbcor(imagename=image, pbimage=image.replace('image', 'pb'), outfile=image.replace('image', 'pbcor'))
-	impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
 	exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True,dropdeg=True)
 	exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 

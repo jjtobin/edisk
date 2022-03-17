@@ -507,8 +507,8 @@ for i in data_params.keys():
 mask_ra  = data_params[i]['common_dir'].split()[1].replace('h',':').replace('m',':').replace('s','')
 mask_dec = data_params[i]['common_dir'].split()[2].replace('d','.').replace('m','.').replace('s','')
 mask_pa  = 90.0 	# position angle of mask in degrees
-mask_maj = 1.01	# semimajor axis of mask in arcsec
-mask_min = 1.0 	# semiminor axis of mask in arcsec
+mask_maj = 1.5	# semimajor axis of mask in arcsec
+mask_min = 1.5 	# semiminor axis of mask in arcsec
 
 common_mask = 'ellipse[[%s, %s], [%.1farcsec, %.1farcsec], %.1fdeg]' % \
               (mask_ra, mask_dec, mask_maj, mask_min, mask_pa)
@@ -657,7 +657,7 @@ if not skip_plots:
 
 
 iteration=3
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=7.6,solint='42.34s',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=7.6,solint='42s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
 
@@ -667,59 +667,22 @@ if not skip_plots:
        plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
+
+#IRAS32_SB-only_p3.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 99.45 mJy
+#Peak intensity of source: 45.75 mJy/beam
+#rms: 3.78e-02 mJy/beam
+#Peak SNR: 1210.21
+
+#IRAS32_SB-only_p3_post.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 99.42 mJy
+#Peak intensity of source: 46.00 mJy/beam
+#rms: 3.79e-02 mJy/beam
+#Peak SNR: 1214.90
 
 iteration=4
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=4.8,solint='18.14s',
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
-
-if not skip_plots:
-   for i in data_params.keys():
-     if 'SB' in i:
-       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
-               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
-       input("Press Enter key to advance to next MS/Caltable...")
-
-
-
-iteration=5
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine='spw')
-
-if not skip_plots:
-   for i in data_params.keys():
-     if 'SB' in i:
-       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
-               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
-       input("Press Enter key to advance to next MS/Caltable...")
-
-
-
-
-
-## recommended up to here, we'll see.   after running it:  yup, looks right!
-
-
-"""
-iteration=4
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
-
-if not skip_plots:
-   for i in data_params.keys():
-     if 'SB' in i:
-       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
-               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
-       input("Press Enter key to advance to next MS/Caltable...")
-
-
-"""
-
-### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
-
-iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel)
@@ -732,20 +695,33 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 
+#IRAS32_SB-only_p4.image.tt0
+#Beam 0.226 arcsec x 0.152 arcsec (88.25 deg)
+#Flux inside disk mask: 96.54 mJy
+#Peak intensity of source: 45.87 mJy/beam
+#rms: 3.69e-02 mJy/beam
+#Peak SNR: 1243.61
+
 #IRAS32_SB-only_p4_post.image.tt0
-#Beam 0.228 arcsec x 0.153 arcsec (89.30 deg)
-#Flux inside disk mask: 92.90 mJy
-#Peak intensity of source: 45.96 mJy/beam
-#rms: 3.70e-02 mJy/beam
-#Peak SNR: 1242.58
+#Beam 0.227 arcsec x 0.152 arcsec (88.36 deg)
+#Flux inside disk mask: 94.11 mJy
+#Peak intensity of source: 46.09 mJy/beam
+#rms: 3.65e-02 mJy/beam
+#Peak SNR: 1263.20
 
 
 
-iteration=7
+iteration=5
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,finalimageonly=True)
 
+#IRAS32_SB-only_ap5.image.tt0
+#Beam 0.227 arcsec x 0.152 arcsec (88.36 deg)
+#Flux inside disk mask: 94.82 mJy
+#Peak intensity of source: 46.08 mJy/beam
+#rms: 3.66e-02 mJy/beam
+#Peak SNR: 1260.67
 
 
 for i in data_params.keys():
@@ -793,12 +769,13 @@ nsigma_per_solint=10**np.linspace(np.log10(nsigma_init),np.log10(3.0),len(solint
 print('Suggested nsigma per solint: ')
 print(nsigma_per_solint)
 
+
 #IRAS32_initial_LB+SB.image.tt0
-#Beam 0.053 arcsec x 0.036 arcsec (75.85 deg)
-#Flux inside disk mask: 106.20 mJy
-#Peak intensity of source: 7.29 mJy/beam
-#rms: 2.38e-02 mJy/beam
-#Peak SNR: 305.55
+#Beam 0.054 arcsec x 0.036 arcsec (76.07 deg)
+#Flux inside disk mask: 108.46 mJy
+#Peak intensity of source: 7.52 mJy/beam
+#rms: 2.52e-02 mJy/beam
+#Peak SNR: 298.21
 
 
 #Suggested Solints:
@@ -806,7 +783,7 @@ print(nsigma_per_solint)
 #Suggested Gaincal Combine params:
 #['spw,scan', 'spw', 'spw', 'spw']
 #Suggested nsigma per solint: 
-#[20.36977277 10.7571661   5.68080085  3.        ]
+#[19.88077522 10.58431188  5.63497432  3.        ]
 
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
@@ -827,7 +804,7 @@ print(nsigma_per_solint)
 ########################## IF ALL ELSE FAILS, SIMPLY START WITH solint='inf' ##############################
 
 iteration=0
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=20.4,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=19.9,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw,scan',parallel=parallel,smoothfactor=2.0)
 
@@ -843,7 +820,7 @@ if not skip_plots:
 
 
 iteration=1
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=10.8,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=10.6,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine='spw',parallel=parallel,smoothfactor=2.0)
 
@@ -857,7 +834,7 @@ if not skip_plots:
 
 
 iteration=2
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=5.7,solint='18.14s',
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=5.6,solint='18.14s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='spw',smoothfactor=2.0)
 
@@ -880,14 +857,20 @@ if not skip_plots:
                xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
        input("Press Enter key to advance to next MS/Caltable...")
 
-# lost the progress summary for the previous steps but i believe the previous SNR was around what i got here
-# so we're moving on.
+
+#IRAS32_LB+SB_p3.image.tt0
+#Beam 0.054 arcsec x 0.036 arcsec (76.08 deg)
+#Flux inside disk mask: 107.25 mJy
+#Peak intensity of source: 9.41 mJy/beam
+#rms: 1.39e-02 mJy/beam
+#Peak SNR: 676.36
+
 #IRAS32_LB+SB_p3_post.image.tt0
-#Beam 0.055 arcsec x 0.036 arcsec (75.46 deg)
-#Flux inside disk mask: 101.56 mJy
-#Peak intensity of source: 9.46 mJy/beam
-#rms: 1.24e-02 mJy/beam
-#Peak SNR: 761.42
+#Beam 0.054 arcsec x 0.036 arcsec (76.08 deg)
+#Flux inside disk mask: 107.66 mJy
+#Peak intensity of source: 9.53 mJy/beam
+#rms: 1.40e-02 mJy/beam
+#Peak SNR: 679.38
 
 ### step took 7 hours, saving progress...
 with open(prefix+'.pickle', 'wb') as handle:
