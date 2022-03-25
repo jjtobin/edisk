@@ -869,32 +869,7 @@ if not skip_plots:
 #rms: 1.40e-02 mJy/beam
 #Peak SNR: 394.81
 
-'''
-iteration=3
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine=gaincal_combine[iteration],smoothfactor=2.0)
 
-if not skip_plots:
-   for i in data_params.keys():
-       plotms(vis=data_params[i][selectedVis].replace('.ms','_LB+SB_p'+str(iteration)+'.g'),
-               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
-       input("Press Enter key to advance to next MS/Caltable...")
-
-#IRAS16253_LB+SB_p3.image.tt0
-#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
-#Flux inside disk mask: 36.04 mJy
-#Peak intensity of source: 5.51 mJy/beam
-#rms: 1.39e-02 mJy/beam
-#Peak SNR: 395.94
-
-#IRAS16253_LB+SB_p3_post.image.tt0
-#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
-#Flux inside disk mask: 35.32 mJy
-#Peak intensity of source: 4.48 mJy/beam
-#rms: 1.52e-02 mJy/beam
-#Peak SNR: 295.32
-'''
 iteration=3
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,prevselfcalmode='p',selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],

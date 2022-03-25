@@ -889,20 +889,34 @@ if not skip_plots:
        plotms(vis=data_params[i][selectedVis].replace('.ms','_LB+SB_ap'+str(iteration)+'.g'), xaxis='time',
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
+#IRAS32_LB+SB_p4.image.tt0
+#Beam 0.054 arcsec x 0.036 arcsec (76.08 deg)
+#Flux inside disk mask: 164.36 mJy
+#Peak intensity of source: 9.49 mJy/beam
+#rms: 1.39e-02 mJy/beam
+#Peak SNR: 682.56
 
 #IRAS32_LB+SB_p4_post.image.tt0
-#Beam 0.056 arcsec x 0.037 arcsec (76.48 deg)
-#Flux inside disk mask: 90.44 mJy
-#Peak intensity of source: 9.62 mJy/beam
-#rms: 1.23e-02 mJy/beam
-#Peak SNR: 781.85
+#Beam 0.056 arcsec x 0.037 arcsec (77.05 deg)
+#Flux inside disk mask: 148.55 mJy
+#Peak intensity of source: 9.69 mJy/beam
+#rms: 1.39e-02 mJy/beam
+#Peak SNR: 698.94
+
 
 
 iteration=5
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,
                LB_spwmap=LB_spwmap,parallel=parallel,combine='spw',smoothfactor=2.0,finalimageonly=True)
+
+#IRAS32_LB+SB_ap5.image.tt0
+#Beam 0.056 arcsec x 0.037 arcsec (77.05 deg)
+#Flux inside disk mask: 155.77 mJy
+#Peak intensity of source: 9.78 mJy/beam
+#rms: 1.39e-02 mJy/beam
+#Peak SNR: 705.66
 
 ###Backup gain table list for LB+SB runs
 for i in data_params.keys():
@@ -950,7 +964,7 @@ if not skip_plots:
                      show_err=False,outfile='amp-vs-uv-distance-post-selfcal.png')
 
 #################### MANUALLY SET THIS ######################
-refdata='LB3'
+refdata='LB1'
 
 reference=prefix+'_'+refdata+'_selfcal_cont_shift.vis.npz'
 for i in data_params.keys():

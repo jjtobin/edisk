@@ -1387,7 +1387,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
                   sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5,smoothfactor=1.0,combine='spw',skipImage=False,nterms=2,
-                  evalImage=True,robust=0.5,minsnr=2.0,uvrange='',minsnr_ap=4.0,uvtaper=''):
+                  evalImage=True,robust=0.5,minsnr=2.0,uvrange='',minsnr_ap=4.0,uvtaper='',refantmode='flex'):
    ### Use skipImage with care
    contspws=''
    spwmap=[0,0,0,0,0]
@@ -1483,7 +1483,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
          gaincal(vis=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'), 
                     caltable=data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'), 
                     gaintype='T', spw=contspws,refant=data_params[i]["refant"], calmode=selfcalmode, solint=solint, 
-                    minsnr=minsnr, minblperant=4,combine=combine,uvrange=uvrange)
+                    minsnr=minsnr, minblperant=4,combine=combine,uvrange=uvrange,refantmode=refantmode)
          plot_ants_flagging_colored('plot_ants_'+data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.png'),\
                                     data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.ms'),\
                                     data_params[i][selectedVis].replace('.ms','_'+mode+'_'+selfcalmode+str(iteration)+'.g'))
