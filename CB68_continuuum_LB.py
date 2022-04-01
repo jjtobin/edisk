@@ -381,7 +381,7 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 selectedVis='vis_avg_rescaled'
 #selectedVis='vis_avg_shift_rescaled'
-#shiftしてない方で作った方が良い(Johnから1/24)
+
 
 ### determine best reference antennas based on geometry and flagging
 for i in data_params.keys():
@@ -613,19 +613,6 @@ self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,s
 #rms: 1.82e-02 mJy/beam
 #Peak SNR: 267.49
 
-'''
-iteration=6
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
-               noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,finalimageonly=True)
-#IRS7B_LB+SB_ap7.image.tt0
-#Beam 0.080 arcsec x 0.061 arcsec (80.32 deg)
-#Flux inside disk mask: 375.08 mJy
-#Peak intensity of source: 28.18 mJy/beam
-#rms: 4.59e-02 mJy/beam
-#Peak SNR: 614.12
-
-'''
 
 ###Backup gain table list for LB+SB runs
 for i in data_params.keys():
@@ -727,5 +714,4 @@ os.system('rm -rf *initcont*.ms.flagversions')
 
 
 
-#slideで使用しているplotms
-plotms(vis='CB68_LB1_initcont_rescaled_LB+SB_p4.g',xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180])
+
