@@ -545,7 +545,7 @@ def split_spec(ms_dict, output_prefix, datacolumn = 'data'):
     split(vis=msfile,field = ms_dict['field'],outputvis=prefix+'_initspec.ms')
 
 
-def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data', excludechans = True): 
+def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data', excludechans = True,combine=''): 
     """
     Produce spectrally averaged continuum measurement sets 
 
@@ -561,7 +561,7 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
     """
 
     #start of CASA commands
-    uvcontsub(vis=msfile, fitspw=flagchannels, spw=spw,field = '',fitorder=1,solint='int',combine='',excludechans=excludechans) #flag spectral lines 
+    uvcontsub(vis=msfile, fitspw=flagchannels, spw=spw,field = '',fitorder=1,solint='int',combine=combine,excludechans=excludechans) #flag spectral lines 
 
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 

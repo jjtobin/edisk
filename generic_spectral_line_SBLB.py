@@ -352,13 +352,12 @@ os.system("rm -rf *.pbcor* *.fits")
 
 imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
-    if selectedVis=='vis_shift':
+   if selectedVis=='vis_shift':
        immath(imagename=[image,image.replace('image', 'pb')],expr='IM0/IM1',outfile=image.replace('image', 'pbcor'),imagemd=image)
-    else:
+   else:
        impbcor(imagename=image, pbimage=image.replace('image', 'pb'),
             outfile=image.replace('image', 'pbcor'))
 
-   impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True,dropdeg=True)
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
