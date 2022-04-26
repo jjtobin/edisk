@@ -176,11 +176,11 @@ image_list = {
         ### C18O images
         "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[0.5,-0.5,0.],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 13CO images
         "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='220.39868420GHz', linespw='1', 
-            robust=[0.5,-0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 12CO images
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
             nchan=315, linefreq='230.538GHz', linespw='6',
