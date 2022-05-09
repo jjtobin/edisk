@@ -229,7 +229,7 @@ for dataset, line_center in zip(datasets, line_centers):
            image, header = fits.getdata("{0:s}_SBLB_{1:s}_robust_{2:s}.image."
                            "fits".format(source, dataset, robust), header=True)
         elif os.path.exists("{0:s}_LB_{1:s}_robust_{2:s}.image.fits".format(source, dataset, robust)):
-           image, header = fits.getdata("{0:s}_SBLB_{1:s}_robust_{2:s}.image."
+           image, header = fits.getdata("{0:s}_LB_{1:s}_robust_{2:s}.image."
                            "fits".format(source, dataset, robust), header=True)
         else:
            continue
