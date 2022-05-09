@@ -721,16 +721,12 @@ nsigma_init=np.max([initial_SNR/15.0,5.0]) # restricts initial nsigma to be at l
 nsigma_per_solint=10**np.linspace(np.log10(nsigma_init),np.log10(3.0),len(solints))
 print('Suggested nsigma per solint: ')
 print(nsigma_per_solint)
-
-
-
 #GSS30IRS3_initial_LB+SB.image.tt0
 #Beam 0.065 arcsec x 0.045 arcsec (78.17 deg)
 #Flux inside disk mask: 118.24 mJy
 #Peak intensity of source: 4.85 mJy/beam
 #rms: 2.20e-02 mJy/beam
 #Peak SNR: 220.76
-
 
 #WARNING, INCONSISTENT NUMBER OF SPWS IN SCANS/MSes
 #Suggested Solints:
@@ -739,9 +735,6 @@ print(nsigma_per_solint)
 #['spw,scan', 'spw', 'spw', 'spw']
 #Suggested nsigma per solint: 
 #[14.71729953  8.66148792  5.09749583  3.        ]
-
-
-
 
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
@@ -952,19 +945,6 @@ for i in data_params.keys():
 if not os.path.exists('gencal_scale.pickle'):
    with open('gencal_scale.pickle', 'wb') as handle:
       pickle.dump(gencal_scale, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-
-# check per EB images to ensure selfcal made them look ok
-for i in data_params.keys():      
-   print('Imaging MS: ',i) 
-   if 'LB' in i:
-      tclean_wrapper(vis=data_params[i]['vis_avg_shift_selfcal'], imagename=prefix+'_'+i+'_perEB_cont_iteration_'+str(iteration), sidelobethreshold=2.0, 
-            smoothfactor=1.5, scales=LB_scales, nsigma=5.0, robust=0.5, parallel=parallel, 
-            nterms=2)
-   else:
-      tclean_wrapper(vis=data_params[i]['vis_avg_shift_selfcal'], imagename=prefix+'_'+i+'_perEB_cont_iteration_'+str(iteration), sidelobethreshold=2.5, 
-            smoothfactor=1.5, scales=SB_scales, nsigma=5.0, robust=0.5, parallel=parallel,nterms=2)
 
 
 ###############################################################
