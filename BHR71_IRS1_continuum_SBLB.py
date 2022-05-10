@@ -483,36 +483,6 @@ with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-"""
-LB1
-#The ratio of the fluxes of BHR71_IRS1_LB1_initcont_shift.vis.npz to BHR71_IRS1_SB2_initcont_shift.vis.npz is 0.52681
-#The scaling factor for gencal is 0.726 for your comparison measurement
-#The error on the weighted mean ratio is 2.538e-04, although it's likely that the weights in the measurement sets are off by some constant factor
- 
-LB2
-#The ratio of the fluxes of BHR71_IRS1_LB2_initcont_shift.vis.npz to BHR71_IRS1_SB2_initcont_shift.vis.npz is 0.86026
-#The scaling factor for gencal is 0.928 for your comparison measurement
-#The error on the weighted mean ratio is 2.267e-04, although it's likely that the weights in the measurement sets are off by some constant factor
- 
-LB3
-#The ratio of the fluxes of BHR71_IRS1_LB3_initcont_shift.vis.npz to BHR71_IRS1_SB2_initcont_shift.vis.npz is 0.96163
-#The scaling factor for gencal is 0.981 for your comparison measurement
-#The error on the weighted mean ratio is 2.326e-04, although it's likely that the weights in the measurement sets are off by some constant factor
- 
-LB4
-#The ratio of the fluxes of BHR71_IRS1_LB4_initcont_shift.vis.npz to BHR71_IRS1_SB2_initcont_shift.vis.npz is 0.93183
-#The scaling factor for gencal is 0.965 for your comparison measurement
-#The error on the weighted mean ratio is 2.500e-04, although it's likely that the weights in the measurement sets are off by some constant factor
- 
-LB5
-#The ratio of the fluxes of BHR71_IRS1_LB5_initcont_shift.vis.npz to BHR71_IRS1_SB2_initcont_shift.vis.npz is 0.94314
-#The scaling factor for gencal is 0.971 for your comparison measurement
-#The error on the weighted mean ratio is 2.504e-04, although it's likely that the weights in the measurement sets are off by some constant factor
-
-
-"""
-
-
 ###############################################################
 ################ SELF-CALIBRATION PREPARATION #################
 ###############################################################
@@ -1177,8 +1147,8 @@ for robust in [-2.0,-1.0,-0.5,0.0,0.5,1.0,2.0]:
     sigma = get_sensitivity(data_params, specmode='mfs',imsize=imsize,robust=robust,cellsize=cell)
     # adjust sigma to corrector for the irregular noise in the images if needed
     # correction factor may vary or may not be needed at all depending on source
-    #if robust == 2.0 or robust == 1.0:
-    #   sigma=sigma*1.75
+    if robust == 2.0 or robust == 1.0:
+       sigma=sigma*1.75
     tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
             smoothfactor=1.5, scales=scales, threshold=3.0*sigma, 
             noisethreshold=3.0, robust=robust, parallel=parallel, 
