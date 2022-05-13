@@ -1387,7 +1387,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
                   SB_spwmap=[0,0,0,0,0,0,0],LB_contspws='',LB_spwmap=[0,0,0,0,0,0,0],
                   cellsize=None,imsize=None,scales=None,finalimageonly=False,remove_all_following_iterations=True,         
                   sidelobethreshold=2.5,noisethreshold=5.0,lownoisethreshold=1.5,smoothfactor=1.0,combine='spw',skipImage=False,nterms=2,
-                  evalImage=True,robust=0.5,minsnr=2.0,uvrange='',minsnr_ap=4.0,uvtaper='',refantmode='flex'):
+                  evalImage=True,robust=0.5,minsnr=2.0,uvrange='',minsnr_ap=4.0,uvtaper='',refantmode='flex',threshold='0.0Jy'):
    ### Use skipImage with care
    contspws=''
    spwmap=[0,0,0,0,0]
@@ -1461,7 +1461,7 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration),scales=scales, nsigma=nsigma,
                   savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
                   noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,
-                  robust=robust,uvtaper=[uvtaper])
+                  robust=robust,uvtaper=[uvtaper],threshold=threshold)
 
 
    if finalimageonly==True: # break out of function if we just wanted final image and no more gain solutions
