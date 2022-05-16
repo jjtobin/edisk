@@ -1633,6 +1633,59 @@ def get_sensitivity(data_params,specmode='mfs',spw=[],chan=0,cellsize='0.025arcs
    estsens=np.sum(sensitivities)/float(counter)/(float(counter))**0.5
    return estsens
 
+def get_sensitivity_nodata_params(vislist,cont_spws,specmode='mfs',spw=[],chan=0,cellsize='0.025arcsec',imsize=1600,robust=0.5,uvtaper=''):
+   sensitivities=np.zeros(len(vislist))
+   counter=0
+   scalefactor=1.0
+   spwstring=''
+   for vis in vislist:
+      if specmode=='mfs':
+         spw=cont_spws[vis].tolist()
+
+         vis=vis
+         scalefactor=2.5
+      if (type(spw[0]) == str):
+         spwstring=''.join(str(spwnum)+',' for spwnum in spw)[:-1]
+      elif (type(spw[0]) == list):
+          spwstring=spw[0][counter]
+      if specmode=='cube':
+         print('Using Cube Mode')
+         vis=vis
+         spwstring=spwstring+':'+str(chan)+'~'+str(chan)
+         print(spwstring)
+      im.open(vis)
+      im.selectvis(field='',spw=spwstring)
+      im.defineimage(mode=specmode,stokes='I',spw=spw,cellx=cellsize,celly=cellsize,nx=imsize,ny=imsize)  
+      im.weight(type='briggs',robust=robust)  
+      if uvtaper != '':
+         if 'klambda' in uvtaper:
+            uvtaper=uvtaper.replace('klambda','')
+            uvtaperflt=float(uvtaper)
+            bmaj=str(206.0/uvtaperflt)+'arcsec'
+            bmin=bmaj
+            bpa='0.0deg'
+         if 'arcsec' in uvtaper:
+            bmaj=uvtaper
+            bmin=uvtaper
+            bpa='0.0deg'
+         print('uvtaper: '+bmaj+' '+bmin+' '+bpa)
+         im.filter(type='gaussian', bmaj=bmaj, bmin=bmin, bpa=bpa)
+      try:
+          sens=im.apparentsens()
+      except:
+          print('#')
+          print('# Sensisitivity Calculation failed for '+vis)
+          print('# Continuing to next MS') 
+          print('# Data in this spw/MS may be flagged')
+          print('#')
+          continue
+      print(vis,'Briggs Sensitivity = ', sens[1])
+      print(vis,'Relative to Natural Weighting = ', sens[2])  
+      sensitivities[counter]=sens[1]*scalefactor
+      counter+=1
+   estsens=np.sum(sensitivities)/float(counter)/(float(counter))**0.5
+   return estsens
+
 def get_solints_simple(vislist,scantimesdict,integrationtimes):
    all_integrations=np.array([])
    for vis in vislist:

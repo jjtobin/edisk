@@ -587,6 +587,21 @@ if not skip_plots:
 #rms: 2.62e-02 mJy/beam
 #Peak SNR: 244.56
 
+#2nd pass
+#IRAS04166+2706_LB+SB_p0.image.tt0
+#Beam 0.059 arcsec x 0.044 arcsec (24.42 deg)
+#Flux inside disk mask: 68.35 mJy
+#Peak intensity of source: 6.51 mJy/beam
+#rms: 3.23e-02 mJy/beam
+#Peak SNR: 201.40
+#IRAS04166+2706_LB+SB_p0_post.image.tt0
+#Beam 0.059 arcsec x 0.044 arcsec (24.42 deg)
+#Flux inside disk mask: 69.13 mJy
+#Peak intensity of source: 7.31 mJy/beam
+#rms: 2.90e-02 mJy/beam
+#Peak SNR: 251.67
+
+
 iteration=1
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=15.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
@@ -609,6 +624,20 @@ if not skip_plots:
 #Peak intensity of source: 12.52 mJy/beam
 #rms: 2.00e-02 mJy/beam
 #Peak SNR: 625.06
+
+
+#2nd pass
+#Beam 0.059 arcsec x 0.044 arcsec (24.42 deg)
+#Flux inside disk mask: 69.82 mJy
+#Peak intensity of source: 7.22 mJy/beam
+#rms: 2.85e-02 mJy/beam
+#Peak SNR: 253.22
+
+#Beam 0.059 arcsec x 0.044 arcsec (24.42 deg)
+#Flux inside disk mask: 68.82 mJy
+#Peak intensity of source: 12.61 mJy/beam
+#rms: 2.21e-02 mJy/beam
+#Peak SNR: 571.41
 iteration=2
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=9.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
@@ -692,6 +721,7 @@ if not skip_plots:
 #Peak intensity of source: 11.09 mJy/beam
 #rms: 1.46e-02 mJy/beam
 #Peak SNR: 758.46
+
 #IRAS04166+2706_LB+SB_p5_post.image.tt0
 #Beam 0.058 arcsec x 0.043 arcsec (26.52 deg)
 #Flux inside disk mask: 72.41 mJy
@@ -699,6 +729,21 @@ if not skip_plots:
 #rms: 1.47e-02 mJy/beam
 #Peak SNR: 776.29
 
+#2nd pass
+#IRAS04166+2706_LB+SB_p5.image.tt0
+#Beam 0.059 arcsec x 0.044 arcsec (24.42 deg)
+#Flux inside disk mask: 75.30 mJy
+#Peak intensity of source: 12.17 mJy/beam
+#rms: 1.56e-02 mJy/beam
+#Peak SNR: 777.95
+
+
+#IRAS04166+2706_LB+SB_p5_post.image.tt0
+#Beam 0.059 arcsec x 0.044 arcsec (24.42 deg)
+#Flux inside disk mask: 75.71 mJy
+#Peak intensity of source: 12.47 mJy/beam
+#rms: 1.57e-02 mJy/beam
+#Peak SNR: 796.44
 
 iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='600s',
@@ -723,6 +768,19 @@ if not skip_plots:
 #rms: 1.47e-02 mJy/beam
 #Peak SNR: 802.04
 
+#2nd pass
+#IRAS04166+2706_LB+SB_p6.image.tt0
+#Beam 0.059 arcsec x 0.044 arcsec (24.42 deg)
+#Flux inside disk mask: 75.75 mJy
+#Peak intensity of source: 12.43 mJy/beam
+#rms: 1.56e-02 mJy/beam
+#Peak SNR: 794.16
+#IRAS04166+2706_LB+SB_p6_post.image.tt0
+#Beam 0.063 arcsec x 0.046 arcsec (25.46 deg)
+#Flux inside disk mask: 72.30 mJy
+#Peak intensity of source: 13.01 mJy/beam
+#rms: 1.54e-02 mJy/beam
+#Peak SNR: 842.81
 
 iteration=7
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='300s',
@@ -748,6 +806,21 @@ if not skip_plots:
 #rms: 1.46e-02 mJy/beam
 #Peak SNR: 822.95
 
+#2nd pass
+#IRAS04166+2706_LB+SB_ap7.image.tt0
+#Beam 0.063 arcsec x 0.046 arcsec (25.46 deg)
+#Flux inside disk mask: 71.78 mJy
+#Peak intensity of source: 13.15 mJy/beam
+#rms: 1.54e-02 mJy/beam
+#Peak SNR: 853.82
+
+#IRAS04166+2706_LB+SB_ap7_post.image.tt0
+#Beam 0.064 arcsec x 0.047 arcsec (24.91 deg)
+#Flux inside disk mask: 71.44 mJy
+#Peak intensity of source: 13.40 mJy/beam
+#rms: 1.54e-02 mJy/beam
+#Peak SNR: 869.52
+
 iteration=8
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
@@ -772,7 +845,20 @@ if not skip_plots:
 #rms: 1.47e-02 mJy/beam
 #Peak SNR: 828.59
 
+#2nd pass
+#IRAS04166+2706_LB+SB_ap8.image.tt0
+#Beam 0.064 arcsec x 0.047 arcsec (24.91 deg)
+#Flux inside disk mask: 71.37 mJy
+#Peak intensity of source: 13.43 mJy/beam
+#rms: 1.54e-02 mJy/beam
+#Peak SNR: 870.98
 
+#IRAS04166+2706_LB+SB_ap8_post.image.tt0
+#Beam 0.064 arcsec x 0.046 arcsec (25.60 deg)
+#Flux inside disk mask: 72.31 mJy
+#Peak intensity of source: 13.57 mJy/beam
+#rms: 1.56e-02 mJy/beam
+#Peak SNR: 870.91
 
 iteration=9
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
@@ -786,6 +872,16 @@ self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,s
 #Peak intensity of source: 12.16 mJy/beam
 #rms: 1.47e-02 mJy/beam
 #Peak SNR: 826.41
+
+#2nd pass
+#IRAS04166+2706_LB+SB_ap9.image.tt0
+#Beam 0.064 arcsec x 0.046 arcsec (25.60 deg)
+#Flux inside disk mask: 72.52 mJy
+#Peak intensity of source: 13.52 mJy/beam
+#rms: 1.56e-02 mJy/beam
+#Peak SNR: 869.15
+
+
 
 #save data params to a pickle
 with open(prefix+'.pickle', 'wb') as handle:
@@ -877,6 +973,11 @@ for i in data_params.keys():
 #if not os.path.exists('gencal_scale.pickle'):
 #   with open('gencal_scale.pickle', 'wb') as handle:
 #      pickle.dump(gencal_scale, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#2nd pass
+#data_params["LB1"]["gencal_scale"]=1.000
+#data_params["LB2"]["gencal_scale"]=1.007
+#data_params["LB3"]["gencal_scale"]=0.995
+#data_params["LB4"]["gencal_scale"]=1.005
 
 
 ###############################################################
