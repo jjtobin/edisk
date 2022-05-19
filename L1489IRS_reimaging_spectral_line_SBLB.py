@@ -48,7 +48,7 @@ smoothfactor=1.0
 
 import glob
 
-
+selectedVis='vis'
 
 #pick up extracted MSes from the archived data
 vislist=glob.glob('*spectral_line.ms')
@@ -74,7 +74,11 @@ image_list = {
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
             nchan=315, linefreq='230.538GHz', linespw='6',
             robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        }
+        ### SO Images
+        "SO":dict(chanstart='-10.0km/s', chanwidth='0.167km/s', 
+            nchan=270, linefreq='219.94944200GHz', linespw='2',
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+       }
 
 for line in image_list:
     print(line)
