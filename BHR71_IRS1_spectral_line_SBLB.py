@@ -153,7 +153,6 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 
 for i in data_params.keys():
-   if 'SB' in i:
       os.system('rm -rf '+data_params[i]['vis_contsub']+'.tgz')
       os.system('tar czf '+data_params[i]['vis_contsub']+'.tgz '+data_params[i]['vis_contsub'])
 
