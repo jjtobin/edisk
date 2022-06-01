@@ -890,7 +890,6 @@ with open(prefix + '.pickle', 'wb') as handle:
 
 
 
-
 iteration = 2
 self_calibrate(prefix,
                data_params,
@@ -928,6 +927,21 @@ if not skip_plots:
 ### save updated data params to a pickle
 with open(prefix + '.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol = pickle.HIGHEST_PROTOCOL)
+
+#IRAS04169_LB+SB_p2.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 94.17 mJy
+#Peak intensity of source: 5.71 mJy/beam
+#rms: 1.47e-02 mJy/beam
+#Peak SNR: 388.45
+
+#IRAS04169_LB+SB_p2_post.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 94.15 mJy
+#Peak intensity of source: 5.70 mJy/beam
+#rms: 1.46e-02 mJy/beam
+#Peak SNR: 389.20
+
 
 iteration = 3
 self_calibrate(prefix,
@@ -967,6 +981,20 @@ if not skip_plots:
 with open(prefix + '.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol = pickle.HIGHEST_PROTOCOL)
 
+#IRAS04169_LB+SB_p3.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 94.33 mJy
+#Peak intensity of source: 5.70 mJy/beam
+#rms: 1.46e-02 mJy/beam
+#Peak SNR: 389.55
+
+#IRAS04169_LB+SB_p3_post.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 94.48 mJy
+#Peak intensity of source: 6.11 mJy/beam
+#rms: 1.45e-02 mJy/beam
+#Peak SNR: 420.40
+
 iteration = 4
 self_calibrate(prefix,
                data_params,
@@ -1005,6 +1033,21 @@ if not skip_plots:
 with open(prefix + '.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol = pickle.HIGHEST_PROTOCOL)
 
+#IRAS04169_LB+SB_p4.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 95.66 mJy
+#Peak intensity of source: 5.99 mJy/beam
+#rms: 1.44e-02 mJy/beam
+#Peak SNR: 416.36
+
+#IRAS04169_LB+SB_p4_post.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 95.75 mJy
+#Peak intensity of source: 6.07 mJy/beam
+#rms: 1.44e-02 mJy/beam
+#Peak SNR: 421.07
+
+
 iteration = 5
 self_calibrate(prefix,
                data_params,
@@ -1042,6 +1085,21 @@ if not skip_plots:
 ### save updated data params to a pickle
 with open(prefix + '.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol = pickle.HIGHEST_PROTOCOL)
+
+#IRAS04169_LB+SB_p5.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 96.07 mJy
+#Peak intensity of source: 6.05 mJy/beam
+#rms: 1.44e-02 mJy/beam
+#Peak SNR: 420.47
+
+
+#IRAS04169_LB+SB_p5_post.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 96.31 mJy
+#Peak intensity of source: 6.14 mJy/beam
+#rms: 1.44e-02 mJy/beam
+#Peak SNR: 426.40
 
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
 iteration = 6
@@ -1084,6 +1142,21 @@ if not skip_plots:
 with open(prefix + '.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol = pickle.HIGHEST_PROTOCOL)
 
+#IRAS04169_LB+SB_p6.image.tt0
+#Beam 0.058 arcsec x 0.044 arcsec (23.83 deg)
+#Flux inside disk mask: 96.37 mJy
+#Peak intensity of source: 6.12 mJy/beam
+#rms: 1.44e-02 mJy/beam
+#Peak SNR: 424.66
+
+#IRAS04169_LB+SB_p6_post.image.tt0
+#Beam 0.059 arcsec x 0.045 arcsec (23.72 deg)
+#Flux inside disk mask: 94.15 mJy
+#Peak intensity of source: 6.06 mJy/beam
+#rms: 1.43e-02 mJy/beam
+#Peak SNR: 424.13
+
+
 iteration = 7
 finalimageonly = True
 self_calibrate(prefix,
@@ -1118,6 +1191,13 @@ if finalimageonly == False:
                    xselfscale = True,
                    plotrange = [0, 0, 0, 2])
             # input("Press Enter key to advance to next MS/Caltable...")
+
+#IRAS04169_LB+SB_ap7.image.tt0
+#Beam 0.059 arcsec x 0.045 arcsec (23.72 deg)
+#Flux inside disk mask: 93.49 mJy
+#Peak intensity of source: 6.13 mJy/beam
+#rms: 1.43e-02 mJy/beam
+#Peak SNR: 429.80
 
 ### Backup gain table list for LB+SB runs
 for i in data_params.keys():
