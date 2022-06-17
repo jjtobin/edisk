@@ -562,7 +562,7 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
 
     #start of CASA commands
     
-uvcontsub(vis=msfile, fitspw=flagchannels, spw=spw,field = '',fitorder=1,solint='int',combine=combine,excludechans=excludechans) #flag spectral lines 
+    uvcontsub(vis=msfile, fitspw=flagchannels, spw=spw,field = '',fitorder=1,solint='int',combine=combine,excludechans=excludechans) #flag spectral lines 
 
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
