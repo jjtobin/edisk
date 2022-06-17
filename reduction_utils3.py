@@ -209,7 +209,7 @@ def get_flagchannels(ms_dict, output_prefix):
         flagchannels_string += '%d:' % (spw)
 
         for count, j in enumerate(np.where(ms_dict['line_spws'] == spw)[0]):
-            print(ms_dict['flagrange'][j],j)
+            print(ms_dict['flagrange'][j],'spw:',ms_dict['line_spws'][j],j)
             if count==0:
                 chans = LSRKvel_to_chan(ms_dict['vis'], ms_dict['field'], spw, ms_dict['line_freqs'][j] , \
                         ms_dict['flagrange'][j]).reshape((1,ms_dict['flagrange'][j].size))
@@ -561,7 +561,8 @@ def contsub(msfile, output_prefix, spw='',flagchannels = '', datacolumn = 'data'
     """
 
     #start of CASA commands
-    uvcontsub(vis=msfile, fitspw=flagchannels, spw=spw,field = '',fitorder=1,solint='int',combine=combine,excludechans=excludechans) #flag spectral lines 
+    
+uvcontsub(vis=msfile, fitspw=flagchannels, spw=spw,field = '',fitorder=1,solint='int',combine=combine,excludechans=excludechans) #flag spectral lines 
 
     print("#Continuum subtracted dataset saved to %s" % msfile+'.contsub') 
 
@@ -1458,8 +1459,12 @@ def self_calibrate(prefix,data_params,selectedVis='vis_avg_shift_rescaled',mode=
       print(vislist)
       #create single image using all visibilities; model column always writes with parallel=False
       os.system('rm -rf '+prefix+'_'+mode+'_'+prevselfcalmode+str(iteration)+'*')
+      if finalimageonly:
+         savemodel=''
+      else:
+         savemodel='modelcolumn'
       tclean_wrapper(vis=vislist, imagename=prefix+'_'+mode+'_'+prevselfcalmode+str(iteration),scales=scales, nsigma=nsigma,
-                  savemodel='modelcolumn',parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
+                  savemodel=savemodel,parallel=parallel,cellsize=cellsize,imsize=imsize,sidelobethreshold=sidelobethreshold,
                   noisethreshold=noisethreshold,lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,nterms=nterms,
                   robust=robust,uvtaper=[uvtaper],threshold=threshold)
 
