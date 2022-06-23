@@ -4,13 +4,11 @@ This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
-SB1:  (2015/09/20)
- 
-LB1: 2015.1.01415.S (2015/10/23)
+SB1: 
 
-LB2: 2015.1.01415.S (2015/10/30)
+LB1: 
 
-reducer: J. Tobin
+reducer: 
 """
 
 """ Starting matter """
@@ -54,7 +52,7 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 
 ### automasking parameters for very extended emission
 #sidelobethreshold=2.0
-#noisethreshold=2.0
+#noisethreshold=3.75
 #lownoisethreshold=1.0
 #smoothfactor=2.0
 ### automasking parameters for compact emission (uncomment to use)
@@ -71,15 +69,18 @@ with open(prefix+'.pickle', 'rb') as handle:
 ###############################################################
 #################### SHIFT PHASE CENTERS ######################
 ###############################################################
+#selectedVis='vis'
+selectedVis='vis_shift'
 
-for i in data_params.keys():
-   data_params[i]['vis_shift']=prefix+'_'+i+'_shift.ms'
-   os.system('rm -rf '+data_params[i]['vis_shift']+'*')
-   fixvis(vis=data_params[i]['vis'], outputvis=data_params[i]['vis_shift'], 
-       field=data_params[i]['field'], 
-       phasecenter='J2000 '+data_params[i]['phasecenter'])
-   fixplanets(vis=data_params[i]['vis_shift'], field=data_params[i]['field'], 
-           direction=data_params[i]['common_dir'])
+if selectedVis == 'vis_shift':
+   for i in data_params.keys():
+      data_params[i]['vis_shift']=prefix+'_'+i+'_shift.ms'
+      os.system('rm -rf '+data_params[i]['vis_shift']+'*')
+      fixvis(vis=data_params[i]['vis'], outputvis=data_params[i]['vis_shift'], 
+         field=data_params[i]['field'], 
+         phasecenter='J2000 '+data_params[i]['phasecenter'])
+      fixplanets(vis=data_params[i]['vis_shift'], field=data_params[i]['field'], 
+         direction=data_params[i]['common_dir'])
 
 ###############################################################
 ############### SCALE DATA RELATIVE TO ONE EB #################
@@ -87,8 +88,8 @@ for i in data_params.keys():
 
 ### Uses scaling from continuum data
 for i in data_params.keys():
-   rescale_flux(data_params[i]['vis_shift'], [data_params[i]['gencal_scale']])
-   data_params[i]['vis_shift_rescaled']=data_params[i]['vis_shift'].replace('.ms','_rescaled.ms')
+   rescale_flux(data_params[i][selectedVis].replace(WD_path,''), [data_params[i]['gencal_scale']])
+   data_params[i]['vis_rescaled']=data_params[i][selectedVis].replace('.ms','_rescaled.ms')
 
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -99,15 +100,17 @@ with open(prefix+'.pickle', 'wb') as handle:
 
 ### Gain tables and spw mapping saved to data dictionaries during selfcal and used as arguments here
 for i in data_params.keys():
-   applycal(vis=data_params[i]['vis_shift_rescaled'], spw='', 
-         gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp='linearPD', 
+   n_tables=len(data_params[i]['selfcal_tables'])
+   interp_list=['linearPD']*n_tables
+   applycal(vis=data_params[i]['vis_rescaled'], spw='', 
+         gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp=interp_list, 
          calwt=True, applymode='calonly')
-   split(vis=data_params[i]['vis_shift_rescaled'],outputvis=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
-   data_params[i]['vis_selfcal']=data_params[i]['vis_shift_rescaled'].replace('.ms','.ms.selfcal')
-
-### cleanup intermediate MS files
-for i in data_params.keys():
-   os.system('rm -rf '+data_params[i]['vis_shift_rescaled']+' '+data_params[i]['vis_shift'])
+   split(vis=data_params[i]['vis_rescaled'],outputvis=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
+   data_params[i]['vis_selfcal']=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal')
+   ### cleanup
+   os.system('rm -rf '+data_params[i]['vis_rescaled'])
+   if selectedVis=='vis_shift':
+      os.system('rm -rf '+data_params[i]['vis_shift'])
 
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -142,14 +145,21 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 
 for i in data_params.keys():
-   os.system('rm -rf '+data_params[i]['vis_contsub']+'.tgz')
-   os.system('tar czf '+data_params[i]['vis_contsub']+'.tgz '+data_params[i]['vis_contsub'])
+      os.system('rm -rf '+data_params[i]['vis_contsub']+'.tgz')
+      os.system('tar czf '+data_params[i]['vis_contsub']+'.tgz '+data_params[i]['vis_contsub'])
 
 ###############################################################
 ############ RUN A FINAL SPECTRAL LINE IMAGE SET ##############
 ###############################################################
 
 
+### generate list of MS files to image
+vislist=[]
+for i in data_params.keys():
+   if 'SB' in i:
+      vislist.append(data_params[i]['vis_contsub'])
+
+### Dictionary defining the spectral line imaging parameters.
 
 ### generate list of MS files to image
 vislist=[]
@@ -196,6 +206,8 @@ image_list_sb = {
 
 ### Loop through the spectral line images and make images.
 
+
+
 for line in image_list_sb:
     for robust in image_list_sb[line]["robust"]:
         imagename = prefix+f'_SB_'+line+'_robust_'+str(robust)
@@ -209,7 +221,23 @@ for line in image_list_sb:
                 image_list_sb[line]["linespw"], SB_scales, threshold=3.0*sigma,
                 imsize=image_list_sb[line]["imsize"], cellsize=image_list_sb[line]["cellsize"],robust=robust, 
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel)
+                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
+                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+    if selectedVis=='vis_shift':
+       tclean_spectral_line_wrapper(data_params['SB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
+        image_list_sb[line]["chanstart"], image_list_sb[line]["chanwidth"], 
+        image_list_sb[line]["nchan"], image_list_sb[line]["linefreq"], 
+        image_list_sb[line]["linespw"], SB_scales, threshold=3.0*sigma,
+        imsize=image_list_sb[line]["imsize"],
+        cellsize=image_list_sb[line]["cellsize"], robust=robust, 
+        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
+        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
+        parallel=parallel,niter=0,
+        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+       os.system('mv '+imagename+'.pb orig_pbimages/')
+       os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
+       os.system('rm -rf '+imagename.replace(prefix,'temporary.pbfix')+'*')
+
 
 for line in image_list:
     print(line)
@@ -217,7 +245,7 @@ for line in image_list:
         imagename = prefix+f'_SBLB_'+line+'_robust_'+str(robust)
 
         sigma = get_sensitivity(data_params, specmode='cube', \
-                spw=[image_list[line]["linespw"]], chan=450)
+                spw=[image_list[line]["linespw"]], chan=450,robust=robust,)
 
         tclean_spectral_line_wrapper(vislist, imagename,
                 image_list[line]["chanstart"], image_list[line]["chanwidth"], 
@@ -226,11 +254,25 @@ for line in image_list:
                 imsize=image_list[line]["imsize"], cellsize=image_list[line]["cellsize"],
                 robust=robust, uvtaper=image_list[line]["uvtaper"],
                 sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel)
-
-
+                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
+                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+    if selectedVis=='vis_shift':
+       tclean_spectral_line_wrapper(data_params['LB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
+        image_list[line]["chanstart"], image_list[line]["chanwidth"], 
+        image_list[line]["nchan"], image_list[line]["linefreq"], 
+        image_list[line]["linespw"][1], LB_scales, threshold=3.0*sigma,
+        imsize=image_list[line]["imsize"],
+        cellsize=image_list[line]["cellsize"],
+        robust=robust, uvtaper=image_list[line]["uvtaper"],
+        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
+        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
+        parallel=parallel,
+        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+       os.system('mv '+imagename+'.pb orig_pbimages/')
+       os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
+       os.system('rm -rf '+imagename.replace(prefix,'temporary.pbfix')+'*')
 ###############################################################
-########################### CLEANUP ###########################
+################ CLEANUP AND FITS CONVERSION ##################
 ###############################################################
 
 
@@ -243,7 +285,12 @@ os.system("rm -rf *.pbcor* *.fits")
 
 imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
-   impbcor(imagename=image,pbimage=image.replace('image','pb'),outfile=image.replace('image','pbcor'))
+   if selectedVis=='vis_shift':
+       immath(imagename=[image,image.replace('image', 'pb')],expr='IM0/IM1',outfile=image.replace('image', 'pbcor'),imagemd=image)
+   else:
+       impbcor(imagename=image, pbimage=image.replace('image', 'pb'),
+            outfile=image.replace('image', 'pbcor'))
+
    exportfits(imagename=image.replace('image','pbcor'),fitsimage=image.replace('image','pbcor')+'.fits',overwrite=True,dropdeg=True)
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
 
@@ -257,20 +304,19 @@ imagelist=glob.glob('*.pb') + glob.glob('*.pb.tt0')
 for image in imagelist:
    exportfits(imagename=image,fitsimage=image+'.fits',overwrite=True,dropdeg=True)
    os.system('gzip '+image+'.fits')
-
-
 ###############################################################
 ################# Make Plots of Everything ####################
 ###############################################################
 import sys
-sys.argv = ['../edisk/plot_final_images_SBLB.py',prefix]
+sys.argv = ['../edisk/plot_final_images_SBLB.py', prefix]
 execfile('../edisk/plot_final_images_SBLB.py')
-
 
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *rescaled.ms.*')
 os.system('rm -rf scale*')
-os.system('rm -rf Temp*')
+
+### Remove extra image products
+os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
 
 ### Make a directory to put the final products
 os.system('rm -rf export')
@@ -279,5 +325,4 @@ os.system('mv *.fits export/')
 os.system('mv *.fits.gz export/')
 os.system('mv *.tgz export/')
 os.system('mv *.pdf export/')
-
 
