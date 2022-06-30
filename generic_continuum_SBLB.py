@@ -295,9 +295,9 @@ for i in data_params.keys():
    export_MS(data_params[i]['vis_avg_shift'])
    export_vislist.append(data_params[i]['vis_avg_shift'].replace('.ms','.vis.npz'))
 
-if not skip_plots:
-    ### Plot deprojected visibility profiles for all data together """
-    plot_deprojected(export_vislist,
+
+### Plot deprojected visibility profiles for all data together """
+plot_deprojected(export_vislist,
                      fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
                      show_err=False,outfile='amp-vs-uv-distance-pre-selfcal.png')
 
@@ -1015,9 +1015,7 @@ for i in data_params.keys():
    export_MS(data_params[i]['vis_avg_shift_selfcal'])
    export_vislist.append(data_params[i]['vis_avg_shift_selfcal'].replace('.ms','.vis.npz'))
 
-if not skip_plots:
-    ### Plot deprojected visibility profiles for all data together """
-    plot_deprojected(export_vislist,
+plot_deprojected(export_vislist,
                      fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
                      show_err=False,outfile='amp-vs-uv-distance-post-selfcal.png')
 

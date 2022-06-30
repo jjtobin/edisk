@@ -188,6 +188,131 @@ def flagchannels_from_contdotdat(ms_dict):
 
     return flagchannels_string
 
+def get_fitspw(msdict,output_prefix):
+
+    if 'contdotdat' in ms_dict:
+        print("# cont.dat file found, adding lines identified by the ALMA pipeline.")
+        contdot_dat_fitspw_string = fitspw_from_contdotdat(ms_dict)
+
+        # Merge the two strings together properly. First create (N,2) arrays of (start flagging, stop flagging) channels and store them in
+        # dictionaries where the keys are the SPWs.
+
+        basic_dict = dict([line.split(":") for line in flagchannels_string.split()])
+        for spw in basic_dict: 
+            basic_dict[spw] = basic_dict[spw].split(',')[0].split(';')
+            for i in range(len(basic_dict[spw])): 
+                basic_dict[spw][i] = basic_dict[spw][i].split('~') 
+            basic_dict[spw] = numpy.array(basic_dict[spw], dtype=int) 
+
+        cont_dict = dict([line.split(":") for line in contdot_dat_flagchannels_string.split()])
+        for spw in cont_dict:
+            cont_dict[spw] = cont_dict[spw].split(',')[0].split(';')
+            for i in range(len(cont_dict[spw])):
+                cont_dict[spw][i] = cont_dict[spw][i].split('~')
+            cont_dict[spw] = numpy.array(cont_dict[spw], dtype=int)
+
+        # Now merge those two dictionaries into one.
+
+        keys = np.unique(np.concatenate((np.array(list(basic_dict.keys())), np.array(list(cont_dict.keys())))))
+        merged_dict = {}
+        for key in keys:
+            if key in basic_dict and key not in cont_dict:
+                merged_dict[key] = basic_dict[key].flatten()
+            elif key in cont_dict and key not in basic_dict:
+                merged_dict[key] = cont_dict[key].flatten()
+            else:
+                merged_dict[key] = numpy.concatenate((basic_dict[key],cont_dict[key]), axis=0)
+
+                # Now make sure we remove any overlap in (start, stop) channels. E.g. if we have (0, 10) and (6, 11) we want to replace that with 
+                # just (0, 11).
+
+                chans = list(merged_dict[key][merged_dict[key][:,0].argsort(),:].flatten())
+
+                i = 1
+                while True:
+                    if i >= len(chans)-1 or len(chans) == 2:
+                        break
+
+                    if chans[i] > chans[i+1]:
+                        chans.pop(i + 1)
+                        if chans[i+1] > chans[i]:
+                            chans.pop(i)
+                        else:
+                            chans.pop(i+1)
+                    else:
+                        i += 2
+
+
+                merged_dict[key] = chans
+
+        # Finally, recreate the string.
+
+        flagchannels_string = ''
+        for key in merged_dict.keys():
+            flagchannels_string += key+":"
+
+            for i in range(0,len(merged_dict[key]),2):
+                if i > 0:
+                    flagchannels_string += ';'
+                flagchannels_string += '%d~%d' % (merged_dict[key][i], merged_dict[key][i+1])
+
+            flagchannels_string += ", "
+    flagchannels_string=flagchannels_string[:-2]
+    print("# Flagchannels input string for %s: \'%s\'" % (ms_dict['name'], flagchannels_string))
+
+    return flagchannels_string
+
+def fitspw_from_contdotdat(ms_dict):
+    """
+    Generates a string with the list of lines identified by the cont.dat file from the ALMA pipeline, that need to be flagged.
+
+    Parameters
+    ==========
+    ms_dict: Dictionary of information about measurement set
+
+    Returns
+    =======
+    String of channels to be flagged, in a format that can be passed to the spw parameter in CASA's flagdata task. 
+    """
+    contdotdat = parse_contdotdat(ms_dict['contdotdat'], ms_dict['orig_spw_map'])
+
+    fitspw_string = ''
+    for j,spw in enumerate(contdotdat):
+
+        #fitspw_string += '%d:' % (spw)
+        if fitspw_string !='':
+           fitspw_string=fitspw_string[:-1]
+           fitspw_string += ',%d:' % (spw)
+        else:
+           fitspw_string += '%d:' % (spw)
+        tb.open(ms_dict['vis']+'/SPECTRAL_WINDOW')
+        nchan = tb.getcol('CHAN_FREQ', startrow = spw, nrow = 1).size
+        tb.close()
+
+        chans = np.array([])
+        for k in range(contdotdat[spw].shape[0]):
+            print(spw, contdotdat[spw][k])
+
+            chans = np.concatenate((LSRKfreq_to_chan(ms_dict['vis'], ms_dict['field'], spw, contdotdat[spw][k]),chans))
+
+            """
+            if flagchannels_string == '':
+
+                flagchannels_string+='%d:%d~%d' % (spw, np.min([chans[0], chans[1]]), np.max([chans[0], chans[1]]))
+            else:
+                flagchannels_string+=', %d:%d~%d' % (spw, np.min([chans[0], chans[1]]), np.max([chans[0], chans[1]]))
+
+            """
+
+        chans = np.sort(chans)
+
+        for i in range(0,chans.size-1,2):
+            fitspw_string += '%d~%d;' % (chans[i], chans[i+1])
+
+    fitspw_string=fitspw_string[:-1]
+    print("# Flagchannels input string for %s from cont.dat file: \'%s\'" % (ms_dict['name'], fitspw_string))
+
+    return fitspw_string
 
 
 def get_flagchannels(ms_dict, output_prefix):
@@ -664,6 +789,44 @@ cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel='',pblimit=
                  parallel=False,
                  phasecenter=phasecenter)
     
+
+def tclean_fill_model_column(vis, imagename, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,parallel=False,nterms=2,
+cyclefactor=3,uvrange='',threshold='0.0Jy',phasecenter='',startmodel='',pblimit=0.1,pbmask=0.1):
+    print("Running tclean to fill the model column...")
+    tclean(vis= vis, 
+           imagename = imagename, 
+           specmode = 'mfs', 
+           deconvolver = 'mtmfs',
+           scales = scales, 
+           weighting='briggs', 
+           robust = robust,
+           gain = gain,
+           imsize = imsize,
+           cell = cellsize, 
+           smallscalebias = smallscalebias, #set to CASA's default of 0.6 unless manually changed
+           niter = 0, 
+           interactive = False,
+           nsigma=0.0, 
+           cycleniter = cycleniter,
+           cyclefactor = cyclefactor, 
+           uvtaper = uvtaper, 
+           usemask='user',
+           savemodel = 'modelcolumn',
+           sidelobethreshold=sidelobethreshold,
+           smoothfactor=smoothfactor,
+           pbmask=pbmask,
+           pblimit=pblimit,
+           calcres = False,
+           calcpsf = False,
+           restart = True,
+           nterms = nterms,
+           uvrange=uvrange,
+           threshold=threshold,
+           parallel=False,
+           phasecenter=phasecenter)
+ 
+
+
 def tclean_spectral_line_wrapper(vis, imagename, start, width, nchan, restfreq, spw, scales, smallscalebias = 0.6, mask = '', nsigma=5.0, imsize = None, cellsize = None, interactive = False, robust = 0.5, gain = 0.1, niter = 50000, cycleniter = 300, uvtaper = [], savemodel = 'none', sidelobethreshold=3.0,smoothfactor=1.0,noisethreshold=5.0,lownoisethreshold=1.5,
 parallel=False,cyclefactor=3,threshold='0.0Jy',uvrange='',weighting='briggsbwtaper',phasecenter=''):
 
@@ -1159,6 +1322,9 @@ def deproject_vis(data, bins=np.array([0.]), incl=0., PA=0., offx=0., offy=0.,
     return output
 
 def plot_deprojected(filelist, incl = 0, PA = 0, offx = 0, offy = 0, fluxscale = None, uvbins = None, show_err = True,outfile=''):
+    if outfile !='':
+       import matplotlib
+       matplotlib.use('Agg')
     """
     Plots real and imaginary deprojected visibilities from a list of .npz files
 
@@ -1225,6 +1391,8 @@ def plot_deprojected(filelist, incl = 0, PA = 0, offx = 0, offy = 0, fluxscale =
     ax[1].set_ylabel('average imag [Jy]')
     ax[0].legend(fontsize=4)
     if outfile !='':
+       import matplotlib
+       matplotlib.use('Agg')
        plt.savefig(outfile,dpi=200.0)
     plt.show(block = False)
     

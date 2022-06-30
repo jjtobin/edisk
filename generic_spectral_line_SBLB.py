@@ -333,7 +333,7 @@ for line in image_list:
         robust=robust, uvtaper=image_list[line]["uvtaper"],
         sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
         lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
-        parallel=parallel,
+        parallel=parallel,niter=0,
         phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
        os.system('mv '+imagename+'.pb orig_pbimages/')
        os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')

@@ -181,8 +181,8 @@ image_list = {
             nchan=60, linefreq='220.39868420GHz', linespw=['2','4','4','4','4','4'], 
             robust=[0.5],uvtaper=['1500klambda'],imsize=3000,cellsize='0.01arcsec'),
         ### 12CO images
-        "12CO":dict(chanstart='-20km/s', chanwidth='0.65km/s', 
-            nchan=100, linefreq='230.538GHz', linespw=['4','1','1','1','1','1'],
+        "12CO":dict(chanstart='-63km/s', chanwidth='0.65km/s', 
+            nchan=215, linefreq='230.538GHz', linespw=['4','1','1','1','1','1'],
             robust=[0.5],uvtaper=['1500klambda'],imsize=3000,cellsize='0.01arcsec'),
         }
 image_list_sb = {
@@ -195,8 +195,8 @@ image_list_sb = {
             nchan=120, linefreq='220.39868420GHz', linespw='2', 
             robust=[0.5],imsize=1600,cellsize='0.025arcsec'),
         ### 12CO images
-        "12CO":dict(chanstart='-10km/s', chanwidth='0.65km/s', 
-            nchan=70, linefreq='230.538GHz', linespw='4',
+        "12CO":dict(chanstart='-63km/s', chanwidth='0.65km/s', 
+            nchan=215, linefreq='230.538GHz', linespw='4',
             robust=[0.5],imsize=1600,cellsize='0.025arcsec'),
         ### SO Images
         "SO":dict(chanstart='-5.5km/s', chanwidth='0.168km/s', 
@@ -266,7 +266,7 @@ for line in image_list:
         robust=robust, uvtaper=image_list[line]["uvtaper"],
         sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
         lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
-        parallel=parallel,
+        parallel=parallel,niter=0,
         phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
        os.system('mv '+imagename+'.pb orig_pbimages/')
        os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
