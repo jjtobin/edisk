@@ -3,15 +3,20 @@ eDisk data reduction script
 This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
+SCRIPT REQUIRES CASA >6.4 TO WORK AROUND GAINCAL BUG
 
 Datasets calibrated (in order of date observed):
-SB1: 
+SB1: 2019.A.00034.S uid___A002_Xfa2f45_X14835
  
-LB1: 
-     
-LB2: 
+SB2: 2019.A.00034.S uid___A002_Xfa5545_Xa6f
 
-reducer: 
+LB1: 2015.1.01512.S uid___A002_Xac5575_X8ed9
+     
+LB2: 2015.1.01512.S uid___A002_Xac9e3c_X8bb
+
+LB3: 2015.1.01512.S uid___A002_Xc49eba_Xa51
+
+reducer: John Tobin
 """
 
 ### Import statements
@@ -910,7 +915,7 @@ if not skip_plots:
 
 ### Changing self-cal mode here to ap, see use of prevselfcalmode to ensure proper split
 iteration=4
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='200s',
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='300s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='scan,spw',smoothfactor=2.0,imsize=3000)
 
@@ -919,6 +924,21 @@ if not skip_plots:
        plotms(vis=data_params[i][selectedVis].replace('.ms','_LB+SB_ap'+str(iteration)+'.g'), xaxis='time',
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
+
+#OphIRS63_LB+SB_p4.image.tt0
+#Beam 0.048 arcsec x 0.028 arcsec (52.81 deg)
+#Flux inside disk mask: 348.27 mJy
+#Peak intensity of source: 7.93 mJy/beam
+#rms: 1.29e-02 mJy/beam
+#Peak SNR: 613.53
+
+#OphIRS63_LB+SB_p4_post.image.tt0
+#Beam 0.049 arcsec x 0.029 arcsec (54.05 deg)
+#Flux inside disk mask: 339.69 mJy
+#Peak intensity of source: 8.21 mJy/beam
+#rms: 1.28e-02 mJy/beam
+#Peak SNR: 638.72
+
 
 #OphIRS63_LB+SB_p6.image.tt0
 #Beam 0.041 arcsec x 0.025 arcsec (54.00 deg)
@@ -944,6 +964,17 @@ if not skip_plots:
        plotms(vis=data_params[i][selectedVis].replace('.ms','_LB+SB_ap'+str(iteration)+'.g'), xaxis='time',
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
+
+
+#OphIRS63_LB+SB_ap5.image.tt0
+#Beam 0.049 arcsec x 0.029 arcsec (54.05 deg)
+#Flux inside disk mask: 342.59 mJy
+#Peak intensity of source: 8.19 mJy/beam
+#rms: 1.28e-02 mJy/beam
+#Peak SNR: 639.41
+
+
+
 #OphIRS63_LB+SB_ap7.image.tt0
 #Beam 0.041 arcsec x 0.025 arcsec (55.82 deg)
 #Flux inside disk mask: 300.15 mJy

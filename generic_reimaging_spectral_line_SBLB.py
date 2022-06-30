@@ -48,7 +48,8 @@ smoothfactor=1.0
 
 import glob
 
-
+selectedVis='vis'   # pick if the original calibration did not use the shifted visibilities (check scripts)
+#selectedVis='vis_shift'    # pick if the original calibration used shifted visibilities 
 
 #pick up extracted MSes from the archived data
 vislist=glob.glob('*spectral_line.ms')
