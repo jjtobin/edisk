@@ -19,6 +19,7 @@ reducer: Sacha Gavino
 
 """ Starting matter """
 #sys.path.append('/home/casa/contrib/AIV/science/analysis_scripts/') #CHANGE THIS TO YOUR PATH TO THE SCRIPTS!
+#sys.path.append('/users/thunter/AIV/science/analysis_scripts/')   
 import analysisUtils as au
 import analysisUtils as aU
 import string
@@ -108,15 +109,15 @@ with open(prefix+'.pickle', 'wb') as handle:
 for i in data_params.keys():
    n_tables=len(data_params[i]['selfcal_tables'])
    interp_list=['linearPD']*n_tables
-   applycal(vis=data_params[i]['vis_rescaled'], spw='', 
+   applycal(vis=data_params[i]['vis_rescaled'].replace(WD_path,''), spw='', 
          gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp=interp_list, 
          calwt=True, applymode='calonly')
-   split(vis=data_params[i]['vis_rescaled'],outputvis=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
-   data_params[i]['vis_selfcal']=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal')
+   split(vis=data_params[i]['vis_rescaled'].replace(WD_path,''),outputvis=data_params[i]['vis_rescaled'].replace(WD_path,'').replace('.ms','.ms.selfcal'),datacolumn='corrected')
+   data_params[i]['vis_selfcal']=data_params[i]['vis_rescaled'].replace(WD_path,'').replace('.ms','.ms.selfcal')
    ### cleanup
-   os.system('rm -rf '+data_params[i]['vis_rescaled'])
+   os.system('rm -rf '+data_params[i]['vis_rescaled'].replace(WD_path,''))
    if selectedVis=='vis_shift':
-      os.system('rm -rf '+data_params[i]['vis_shift'])
+      os.system('rm -rf '+data_params[i]['vis_shift'].replace(WD_path,''))
 
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -129,18 +130,19 @@ with open(prefix+'.pickle', 'wb') as handle:
 ### Get channels to exclude for continuum fitting (same as the ones 
 ### we flagged for doing making continuum MS)
 for i in data_params.keys():
-   flagchannels_string = get_flagchannels(data_params[i], prefix)
-   print(flagchannels_string)
+   #flagchannels_string = get_flagchannels(data_params[i], prefix)
+   #print(flagchannels_string)
 
    ### Get spws for argument list to uvcontsub
    spws_string = get_contsub_spws_indivdual_ms(data_params[i], prefix,only_cont_spws=True)
    print(spws_string)
 
    ### Run uvcontsub on combined, self-cal applied dataset; THIS WILL TAKE MANY HOURS PER EB
-   contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True, combine='spw')
+   #contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True, combine='spw')
+   fitspw_string=fitspw_from_contdotdat(data_params[i])
    os.system('rm -rf '+prefix+'_'+i+'_spectral_line.ms')  ### remove existing spectral line MS if present
-   os.system('mv '+data_params[i]['vis_selfcal'].replace('.selfcal','.selfcal.contsub')+' '+prefix+'_'+i+'_spectral_line.ms')
-   os.system('rm -rf '+data_params[i]['vis_selfcal'])
+   uvcontsub(vis=data_params[i]['vis_selfcal'],spw=spws_string,fitspw=fitspw_string,fitorder=1)
+   os.system('mv '+data_params[i]['vis_selfcal']+'.contsub '+prefix+'_'+i+'_spectral_line.ms')
    data_params[i]['vis_contsub']=prefix+'_'+i+'_spectral_line.ms'
 
 with open(prefix+'.pickle', 'wb') as handle:
@@ -181,47 +183,45 @@ for i in data_params.keys():
 
 image_list = {
         ### C18O images
-        "C18O":dict(chanstart='-12km/s', chanwidth='0.167km/s',
-            nchan=120, linefreq='219.56035410GHz', linespw='3',
+        "C18O":dict(chanstart='-20km/s', chanwidth='0.167km/s', 
+            nchan=240, linefreq='219.56035410GHz', linespw='3',
             robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 13CO images
-        "13CO":dict(chanstart='-12km/s', chanwidth='0.167km/s',
-            nchan=120, linefreq='220.39868420GHz', linespw='1', 
+        "13CO":dict(chanstart='-20km/s', chanwidth='0.167km/s', 
+            nchan=240, linefreq='220.39868420GHz', linespw='1', 
             robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 12CO images
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
             nchan=315, linefreq='230.538GHz', linespw='6',
             robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### SO Images
-        "SO":dict(chanstart='-12km/s', chanwidth='0.167km/s', 
-            nchan=120, linefreq='219.94944200GHz', linespw='2',
+        "SO":dict(chanstart='-30km/s', chanwidth='0.167km/s', 
+            nchan=300, linefreq='219.94944200GHz', linespw='2',
             robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### H2CO 3(2,1)-2(2,0) Images
-        "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-12km/s', 
-            chanwidth='0.167km/s', nchan=120, linefreq='218.76006600GHz', 
+        "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-20km/s', chanwidth='0.167km/s', 
+            nchan=240, linefreq='218.76006600GHz', 
             linespw='0', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### H2CO 3(0,3)-2(0,2) Images
-        "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-12km/s',
-            chanwidth='1.34km/s', nchan=23, linefreq='218.22219200GHz', 
+        "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-23km/s', chanwidth='1.34km/s', nchan=31, linefreq='218.22219200GHz', 
             linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### H2CO 3(2,2)-2(2,1) Images
-        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-12km/s', 
-            chanwidth='1.34km/s', nchan=23, linefreq='218.47563200GHz',
+        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-23km/s', chanwidth='1.34km/s', nchan=31, linefreq='218.47563200GHz',
             linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### c-C3H2 217.82 GHz Images
-        "c-C3H2_217.82":dict(chanstart='-12km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='217.82215GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        "c-C3H2_217.82":dict(chanstart='-23km/s', chanwidth='1.34km/s', nchan=31, 
+             linefreq='217.82215GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### c-C3H2 217.94 GHz Images
-        "cC3H2_217.94":dict(chanstart='-12km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='217.94005GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.015arcsec',uvtaper=['2000klambda']),
+        "cC3H2_217.94":dict(chanstart='-23km/s', chanwidth='1.34km/s', nchan=31, 
+             linefreq='217.94005GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.015arcsec',uvtaper=['2000klambda']),
         ### c-C3H2 218.16 GHz Images
-        "cC3H2_218.16":dict(chanstart='-12km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='218.16044GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        "cC3H2_218.16":dict(chanstart='-23km/s', chanwidth='1.34km/s', nchan=31, 
+             linefreq='218.16044GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### DCN Images
-        "DCN":dict(chanstart='-12km/s', chanwidth='1.34km/s', nchan=23, 
+        "DCN":dict(chanstart='-23km/s', chanwidth='1.34km/s', nchan=31, 
             linefreq='217.2386GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### CH3OH Images
-        "CH3OH":dict(chanstart='-12km/s', chanwidth='1.34km/s', nchan=23, 
+        "CH3OH":dict(chanstart='-23km/s', chanwidth='1.34km/s', nchan=31, 
             linefreq='218.44006300GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### SiO Images
         "SiO":dict(chanstart='-100km/s', chanwidth='1.34km/s', nchan=150, 
