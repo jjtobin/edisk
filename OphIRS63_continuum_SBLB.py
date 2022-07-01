@@ -384,9 +384,13 @@ for i in data_params.keys():
 #   for i in data_params.keys():
 #      data_params[i]['gencal_scale']=gencal_scale[i]
 
-#data_params["LB1"]["gencal_scale"]=0.840
-#data_params["LB2"]["gencal_scale"]=0.927
-#data_params["LB3"]["gencal_scale"]=1.000
+
+data_params["SB1"]["gencal_scale"]=1.000
+data_params["SB2"]["gencal_scale"]=1.001
+data_params["LB1"]["gencal_scale"]=0.988
+data_params["LB2"]["gencal_scale"]=1.023
+data_params["LB3"]["gencal_scale"]=1.024
+
 ###############################################################
 ############### SCALE DATA RELATIVE TO ONE EB #################
 ###############################################################
@@ -973,6 +977,12 @@ if not skip_plots:
 #rms: 1.28e-02 mJy/beam
 #Peak SNR: 639.41
 
+#OphIRS63_LB+SB_ap5_post.image.tt0
+#Beam 0.049 arcsec x 0.029 arcsec (53.81 deg)
+#Flux inside disk mask: 338.45 mJy
+#Peak intensity of source: 8.57 mJy/beam
+#rms: 1.29e-02 mJy/beam
+#Peak SNR: 665.90
 
 
 #OphIRS63_LB+SB_ap7.image.tt0
@@ -989,19 +999,42 @@ if not skip_plots:
 #rms: 1.35e-02 mJy/beam
 #Peak SNR: 526.92
 
-
 iteration=6
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
+               noisemasks=[common_mask,noise_annulus],
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine='scan,spw',smoothfactor=2.0,imsize=3000)
+
+if not skip_plots:
+   for i in data_params.keys():
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_LB+SB_ap'+str(iteration)+'.g'), xaxis='time',
+              yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
+       input("Press Enter key to advance to next MS/Caltable...")
+#OphIRS63_LB+SB_ap6.image.tt0
+#Beam 0.049 arcsec x 0.029 arcsec (53.81 deg)
+#Flux inside disk mask: 340.38 mJy
+#Peak intensity of source: 8.54 mJy/beam
+#rms: 1.28e-02 mJy/beam
+#Peak SNR: 665.08
+
+#OphIRS63_LB+SB_ap6_post.image.tt0
+#Beam 0.047 arcsec x 0.031 arcsec (61.84 deg)
+#Flux inside disk mask: 335.21 mJy
+#Peak intensity of source: 8.79 mJy/beam
+#rms: 1.28e-02 mJy/beam
+#Peak SNR: 685.09
+
+iteration=7
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
                LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,finalimageonly=True,imsize=3000)
 
-#IRS7B_LB+SB_ap7.image.tt0
-#Beam 0.080 arcsec x 0.061 arcsec (80.32 deg)
-#Flux inside disk mask: 375.08 mJy
-#Peak intensity of source: 28.18 mJy/beam
-#rms: 4.59e-02 mJy/beam
-#Peak SNR: 614.12
 
+#OphIRS63_LB+SB_ap7.image.tt0
+#Beam 0.047 arcsec x 0.031 arcsec (61.84 deg)
+#Flux inside disk mask: 340.79 mJy
+#Peak intensity of source: 8.86 mJy/beam
+#rms: 1.28e-02 mJy/beam
+#Peak SNR: 690.17
 
 
 ###Backup gain table list for LB+SB runs
@@ -1039,8 +1072,8 @@ PA, incl = 0, 0
 ### Export MS contents into Numpy save files 
 export_vislist=[]
 for i in data_params.keys():
-   export_MS(data_params[i]['vis_avg_shift_selfcal'])
-   export_vislist.append(data_params[i]['vis_avg_shift_selfcal'].replace('.ms','.vis.npz'))
+   export_MS(data_params[i]['vis_avg_selfcal'])
+   export_vislist.append(data_params[i]['vis_avg_selfcal'].replace('.ms','.vis.npz'))
 
 
 ### Plot deprojected visibility profiles for all data together """
@@ -1049,14 +1082,14 @@ plot_deprojected(export_vislist,
                      show_err=False,outfile='amp-vs-uv-distance-post-selfcal.png')
 
 #################### MANUALLY SET THIS ######################
-refdata='LB3'
+refdata='SB1'
 
-reference=prefix+'_'+refdata+'_selfcal_cont_shift.vis.npz'
+reference=prefix+'_'+refdata+'_initcont_shift_rescaled_LB+SB_ap7.vis.npz'
 for i in data_params.keys():
    print(i)
    if i != refdata:
       data_params[i]['gencal_scale_selfcal']=estimate_flux_scale(reference=reference, 
-                        comparison=prefix+'_'+i+'_selfcal_cont_shift.vis.npz', 
+                        comparison=prefix+'_'+i+'_initcont_shift_rescaled_LB+SB_ap7.vis.npz', 
                         incl=incl, PA=PA)
    else:
       data_params[i]['gencal_scale_selfcal']=1.0
