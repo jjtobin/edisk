@@ -5,9 +5,11 @@ Originally derived from DSHARP reduction scripts
 
 
 Datasets calibrated (in order of date observed):
-SB1: 2019.A.00034.S (2022/06/14)
+SB1: 2013.1.00879.S (2015/01/28)
 
-SB2: 2019.A.00034.S (2022/06/15)
+SB2: 2013.1.00879.S (2015/05/04)
+
+SB3: 2016.1.00598.S (2017/08/18)
      
 LB1: 2019.1.00261.L (2021/10/05)
 
@@ -19,7 +21,17 @@ LB4: 2019.1.00261.L (2021/10/28)
 
 reducer: Y. Aso
 
-Note: solint in SB-only iteration=3 and SBLB iteration=2 was changed from 12.10s to 13.00s to avoid an error about mismatch between solution frequencies and existing caltable frequencies for spw=0.
+Note:
+SB1 do not have DCN but has N2D+.
+SB2 do not have DCN but has N2D+.
+SB3 does not have 13CO, H2CO, SO, and one c-C3H2 but has N2D+.
+A time range was flagged at DV04, Spw 1, LB1 before this script.
+XX was flagged at DA51, Spw 1, LB1 before this script.
+common_dir is the Gaussian peak of LB2 because it is middle among LBs.
+Scale reference is LB4 because it looks middle and most stable. The scale factor ranges from 0.90 to 1.15.
+The spws for continuum emission is limited to 4 spws in SB1 and SB2 to set the number of spws same as SB3. This loses 4% of the total band width.
+Sidelobethreshold was changed to 2.0 for SB-only self-cal. because 2.5 cannot catch any signal or provide worse results.
+The auto-masking parameters are changed for the final imaging with tapering: sidelobethreshold=1.5, smoothfactor=2.0, lownoisethreshold=1.0.
 """
 
 ### Import statements
@@ -41,7 +53,7 @@ execfile('../edisk/reduction_utils3.py', globals())
 ###############################################################
 
 ### Use MPI CASA for faster imaging (start casa with mpicasa -n XX CASA; where XX is the number of processes >= 2)
-parallel = True  
+parallel = True
 
 ### if True, can run script non-interactively if later parameters properly set
 skip_plots = True	
@@ -49,7 +61,7 @@ skip_plots = True
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = {'SB':'IRAS16253-2429', 'LB':'IRAS16253-2429'}
+field   = {'SB1':'IRAS_16253-2422', 'SB2':'IRAS_16253-2422', 'SB3':'IRAS_16253-2429', 'LB':'IRAS16253-2429'}
 prefix  = 'IRAS16253' 
 
 ### always include trailing slashes!!
@@ -66,13 +78,17 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 ### is different for data that were originally part of the DDT than the LP
 ### DDT 2019.A.00034.S SB data need 'spws': '25,31,29,27,33,35,37'
 ### LP  2019.1.00261.L SB data need 'spws': '25,27,29,31,33,35,37'
-pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xfa2f45_X14835.ms',
-                        'spws': '25,31,29,27,33,35,37',
-                        'field': field['SB'],
+pl_data_params={'SB1': {'vis': SB_path+'uid___A002_X9a9a13_X1ff2-2013.1.00879.S-0.5-arcsec.ms',
+                        'spws': '23,21,19,17,25,27,29',
+                        'field': field['SB1'],
                         'column': 'corrected'},
-                'SB2': {'vis': SB_path+'uid___A002_Xfa5545_Xa6f.ms',
-                        'spws': '25,31,29,27,33,35,37',
-                        'field': field['SB'],
+                'SB2': {'vis': SB_path+'uid___A002_X9fddd8_X2738-2013.1.00879.S-0.5-arcsec.ms',
+                        'spws': '23,21,19,17,25,27,29',
+                        'field': field['SB2'],
+                        'column': 'corrected'},
+                'SB3': {'vis': SB_path+'uid___A002_Xc379ac_X21a7-2016.1.00598.S-0.1-arcsec.ms',
+                        'spws': '29,23,27,25',
+                        'field': field['SB3'],
                         'column': 'corrected'},
                 'LB1': {'vis': LB_path+'uid___A002_Xf160b6_Xb810.ms',
                         'spws': '25,27,29,31,33,35,37',
@@ -98,39 +114,57 @@ pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xfa2f45_X14835.ms',
 ### Hot corino lines (or others) will get taken care of by using the cont.dat
 data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'name' : 'SB1',
-                       'field': field['SB'],
-                       'line_spws': np.array([0,1,2,3,4,6,4,4,4,4,4]), # line SPWs, get from listobs
+                       'field': field['SB1'],
+                       'line_spws': np.array([0,1,2,3,0,4,0,0,0,0,5]), # line SPWs, get from listobs
                        'line_freqs': np.array([218.76006600e9,220.39868420e9,219.94944200e9,219.56035410e9,
-                                               217.82215e9,230.538e9,217.94005e9,218.16044e9,217.2386e9,
-                                               218.22219200e9,218.47563200e9]), #restfreqs
-                       'line_names': ['H2CO','13CO','SO','C18O','c-C3H2','12CO','c-C3H2','c-C3H2','DCN','H2CO','H2CO'], #restfreqs
+                                               217.82215e9,230.538e9,217.94005e9,218.16044e9,
+                                               218.22219200e9,218.47563200e9,231.32182830e9]), #restfreqs
+                       'line_names': ['H2CO','13CO','SO','C18O','c-C3H2','12CO','c-C3H2','c-C3H2','H2CO','H2CO','N2Dp'], #restfreqs
                        'flagrange': np.array([[-11.,19.],[-11.,19.],[-11.,19.],[-11.,19.],
                                               [-11.,19.],[-11.,19.],[-11.,19.],[-11.,19.],
                                               [-11.,19.],[-11.,19.],[-11.,19.]]),
-                       'orig_spw_map': {25:0, 31:1, 29:2, 27:3, 33:4, 35:5, 37:6},  # mapping of old spws to new spws (needed for cont.dat to work)
-                       'cont_spws':  np.array([0,1,2,3,4,5,6]),  #spws to use for continuum
-                       'cont_avg_width':  np.array([480,480,480,480,60,60,120]), #n channels to average; approximately aiming for 30 MHz channels
+                       'orig_spw_map': {23:0, 21:1, 19:2, 17:3, 25:4, 27:5, 29:6},  # mapping of old spws to new spws (needed for cont.dat to work)
+#                       'cont_spws':  np.array([0,1,2,3,4,5,6]),  #spws to use for continuum
+#                       'cont_avg_width':  np.array([2,480,480,480,480,480,2]), #n channels to average; approximately aiming for 30 MHz channels
+                       'cont_spws':  np.array([0,2,5,6]),  #spws to use for continuum
+                       'cont_avg_width':  np.array([2,480,480,2]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
-                       'timerange': '2022/06/14/04:15:00~2022/06/14/05:37:00',
-                       'contdotdat' : 'SB/cont-IRAS16253.dat'
+                       'timerange': '2015/01/28/10:09:08~2015/01/28/11:18:15',
                       }, 
                'SB2': {'vis' : WD_path+prefix+'_SB2.ms',
                        'name' : 'SB2',
-                       'field': field['SB'],
-                       'line_spws': np.array([0,1,2,3,4,6,4,4,4,4,4]), # line SPWs, get from listobs
+                       'field': field['SB2'],
+                       'line_spws': np.array([0,1,2,3,0,4,0,0,0,0,5]), # line SPWs, get from listobs
                        'line_freqs': np.array([218.76006600e9,220.39868420e9,219.94944200e9,219.56035410e9,
-                                               217.82215e9,230.538e9,217.94005e9,218.16044e9,217.2386e9,
-                                               218.22219200e9,218.47563200e9]), #restfreqs
-                       'line_names': ['H2CO','13CO','SO','C18O','c-C3H2','12CO','c-C3H2','c-C3H2','DCN','H2CO','H2CO'], #restfreqs
+                                               217.82215e9,230.538e9,217.94005e9,218.16044e9,
+                                               218.22219200e9,218.47563200e9,231.32182830e9]), #restfreqs
+                       'line_names': ['H2CO','13CO','SO','C18O','c-C3H2','12CO','c-C3H2','c-C3H2','H2CO','H2CO','N2Dp'], #restfreqs
                        'flagrange': np.array([[-11.,19.],[-11.,19.],[-11.,19.],[-11.,19.],
                                               [-11.,19.],[-11.,19.],[-11.,19.],[-11.,19.],
                                               [-11.,19.],[-11.,19.],[-11.,19.]]),
-                       'orig_spw_map': {25:0, 31:1, 29:2, 27:3, 33:4, 35:5, 37:6},  # mapping of old spws to new spws (needed for cont.dat to work)
-                       'cont_spws':  np.array([0,1,2,3,4,5,6]),  #spws to use for continuum
-                       'cont_avg_width':  np.array([480,480,480,480,60,60,120]), #n channels to average; approximately aiming for 30 MHz channels
+                       'orig_spw_map': {23:0, 21:1, 19:2, 17:3, 25:4, 27:5, 29:6},  # mapping of old spws to new spws (needed for cont.dat to work)
+                       'cont_spws':  np.array([0,2,5,6]),  #spws to use for continuum
+                       'cont_avg_width':  np.array([2,480,480,2]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
-                       'timerange': '2022/06/15/00:46:30~2022/06/15/02:09:30',
-                       'contdotdat' : 'SB/cont-IRAS16253.dat'
+                       'timerange': '2015/05/04/04:18:28~2015/05/04/05:31:17',
+                      }, 
+               'SB3': {'vis' : WD_path+prefix+'_SB3.ms',
+                       'name' : 'SB3',
+                       'field': field['SB3'],
+                       'line_spws': np.array([0,1,2,1,1,3]), # line SPWs, get from listobs
+                       'line_freqs': np.array([219.56035410e9,
+                                               217.82215e9,230.538e9,217.94005e9,217.2386e9,
+                                               231.32182830e9]), #restfreqs
+                       'line_names': ['C18O','c-C3H2','12CO','c-C3H2','DCN','N2Dp'], #restfreqs
+                       'flagrange': np.array([[-11.,19.],
+                                              [-11.,19.],[-11.,19.],[-11.,19.],[-11.,19.],
+                                              [-11.,19.],]),
+                       'orig_spw_map': {29:0, 23:1, 27:2, 25:3},  # mapping of old spws to new spws (needed for cont.dat to work)
+                       'cont_spws':  np.array([0,1,2,3]),  #spws to use for continuum
+                       'cont_avg_width':  np.array([480,2,240,480]), #n channels to average; approximately aiming for 30 MHz channels
+                       'phasecenter': '',
+                       'timerange': '2017/08/18/04:01:31:29~2017/08/18/02:22:22',
+                       'contdotdat' : 'SB/cont.dat'
                       }, 
                'LB1': {'vis' : WD_path+prefix+'_LB1.ms',
                        'name' : 'LB1',
@@ -307,7 +341,7 @@ for i in data_params.keys():
 
 for i in data_params.keys():
        #################### MANUALLY SET THIS ######################
-       data_params[i]['common_dir']='J2000 16h28m21.61635s -24d36m24.31384s'
+       data_params[i]['common_dir']='J2000 16h28m21.615631s -24d36m24.32560s'
 
 ### save updated data params to a pickle
 
@@ -318,6 +352,7 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 #################### SHIFT PHASE CENTERS ######################
 ###############################################################
+#phase centers already shifted for these data
 
 for i in data_params.keys():
    print(i)
@@ -369,18 +404,20 @@ for i in data_params.keys():
    export_MS(data_params[i]['vis_avg_shift'])
    export_vislist.append(data_params[i]['vis_avg_shift'].replace('.ms','.vis.npz'))
 
-
-### Plot deprojected visibility profiles for all data together """
+if not skip_plots:
+    ### Plot deprojected visibility profiles for all data together """
+    plot_deprojected(export_vislist,
+                     fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
+                     show_err=False)
 plot_deprojected(export_vislist,
                      fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
-                     show_err=False,outfile='amp-vs-uv-distance-pre-selfcal.png')
-
+                     show_err=False,outfile='amp-vs-uvdistance-pre-selfcal.png')
 ### Now inspect offsets by comparing against a reference 
 ### Set reference data using the dictionary key.
 ### Using SB1 as reference because it looks the nicest by far
 
 #################### MANUALLY SET THIS ######################
-refdata='SB2'
+refdata='LB4'
 
 reference=prefix+'_'+refdata+'_initcont_shift.vis.npz'
 for i in data_params.keys():
@@ -393,12 +430,13 @@ for i in data_params.keys():
       data_params[i]['gencal_scale']=1.0
    print(' ')
 
+
 #################### MANUALLY SET THIS ######################
 ##DOES THE AMP VS. UV-DISTANCE LOOK VERY DISSIMILAR BETWEEN DIFFERENT EBS?
 ##IF SO, UNCOMMENT AND RUN THIS BLOCK TO REMOVE SCALING AND PROCEED WITH 2- METHOD PASS
 
-#for i in data_params.keys():
-#   data_params[i]['gencal_scale']=1.0
+for i in data_params.keys():
+   data_params[i]['gencal_scale']=1.0
 
 
 ###############################################################
@@ -413,11 +451,14 @@ for i in data_params.keys():
 #   for i in data_params.keys():
 #      data_params[i]['gencal_scale']=gencal_scale[i]
 
-#data_params["SB1"]["gencal_scale"]=0.956
-#data_params["LB1"]["gencal_scale"]=1.011
-#data_params["LB2"]["gencal_scale"]=1.003
-#data_params["LB3"]["gencal_scale"]=1.000
 
+data_params["SB1"]["gencal_scale"]=1.142
+data_params["SB2"]["gencal_scale"]=0.903
+data_params["SB3"]["gencal_scale"]=0.963
+data_params["LB1"]["gencal_scale"]=0.961
+data_params["LB2"]["gencal_scale"]=0.950
+data_params["LB3"]["gencal_scale"]=1.031
+data_params["LB4"]["gencal_scale"]=1.000
 
 
 ###############################################################
@@ -449,7 +490,7 @@ if not skip_plots:
                      fluxscale=[1.0]*len(export_vislist_rescaled), PA=PA, incl=incl, 
                      show_err=False)
    ### Make sure differences are no longer significant
-   refdata='SB1'
+#   refdata='LB4'  # commented out by Aso to use the same refdata as above.
    reference=prefix+'_'+refdata+'_initcont_shift.vis.npz'
    for i in data_params.keys():
       if i != refdata:
@@ -466,8 +507,8 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 ################ SELF-CALIBRATION PREPARATION #################
 ###############################################################
-selectedVis='vis_avg_rescaled'
-#selectedVis='vis_avg_shift_rescaled'
+#selectedVis='vis_avg_rescaled'
+selectedVis='vis_avg_shift_rescaled'
 
 ### determine best reference antennas based on geometry and flagging
 for i in data_params.keys():
@@ -496,16 +537,18 @@ if not skip_plots:
 #SB_refant   = 'DA43@A035,DV07@A011,DV05@A042' 
 
 ############### CHECK THESE, SHOULD BE FINE #################
-SB_spwmap=[0,0,0,0,0,0,0]
+SB_spwmap=[0,0,0,0]
 SB_contspws = '' 
 
 
 ### Make a list of EBs to image
 vislist=[]
+fieldlist=[]
 for i in data_params.keys():
       if ('LB' in i): # skip over LB EBs if in SB-only mode
          continue
       vislist.append(data_params[i][selectedVis])
+      fieldlist.append(data_params[i]['field'])
 
 
 """ Set up a clean mask """
@@ -527,15 +570,15 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '8.0arcsec']]" % \
 ###################### SELF-CALIBRATION #######################
 ###############################################################
 
-### Initial map to assess DR
+### Initial dirty map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial', 
-               scales=SB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
-               noisethreshold=3.0, robust=0.5, parallel=parallel,cellsize='0.025arcsec',imsize=1600, 
+               scales=SB_scales, parallel=parallel, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, imsize=1600, cellsize='.03arcsec',
+               noisethreshold=3.0, robust=0.5,
                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
 initial_SNR,initial_RMS=estimate_SNR(prefix+'_initial.image.tt0', disk_mask=common_mask, 
                         noise_mask=noise_annulus)
 
-listdict,scantimesdict,integrationsdict,integrationtimesdict,integrationtimes,n_spws,minspw,spwsarray=fetch_scan_times(vislist,[data_params['SB1']['field']])
+listdict,scantimesdict,integrationsdict,integrationtimesdict,integrationtimes,n_spws,minspw,spwsarray=fetch_scan_times(vislist,fieldlist)
 
 solints,gaincal_combine=get_solints_simple(vislist,scantimesdict,integrationtimesdict)
 print('Suggested Solints:')
@@ -548,22 +591,19 @@ print('Suggested nsigma per solint: ')
 print(nsigma_per_solint)
 
 #setup the same number of iterations as suggested solints
-
 #IRAS16253_initial.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.86 mJy
-#Peak intensity of source: 9.94 mJy/beam
-#rms: 2.91e-02 mJy/beam
-#Peak SNR: 341.95
+#Beam 0.168 arcsec x 0.120 arcsec (89.00 deg)
+#Flux inside disk mask: 54.13 mJy
+#Peak intensity of source: 8.21 mJy/beam
+#rms: 3.42e-02 mJy/beam
+#Peak SNR: 239.85
 
 #Suggested Solints:
-#solints = ['inf', 'inf', '42.34s', '12.10s', 'int']
+#['inf', 'inf', '18.14s', 'int']
 #Suggested Gaincal Combine params:
-#gaincal_combine = ['spw,scan', 'spw', 'spw', 'spw', 'spw']
+#['spw,scan', 'spw', 'spw', 'spw']
 #Suggested nsigma per solint: 
-#nsigma_per_solint = [22.8, 13.7, 8.3, 5.0, 3.]
-solints = ['inf', 'inf', '42.34s', '13.0s', 'int']
-
+#[23.34876568   11.78192814  5.94523207  3.        ]
 
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
@@ -577,10 +617,10 @@ solints = ['inf', 'inf', '42.34s', '13.0s', 'int']
 
 ############# USERS MAY NEED TO ADJUST NSIGMA AND SOLINT FOR EACH SELF-CALIBRATION ITERATION ##############
 iteration=0
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',
+               nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,
-               combine=gaincal_combine[iteration])
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine=gaincal_combine[iteration], sidelobethreshold=2.0)
 
 
 ### Plot gain corrections, loop through each
@@ -592,27 +632,25 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 ### Make note of key metrics of image in each round
+
 #IRAS16253_SB-only_p0.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 14.99 mJy
-#Peak intensity of source: 9.99 mJy/beam
-#rms: 3.99e-02 mJy/beam
-#Peak SNR: 333.67
+#Beam 0.500 arcsec x 0.333 arcsec (86.16 deg)
+#Flux inside disk mask: 21.50 mJy
+#Peak intensity of source: 10.30 mJy/beam
+#rms: 3.03e-02 mJy/beam
+#Peak SNR: 340.10
 
 #IRAS16253_SB-only_p0_post.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.14 mJy
-#Peak intensity of source: 10.29 mJy/beam
-#rms: 2.58e-02 mJy/beam
-#Peak SNR: 399.05
-
-
+#Beam 0.500 arcsec x 0.333 arcsec (86.16 deg)
+#Flux inside disk mask: 21.56 mJy
+#Peak intensity of source: 10.34 mJy/beam
+#rms: 2.88e-02 mJy/beam
+#Peak SNR: 359.74
 
 iteration=1
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,
-               combine=gaincal_combine[iteration])
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine=gaincal_combine[iteration], sidelobethreshold=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -622,27 +660,23 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 #IRAS16253_SB-only_p1.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.30 mJy
-#Peak intensity of source: 10.29 mJy/beam
-#rms: 2.55e-02 mJy/beam
-#Peak SNR: 403.09
+#Beam 0.500 arcsec x 0.333 arcsec (86.16 deg)
+#Flux inside disk mask: 20.89 mJy
+#Peak intensity of source: 10.34 mJy/beam
+#rms: 2.76e-02 mJy/beam
+#Peak SNR: 374.39
 
 #IRAS16253_SB-only_p1_post.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.35 mJy
-#Peak intensity of source: 10.53 mJy/beam
-#rms: 2.31e-02 mJy/beam
-#Peak SNR: 455.95
-
-
-
+#Beam 0.500 arcsec x 0.333 arcsec (86.16 deg)
+#Flux inside disk mask: 21.09 mJy
+#Peak intensity of source: 10.67 mJy/beam
+#rms: 2.66e-02 mJy/beam
+#Peak SNR: 401.22
 
 iteration=2
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,
-               combine=gaincal_combine[iteration])
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,combine=gaincal_combine[iteration], sidelobethreshold=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -652,90 +686,32 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 #IRAS16253_SB-only_p2.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.45 mJy
-#Peak intensity of source: 10.51 mJy/beam
-#rms: 2.30e-02 mJy/beam
-#Peak SNR: 457.76
+#Beam 0.500 arcsec x 0.333 arcsec (86.16 deg)
+#Flux inside disk mask: 19.86 mJy
+#Peak intensity of source: 10.66 mJy/beam
+#rms: 2.56e-02 mJy/beam
+#Peak SNR: 416.03
 
 #IRAS16253_SB-only_p2_post.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.45 mJy
-#Peak intensity of source: 10.58 mJy/beam
-#rms: 2.29e-02 mJy/beam
-#Peak SNR: 461.36
-
-
-
-iteration=3
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,
-               combine=gaincal_combine[iteration])
-
-if not skip_plots:
-   for i in data_params.keys():
-     if 'SB' in i:
-       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
-               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
-       input("Press Enter key to advance to next MS/Caltable...")
-
-#IRAS16253_SB-only_p3.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.54 mJy
-#Peak intensity of source: 10.57 mJy/beam
-#rms: 2.29e-02 mJy/beam
-#Peak SNR: 461.95
-
-#IRAS16253_SB-only_p3_post.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.53 mJy
-#Peak intensity of source: 10.64 mJy/beam
-#rms: 2.29e-02 mJy/beam
-#Peak SNR: 464.45
-
-
-iteration=4
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,
-               combine=gaincal_combine[iteration])
-
-if not skip_plots:
-   for i in data_params.keys():
-     if 'SB' in i:
-       plotms(vis=data_params[i][selectedVis].replace('.ms','_SB-only_p'+str(iteration)+'.g'),
-               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
-       input("Press Enter key to advance to next MS/Caltable...")
-
-#IRAS16253_SB-only_p4.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.77 mJy
-#Peak intensity of source: 10.63 mJy/beam
-#rms: 2.28e-02 mJy/beam
-#Peak SNR: 466.49
-
-#IRAS16253_SB-only_p4_post.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.79 mJy
-#Peak intensity of source: 10.65 mJy/beam
-#rms: 2.27e-02 mJy/beam
-#Peak SNR: 468.97
+#Beam 0.500 arcsec x 0.333 arcsec (86.16 deg)
+#Flux inside disk mask: 20.29 mJy
+#Peak intensity of source: 11.08 mJy/beam
+#rms: 2.38e-02 mJy/beam
+#Peak SNR: 464.77
 
 ### Make the final image, will not run another self-calibration
-iteration=5
+iteration=3
 self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration-1],solint=solints[iteration-1],
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,parallel=parallel,
-               combine=gaincal_combine[iteration-1],finalimageonly=True)
+               noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
+               parallel=parallel,combine=gaincal_combine[iteration-1],sidelobethreshold=2.0,finalimageonly=True)
 
-#IRAS16253_SB-only_p5.image.tt0
-#Beam 0.377 arcsec x 0.270 arcsec (81.63 deg)
-#Flux inside disk mask: 15.81 mJy
-#Peak intensity of source: 10.64 mJy/beam
-#rms: 2.27e-02 mJy/beam
-#Peak SNR: 467.96
 
+#IRAS16253_SB-only_p3.image.tt0
+#Beam 0.500 arcsec x 0.333 arcsec (86.16 deg)
+#Flux inside disk mask: 20.07 mJy
+#Peak intensity of source: 11.11 mJy/beam
+#rms: 2.32e-02 mJy/beam
+#Peak SNR: 479.77
 
 for i in data_params.keys():
    if 'SB' in i:
@@ -761,7 +737,7 @@ for i in data_params.keys():
    vislist.append(data_params[i][selectedVis])
    fieldlist.append(data_params[i]['field'])
 
-### Initial map to assess DR
+### Initial dirty map to assess DR
 tclean_wrapper(vis=vislist, imagename=prefix+'_initial_LB+SB',cellsize='0.003arcsec',imsize=6000, 
                scales=LB_scales, sidelobethreshold=2.0, smoothfactor=1.5, nsigma=3.0, 
                noisethreshold=3.0, robust=0.5, parallel=parallel, nterms=1,
@@ -781,20 +757,21 @@ nsigma_per_solint=10**np.linspace(np.log10(nsigma_init),np.log10(3.0),len(solint
 print('Suggested nsigma per solint: ')
 print(nsigma_per_solint)
 
-#IRS7B_LB+SB_dirty.image.tt0
-#Beam 0.119 arcsec x 0.091 arcsec (89.37 deg)
-#Flux inside disk mask: 26.44 mJy
-#Peak intensity of source: 6.36 mJy/beam
-#rms: 1.89e-02 mJy/beam
-#Peak SNR: 336.28
+#IRAS16253_initial_LB+SB.image.tt0
+#Beam 0.100 arcsec x 0.068 arcsec (83.27 deg)
+#Flux inside disk mask: 38.46 mJy
+#Peak intensity of source: 4.51 mJy/beam
+#rms: 1.59e-02 mJy/beam
+#Peak SNR: 284.23
 
+#WARNING, INCONSISTENT NUMBER OF SPWS IN SCANS/MSes
 #Suggested Solints:
-#solints = ['inf', 'inf', '12.10s', 'int']
+#['inf', 'inf', '18.14s', 'int']
 #Suggested Gaincal Combine params:
-#gaincal_combine = ['spw,scan', 'spw', 'spw', 'spw']
+#['spw,scan', 'spw', 'spw', 'spw']
 #Suggested nsigma per solint: 
-#nsigma_per_solint = [22.4, 11.5, 5.9, 3.]
-solints = ['inf', 'inf', '13.0s', 'int']
+#[19.38856709 10.40888541  5.58808162   3.        ]
+
 
 ### Image produced by iter 0 has not selfcal applied, it's used to set the initial model
 ### only images >0 have self-calibration applied
@@ -816,7 +793,7 @@ solints = ['inf', 'inf', '13.0s', 'int']
 iteration=0
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine=gaincal_combine[iteration],parallel=parallel,smoothfactor=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine=gaincal_combine[iteration],smoothfactor=2.0)
 
 
 ### Plot gain corrections, loop through each
@@ -827,23 +804,24 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 #IRAS16253_LB+SB_p0.image.tt0
-#Beam 0.119 arcsec x 0.091 arcsec (89.37 deg)
-#Flux inside disk mask: 29.00 mJy
-#Peak intensity of source: 6.69 mJy/beam
-#rms: 1.81e-02 mJy/beam
-#Peak SNR: 370.25
+#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
+#Flux inside disk mask: 49.41 mJy
+#Peak intensity of source: 4.59 mJy/beam
+#rms: 1.48e-02 mJy/beam
+#Peak SNR: 309.81
 
 #IRAS16253_LB+SB_p0_post.image.tt0
-#Beam 0.119 arcsec x 0.091 arcsec (89.37 deg)
-#Flux inside disk mask: 28.99 mJy
-#Peak intensity of source: 6.75 mJy/beam
-#rms: 1.80e-02 mJy/beam
-#Peak SNR: 374.33
+#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
+#Flux inside disk mask: 45.17 mJy
+#Peak intensity of source: 4.55 mJy/beam
+#rms: 1.46e-02 mJy/beam
+#Peak SNR: 311.96
+
 
 iteration=1
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
                noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine=gaincal_combine[iteration],parallel=parallel,smoothfactor=2.0)
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine=gaincal_combine[iteration],smoothfactor=2.0)
 
 if not skip_plots:
    for i in data_params.keys():
@@ -852,31 +830,77 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 #IRAS16253_LB+SB_p1.image.tt0
-#Beam 0.119 arcsec x 0.091 arcsec (89.37 deg)
-#Flux inside disk mask: 27.69 mJy
-#Peak intensity of source: 6.64 mJy/beam
-#rms: 1.79e-02 mJy/beam
-#Peak SNR: 370.44
+#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
+#Flux inside disk mask: 45.17 mJy
+#Peak intensity of source: 4.55 mJy/beam
+#rms: 1.46e-02 mJy/beam
+#Peak SNR: 311.96
 
 #IRAS16253_LB+SB_p1_post.image.tt0
-#Beam 0.119 arcsec x 0.091 arcsec (89.37 deg)
-#Flux inside disk mask: 27.64 mJy
-#Peak intensity of source: 7.39 mJy/beam
-#rms: 1.76e-02 mJy/beam
-#Peak SNR: 420.31
+#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
+#Flux inside disk mask: 45.30 mJy
+#Peak intensity of source: 5.22 mJy/beam
+#rms: 1.42e-02 mJy/beam
+#Peak SNR: 366.97
 
 
 iteration=2
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration-1],solint=solints[iteration-1],
-               noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
-               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,combine=gaincal_combine[iteration-1],parallel=parallel,smoothfactor=2.0,finalimageonly=True)
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=nsigma_per_solint[iteration],solint=solints[iteration],
+               noisemasks=[common_mask,noise_annulus],
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine=gaincal_combine[iteration],smoothfactor=2.0)
+
+if not skip_plots:
+   for i in data_params.keys():
+       plotms(vis=data_params[i][selectedVis].replace('.ms','_LB+SB_p'+str(iteration)+'.g'),
+               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
+       input("Press Enter key to advance to next MS/Caltable...")
 
 #IRAS16253_LB+SB_p2.image.tt0
-#Beam 0.119 arcsec x 0.091 arcsec (89.37 deg)
-#Flux inside disk mask: 27.19 mJy
-#Peak intensity of source: 7.66 mJy/beam
-#rms: 1.75e-02 mJy/beam
-#Peak SNR: 437.96
+#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
+#Flux inside disk mask: 41.01 mJy
+#Peak intensity of source: 5.30 mJy/beam
+#rms: 1.40e-02 mJy/beam
+#Peak SNR: 379.06
+
+#IRAS16253_LB+SB_p2_post.image.tt0
+#Beam 0.102 arcsec x 0.070 arcsec (83.77 deg)
+#Flux inside disk mask: 40.91 mJy
+#Peak intensity of source: 5.52 mJy/beam
+#rms: 1.40e-02 mJy/beam
+#Peak SNR: 394.81
+
+
+iteration=3
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,prevselfcalmode='p',selfcalmode='ap',nsigma=3.0,solint='inf',
+               noisemasks=[common_mask,noise_annulus],
+               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine=gaincal_combine[iteration],smoothfactor=2.0)
+#IRAS16253_LB+SB_p3.image.tt0
+#Beam 0.102 arcsec x 0.070 arcsec (83.25 deg)
+#Flux inside disk mask: 39.80 mJy
+#Peak intensity of source: 5.75 mJy/beam
+#rms: 1.45e-02 mJy/beam
+#Peak SNR: 396.72
+
+#IRAS16253_LB+SB_p3_post.image.tt0
+#Beam 0.103 arcsec x 0.070 arcsec (82.87 deg)
+#Flux inside disk mask: 37.66 mJy
+#Peak intensity of source: 5.95 mJy/beam
+#rms: 1.46e-02 mJy/beam
+#Peak SNR: 406.92
+
+iteration=4
+self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
+               noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
+               LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,combine=gaincal_combine[iteration-1],smoothfactor=2.0,finalimageonly=True)
+
+
+#IRAS16253_LB+SB_ap4.image.tt0
+#Beam 0.103 arcsec x 0.070 arcsec (82.87 deg)
+#Flux inside disk mask: 36.62 mJy
+#Peak intensity of source: 5.96 mJy/beam
+#rms: 1.46e-02 mJy/beam
+#Peak SNR: 408.46
+
 
 
 ###Backup gain table list for LB+SB runs
@@ -893,7 +917,8 @@ with open(prefix+'.pickle', 'wb') as handle:
 ###############################################################
 ############ SHIFT PHASE CENTERS TO CHECK SCALING #############
 ###############################################################
-
+#no need to shipf, selfcal'ed data are already shifted
+'''
 for i in data_params.keys():
    print(i)
    data_params[i]['vis_avg_shift_selfcal']=prefix+'_'+i+'_selfcal_cont_shift.ms'
@@ -904,7 +929,7 @@ for i in data_params.keys():
    ### fix planets may throw an error, usually safe to ignore
    fixplanets(vis=data_params[i]['vis_avg_shift_selfcal'], field=data_params[i]['field'], 
            direction=data_params[i]['common_dir'])
-
+'''
 ###############################################################
 ############### PLOT UV DATA TO CHECK SCALING #################
 ###############################################################
@@ -915,22 +940,24 @@ PA, incl = 0, 0
 ### Export MS contents into Numpy save files 
 export_vislist=[]
 for i in data_params.keys():
-   export_MS(data_params[i]['vis_avg_shift_selfcal'])
-   export_vislist.append(data_params[i]['vis_avg_shift_selfcal'].replace('.ms','.vis.npz'))
+   export_MS(data_params[i]['vis_avg_selfcal'])
+   export_vislist.append(data_params[i]['vis_avg_selfcal'].replace('.ms','.vis.npz'))
 
+
+    ### Plot deprojected visibility profiles for all data together """
 plot_deprojected(export_vislist,
                      fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
                      show_err=False,outfile='amp-vs-uv-distance-post-selfcal.png')
 
 #################### MANUALLY SET THIS ######################
-refdata='SB2'
+refdata='LB4'
 
-reference=prefix+'_'+refdata+'_selfcal_cont_shift.vis.npz'
+reference=prefix+'_'+refdata+'_initcont_shift_rescaled_LB+SB_ap4.vis.npz'
 for i in data_params.keys():
    print(i)
    if i != refdata:
       data_params[i]['gencal_scale_selfcal']=estimate_flux_scale(reference=reference, 
-                        comparison=prefix+'_'+i+'_selfcal_cont_shift.vis.npz', 
+                        comparison=prefix+'_'+i+'_initcont_shift_rescaled_LB+SB_ap4.vis.npz', 
                         incl=incl, PA=PA)
    else:
       data_params[i]['gencal_scale_selfcal']=1.0
@@ -995,14 +1022,14 @@ for robust in [-2.0,-1.0,-0.5,0.0,0.5,1.0,2.0]:
     exportfits(imagename=imagename, fitsimage=imagename+'.fits',overwrite=True,dropdeg=True)
 
 for taper in ['1000klambda', '2000klambda', '3000klambda']:
-  for robust in [-2.0,0.5,2.0]:
+  for robust in [-2.0, 0.5, 2.0]:
     print('Generate Robust '+str(robust)+' taper '+taper+' image')
     imagename = prefix+'_SBLB_continuum_robust_'+str(robust)+'_taper_'+taper
     os.system('rm -rf '+imagename+'*')
     sigma = get_sensitivity(data_params, specmode='mfs',
                             imsize=imsize, robust=robust, cellsize=cell,uvtaper=taper)
-    tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=2.0, 
-                   smoothfactor=1.5, scales=scales, threshold=2.0*sigma, 
+    tclean_wrapper(vis=vislist, imagename=imagename, sidelobethreshold=1.5, 
+                   smoothfactor=2.0, lownoisethreshold=1.0, scales=scales, threshold=2.0*sigma, 
                    noisethreshold=3.0, robust=robust, parallel=parallel, 
                    cellsize=cell, imsize=imsize, nterms=1,
                    uvtaper=[taper], uvrange='',
@@ -1045,9 +1072,3 @@ os.system('rm -rf *rescaled.ms.flagversions')
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *initcont*.ms')
 os.system('rm -rf *initcont*.ms.flagversions')
-
-
-
-
-
-
