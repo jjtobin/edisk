@@ -4,11 +4,19 @@ This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
-SB1: 
+SB1: 'uid___A002_Xfa2f45_X14835.ms'
 
-LB1: 
+SB2: 'uid___A002_Xfa5545_Xa6f.ms'
 
-reducer: 
+LB1: 'uid___A002_Xf160b6_Xb810.ms'
+     
+LB2: 'uid___A002_Xf20692_X11748.ms'
+
+LB3: 'uid___A002_Xf20692_X157a0.ms'
+
+LB4: 'uid___A002_Xf20692_Xd11e.ms'
+
+reducer: Alejandro Santamaria Miranda casa -r 6.2.1-7-pipeline-2021.2.0.128
 """
 
 """ Starting matter """
@@ -21,7 +29,7 @@ import glob
 import numpy as np
 import sys
 import pickle
-execfile('../edisk/reduction_utils3.py', globals())
+execfile('../reduction_utils3.py', globals())
 
 
 ###############################################################
@@ -33,16 +41,16 @@ execfile('../edisk/reduction_utils3.py', globals())
 parallel=True
 
 ### if True, can run script non-interactively if later parameters properly set
-skip_plots = True	
+skip_plots = False
 
-### Add field names (corresponding to the field in the MS) here and prefix for 
+### Add field names (corresponding to the field in the MS) here and prefix for
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = {'SB':'16263_2422', 'LB':'GSS30IRS3'}
-prefix  = 'GSS30IRS3' 
+field   = {'SB':'GSS30IRS3', 'LB':'GSS30IRS3'}
+prefix  = 'GSS30IRS3'
 
 ### always include trailing slashes!!
-WD_path = '/lustre/aoc/projects/edisk/GSS30IRS3/'
+WD_path =  '/lustre/cv/projects/edisk/GSS30IRS3/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -58,7 +66,7 @@ LB_scales = [0, 5, 30]  #[0, 5, 30, 100, 200]
 ### automasking parameters for compact emission (uncomment to use)
 sidelobethreshold=2.0
 noisethreshold=4.0
-lownoisethreshold=1.5 
+lownoisethreshold=1.5
 smoothfactor=1.0
 
 #read in final data_params from continuum to ensure we get the phase centers for each MS
@@ -69,17 +77,17 @@ with open(prefix+'.pickle', 'rb') as handle:
 ###############################################################
 #################### SHIFT PHASE CENTERS ######################
 ###############################################################
-#selectedVis='vis'
-selectedVis='vis_shift'
+selectedVis='vis'
+#selectedVis='vis_shift'
 
 if selectedVis == 'vis_shift':
    for i in data_params.keys():
       data_params[i]['vis_shift']=prefix+'_'+i+'_shift.ms'
       os.system('rm -rf '+data_params[i]['vis_shift']+'*')
-      fixvis(vis=data_params[i]['vis'], outputvis=data_params[i]['vis_shift'], 
-         field=data_params[i]['field'], 
+      fixvis(vis=data_params[i]['vis'], outputvis=data_params[i]['vis_shift'],
+         field=data_params[i]['field'],
          phasecenter='J2000 '+data_params[i]['phasecenter'])
-      fixplanets(vis=data_params[i]['vis_shift'], field=data_params[i]['field'], 
+      fixplanets(vis=data_params[i]['vis_shift'], field=data_params[i]['field'],
          direction=data_params[i]['common_dir'])
 
 ###############################################################
@@ -102,8 +110,8 @@ with open(prefix+'.pickle', 'wb') as handle:
 for i in data_params.keys():
    n_tables=len(data_params[i]['selfcal_tables'])
    interp_list=['linearPD']*n_tables
-   applycal(vis=data_params[i]['vis_rescaled'], spw='', 
-         gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp=interp_list, 
+   applycal(vis=data_params[i]['vis_rescaled'], spw='',
+         gaintable=data_params[i]['selfcal_tables'],spwmap=data_params[i]['selfcal_spwmap'], interp=interp_list,
          calwt=True, applymode='calonly')
    split(vis=data_params[i]['vis_rescaled'],outputvis=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal'),datacolumn='corrected')
    data_params[i]['vis_selfcal']=data_params[i]['vis_rescaled'].replace('.ms','.ms.selfcal')
@@ -120,7 +128,7 @@ with open(prefix+'.pickle', 'wb') as handle:
 ################## DO CONTINUUM SUBTRACTION ###################
 ###############################################################
 
-### Get channels to exclude for continuum fitting (same as the ones 
+### Get channels to exclude for continuum fitting (same as the ones
 ### we flagged for doing making continuum MS)
 for i in data_params.keys():
    flagchannels_string = get_flagchannels(data_params[i], prefix)
@@ -131,7 +139,7 @@ for i in data_params.keys():
    print(spws_string)
 
    ### Run uvcontsub on combined, self-cal applied dataset; THIS WILL TAKE MANY HOURS PER EB
-   contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True,combine='spw')
+   contsub(data_params[i]['vis_selfcal'], prefix, spw=spws_string,flagchannels=flagchannels_string,excludechans=True)
    os.system('rm -rf '+prefix+'_'+i+'_spectral_line.ms')  ### remove existing spectral line MS if present
    os.system('mv '+data_params[i]['vis_selfcal'].replace('.selfcal','.selfcal.contsub')+' '+prefix+'_'+i+'_spectral_line.ms')
    os.system('rm -rf '+data_params[i]['vis_selfcal'])
@@ -151,106 +159,98 @@ for i in data_params.keys():
 ###############################################################
 ############ RUN A FINAL SPECTRAL LINE IMAGE SET ##############
 ###############################################################
-#### generate list of MS files to image
-#vislist=[]
-#for i in data_params.keys():
-##  if 'SB' in i:
-#    vislist.append(data_params[i]['vis_contsub'])
+
+
+### generate list of MS files to image
+vislist=[]
+for i in data_params.keys():
+   if 'SB' in i:
+      vislist.append(data_params[i]['vis_contsub'])
 
 ### Dictionary defining the spectral line imaging parameters.
 
 ### generate list of MS files to image
 vislist=[]
 vislist_sb=[]
-vislist_lb=[]
 for i in data_params.keys():
-  vislist.append(data_params[i]['vis_contsub'])
-  if 'SB' in i:
-    vislist_sb.append(data_params[i]['vis_contsub'])
-  if 'LB' in i:
-    vislist_lb.append(data_params[i]['vis_contsub'])
-### Dictionary defining the spectral line imaging parameters
+   vislist.append(data_params[i]['vis_contsub'])
+   if 'SB' in i:
+      vislist_sb.append(data_params[i]['vis_contsub'])
+
+### Dictionary defining the spectral line imaging parameters.
 
 image_list = {
-        ### 12CO images
-        "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
-                    nchan=315, linefreq='230.538GHz',
-                    linespw=['0','0', '6', '6', '6', '6'], robust=[1.0], imsize=4000,
-                    cellsize='0.01arcsec', uvtaper=['2000klambda'])}
-
-image_list_lb = {
-        ### H2CO 3(2,1)-2(2,0) Images
-        "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-7km/s', 
-            chanwidth='0.167km/s', nchan=120, linefreq='218.76006600GHz', 
-            linespw='0', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### H2CO 3(0,3)-2(0,2) Images
-        "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-10km/s',
-            chanwidth='1.34km/s', nchan=23, linefreq='218.22219200GHz', 
-            linespw='4', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### H2CO 3(2,2)-2(2,1) Images
-        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-10km/s', 
-            chanwidth='1.34km/s', nchan=23, linefreq='218.47563200GHz',
-            linespw='4', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### c-C3H2 217.82 GHz Images
-        "c-C3H2_217.82":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='217.82215GHz', linespw='4', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### c-C3H2 217.94 GHz Images
-        "cC3H2_217.94":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='217.94005GHz', linespw='4', robust=[1.5],imsize=4000,cellsize='0.015arcsec',uvtaper=['2000klambda']),
-        ### c-C3H2 218.16 GHz Images
-        "cC3H2_218.16":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
-            nchan=23, linefreq='218.16044GHz', linespw='4', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### DCN Images
-        "DCN":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23, 
-            linefreq='217.2386GHz', linespw='4', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### CH3OH Images
-        "CH3OH":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23, 
-            linefreq='218.44006300GHz', linespw='4', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### SiO Images
-        "SiO":dict(chanstart='-100km/s', chanwidth='1.34km/s', nchan=150, 
-            linefreq='217.10498000GHz', linespw='4', robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-                 ### C18O images
-         "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
+        ### C18O images
+        "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 13CO images
         "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
-            nchan=120, linefreq='220.39868420GHz', linespw='1', 
-            robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            nchan=120, linefreq='220.39868420GHz', linespw='1',
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### 12CO images
+        "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s',
+            nchan=315, linefreq='230.538GHz', linespw='6',
+            robust=[0.5,2],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### SO Images
-        "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
+        "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='219.94944200GHz', linespw='2',
-            robust=[1.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-       
+            robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### H2CO 3(2,1)-2(2,0) Images
+        "H2CO_3_21-2_20_218.76GHz":dict(chanstart='-5.5km/s',
+            chanwidth='0.167km/s', nchan=120, linefreq='218.76006600GHz',
+            linespw='0', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### H2CO 3(0,3)-2(0,2) Images
+        "H2CO_3_03-2_02_218.22GHz":dict(chanstart='-10km/s',
+            chanwidth='1.34km/s', nchan=23, linefreq='218.22219200GHz',
+            linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### H2CO 3(2,2)-2(2,1) Images
+        "H2CO_3_22-2_21_218.47GHz":dict(chanstart='-10km/s',
+            chanwidth='1.34km/s', nchan=23, linefreq='218.47563200GHz',
+            linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### c-C3H2 217.82 GHz Images
+        "c-C3H2_217.82":dict(chanstart='-10km/s', chanwidth='1.34km/s',
+            nchan=23, linefreq='217.82215GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### c-C3H2 217.94 GHz Images
+        "cC3H2_217.94":dict(chanstart='-10km/s', chanwidth='1.34km/s',
+            nchan=23, linefreq='217.94005GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### c-C3H2 218.16 GHz Images
+        "cC3H2_218.16":dict(chanstart='-10km/s', chanwidth='1.34km/s',
+            nchan=23, linefreq='218.16044GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### DCN Images
+        "DCN":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23,
+            linefreq='217.2386GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### CH3OH Images
+        "CH3OH":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23,
+            linefreq='218.44006300GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### SiO Images
+        "SiO":dict(chanstart='-100km/s', chanwidth='1.34km/s', nchan=150,
+            linefreq='217.10498000GHz', linespw='4', robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda'])
         }
 
 
-
 for line in image_list:
-  print(line)
-  for robust in image_list[line]["robust"]:
-    imagename = prefix+'_SBLB_'+line+'_robust_'+str(robust)
+    print(line)
+    for robust in image_list[line]["robust"]:
+        imagename = prefix+f'_SBLB_'+line+'_robust_'+str(robust)
 
-    sigma = get_sensitivity(data_params, specmode='cube',
-                            spw=[image_list[line]["linespw"]], chan=5,
-                            robust=robust)
+        sigma = get_sensitivity(data_params, specmode='cube', \
+                spw=[image_list[line]["linespw"]], chan=450,robust=robust,)
 
-    tclean_spectral_line_wrapper(vislist, imagename,
-        image_list[line]["chanstart"], image_list[line]["chanwidth"], 
-        image_list[line]["nchan"], image_list[line]["linefreq"], 
-        image_list[line]["linespw"], LB_scales, threshold=3.0*sigma,
-        imsize=image_list[line]["imsize"],
-        cellsize=image_list[line]["cellsize"],
-        robust=robust, uvtaper=image_list[line]["uvtaper"],
-        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
-        parallel=parallel,
-        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
+        tclean_spectral_line_wrapper(vislist, imagename,
+                image_list[line]["chanstart"], image_list[line]["chanwidth"],
+                image_list[line]["nchan"], image_list[line]["linefreq"],
+                image_list[line]["linespw"], SB_scales, threshold=3.0*sigma,
+                imsize=image_list[line]["imsize"], cellsize=image_list[line]["cellsize"],
+                robust=robust, uvtaper=image_list[line]["uvtaper"],
+                sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
+                lownoisethreshold=lownoisethreshold,smoothfactor=smoothfactor,parallel=parallel,
+                phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
     if selectedVis=='vis_shift':
        tclean_spectral_line_wrapper(data_params['LB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
-        image_list[line]["chanstart"], image_list[line]["chanwidth"], 
-        image_list[line]["nchan"], image_list[line]["linefreq"], 
-        image_list[line]["linespw"][1], LB_scales, threshold=1000000.0*sigma,
+        image_list[line]["chanstart"], image_list[line]["chanwidth"],
+        image_list[line]["nchan"], image_list[line]["linefreq"],
+        image_list[line]["linespw"][1], LB_scales, threshold=3.0*sigma,
         imsize=image_list[line]["imsize"],
         cellsize=image_list[line]["cellsize"],
         robust=robust, uvtaper=image_list[line]["uvtaper"],
@@ -261,43 +261,6 @@ for line in image_list:
        os.system('mv '+imagename+'.pb orig_pbimages/')
        os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
        os.system('rm -rf '+imagename.replace(prefix,'temporary.pbfix')+'*')
-for line in image_list_lb:
-  print(line)
-  for robust in image_list_lb[line]["robust"]:
-    imagename = prefix+'_LB_'+line+'_robust_'+str(robust)
-    data_params_lb = {k:v for k, v in data_params.items() if k.startswith('LB')}
-    sigma = get_sensitivity(data_params_lb, specmode='cube',
-                            spw=[image_list_lb[line]["linespw"]], chan=5,
-                            robust=robust)
-
-    tclean_spectral_line_wrapper(vislist_lb, imagename,
-        image_list_lb[line]["chanstart"], image_list_lb[line]["chanwidth"], 
-        image_list_lb[line]["nchan"], image_list_lb[line]["linefreq"], 
-        image_list_lb[line]["linespw"], LB_scales, threshold=3.0*sigma,
-        imsize=image_list_lb[line]["imsize"],
-        cellsize=image_list_lb[line]["cellsize"],
-        robust=robust, uvtaper=image_list_lb[line]["uvtaper"],
-        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
-        parallel=parallel,
-        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
-    if selectedVis=='vis_shift':
-       tclean_spectral_line_wrapper(data_params['LB1']['vis'], imagename.replace(prefix,'temporary.pbfix'),
-        image_list_lb[line]["chanstart"], image_list_lb[line]["chanwidth"], 
-        image_list_lb[line]["nchan"], image_list_lb[line]["linefreq"], 
-        image_list_lb[line]["linespw"], LB_scales, threshold=1000000.0*sigma,
-        imsize=image_list_lb[line]["imsize"],
-        cellsize=image_list_lb[line]["cellsize"],
-        robust=robust, uvtaper=image_list_lb[line]["uvtaper"],
-        sidelobethreshold=sidelobethreshold, noisethreshold=noisethreshold,
-        lownoisethreshold=lownoisethreshold, smoothfactor=smoothfactor,
-        parallel=parallel,niter=0,
-        phasecenter=data_params['SB1']['common_dir'].replace('J2000','ICRS'))
-       os.system('mv '+imagename+'.pb orig_pbimages/')
-       os.system('cp -r '+imagename.replace(prefix,'temporary.pbfix')+'.pb '+imagename+'.pb')
-       os.system('rm -rf '+imagename.replace(prefix,'temporary.pbfix')+'*')
-
-
 ###############################################################
 ################ CLEANUP AND FITS CONVERSION ##################
 ###############################################################
@@ -307,8 +270,8 @@ import glob
 ### Remove extra image products
 os.system('rm -rf *.residual* *.psf* *.model* *dirty* *.sumwt* *.gridwt* *.workdirectory')
 
-### Remove fits files and pbcor files from previous iterations. 
-os.system("rm -rf *.pbcor* *.fits") 
+### Remove fits files and pbcor files from previous iterations.
+os.system("rm -rf *.pbcor* *.fits")
 
 imagelist=glob.glob('*.image') + glob.glob('*.image.tt0')
 for image in imagelist:
@@ -335,8 +298,8 @@ for image in imagelist:
 ################# Make Plots of Everything ####################
 ###############################################################
 import sys
-sys.argv = ['../edisk/plot_final_images_SBLB.py', prefix]
-execfile('../edisk/plot_final_images_SBLB.py')
+sys.argv = ['plot_final_images_SBLB.py', prefix]
+execfile('plot_final_images_SBLB.py')
 
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *rescaled.ms.*')
@@ -352,3 +315,4 @@ os.system('mv *.fits export/')
 os.system('mv *.fits.gz export/')
 os.system('mv *.tgz export/')
 os.system('mv *.pdf export/')
+

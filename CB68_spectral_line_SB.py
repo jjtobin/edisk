@@ -4,11 +4,10 @@ This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
-SB1: 2019.A.00034.S
+SB1:2019.1.00261.L
+vis=uid___A002_Xfa2f45_X14241.ms 
 
-LB1: 
-
-reducer: Merel van 't Hoff
+reducer:Miyu Kido 
 """
 
 """ Starting matter """
@@ -38,11 +37,11 @@ skip_plots = False
 ### Add field names (corresponding to the field in the MS) here and prefix for 
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
-field   = 'L1527IRS'
-prefix  = 'L1527IRS' 
+field   = 'CB68'
+prefix  = 'CB68' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/L1527IRS_SB/'
+WD_path = '/lustre/cv/projects/edisk/CB68/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
@@ -149,9 +148,6 @@ for i in data_params.keys():
       os.system('rm -rf '+data_params[i]['vis_contsub']+'.tgz')
       os.system('tar czf '+data_params[i]['vis_contsub']+'.tgz '+data_params[i]['vis_contsub'])
 
-
-
-
 ###############################################################
 ############ RUN A FINAL SPECTRAL LINE IMAGE SET ##############
 ###############################################################
@@ -164,7 +160,7 @@ for i in data_params.keys():
       vislist.append(data_params[i]['vis_contsub'])
 
 ### Dictionary defining the spectral line imaging parameters.
-
+#from based on DDT setting, linespws of C18O and 13Co are changed
 image_list = {
         ### C18O images
         "C18O":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
@@ -174,19 +170,9 @@ image_list = {
         "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='220.39868420GHz', linespw='1', 
             robust=[0.5,-0.5]),
-        ### C18O images
-        "C18O-binned":dict(chanstart='-20km/s', chanwidth='0.635km/s',
-            nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-        ### 13CO images
-        ### 13CO cannot go much more negative due to how the 13CO line is off center
-        "13CO-binned":dict(chanstart='-5.395km/s', chanwidth='0.635km/s',
-            nchan=120, linefreq='220.39868420GHz', linespw='1', 
-            robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
-
         ### 12CO images
-        "12CO":dict(chanstart='-50.0km/s', chanwidth='0.635km/s', # MvtH: 12CO does not extent to very high velocities
-            nchan=160, linefreq='230.538GHz', linespw='6',
+        "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
+            nchan=315, linefreq='230.538GHz', linespw='6',
             robust=[0.5]),
         ### SO Images
         "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
@@ -208,10 +194,10 @@ image_list = {
         "c-C3H2_217.82":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
             nchan=23, linefreq='217.82215GHz', linespw='4', robust=[0.5]),
         ### c-C3H2 217.94 GHz Images
-        "c-C3H2_217.94":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
+        "cC3H2_217.94":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
             nchan=23, linefreq='217.94005GHz', linespw='4', robust=[0.5]),
         ### c-C3H2 218.16 GHz Images
-        "c-C3H2_218.16":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
+        "cC3H2_218.16":dict(chanstart='-10km/s', chanwidth='1.34km/s', 
             nchan=23, linefreq='218.16044GHz', linespw='4', robust=[0.5]),
         ### DCN Images
         "DCN":dict(chanstart='-10km/s', chanwidth='1.34km/s', nchan=23, 

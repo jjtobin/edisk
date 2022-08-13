@@ -177,9 +177,18 @@ image_list = { # MtvH: added robust=2.0 images
         "13CO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s',
             nchan=120, linefreq='220.39868420GHz', linespw='1', 
             robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### C18O images
+        "C18O-binned":dict(chanstart='-20km/s', chanwidth='0.635km/s',
+            nchan=120, linefreq='219.56035410GHz', linespw='3',
+            robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+        ### 13CO images
+        ### 13CO cannot go much more negative due to how the 13CO line is off center
+        "13CO-binned":dict(chanstart='-5.395km/s', chanwidth='0.635km/s',
+            nchan=120, linefreq='220.39868420GHz', linespw='1', 
+            robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 12CO images
-        "12CO":dict(chanstart='-50.0km/s', chanwidth='0.635km/s', # MvtH: 12CO does not extent to very high velocities
-            nchan=160, linefreq='230.538GHz', linespw='6',
+        "12CO":dict(chanstart='-20.0km/s', chanwidth='0.635km/s', # MvtH: 12CO does not extent to very high velocities
+            nchan=63, linefreq='230.538GHz', linespw='6',
             robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### SO Images
         "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
