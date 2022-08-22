@@ -298,8 +298,8 @@ for image in imagelist:
 ################# Make Plots of Everything ####################
 ###############################################################
 import sys
-sys.argv = ['plot_final_images_SBLB.py', prefix]
-execfile('plot_final_images_SBLB.py')
+sys.argv = ['../edisk/plot_final_images_SBLB.py', prefix]
+execfile('../edisk/plot_final_images_SBLB.py')
 
 ### Remove rescaled selfcal MSfiles
 os.system('rm -rf *rescaled.ms.*')

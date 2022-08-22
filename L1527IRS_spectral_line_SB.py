@@ -176,13 +176,17 @@ image_list = {
             robust=[0.5,-0.5]),
         ### C18O images
         "C18O-binned":dict(chanstart='-20km/s', chanwidth='0.635km/s',
-            nchan=120, linefreq='219.56035410GHz', linespw='3',
-            robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            nchan=63, linefreq='219.56035410GHz', linespw='3',
+            robust=[2.0,0.5]),
         ### 13CO images
         ### 13CO cannot go much more negative due to how the 13CO line is off center
         "13CO-binned":dict(chanstart='-5.395km/s', chanwidth='0.635km/s',
-            nchan=120, linefreq='220.39868420GHz', linespw='1', 
-            robust=[2.0,0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            nchan=63, linefreq='220.39868420GHz', linespw='1', 
+            robust=[2.0,0.5]),
+        ### 12CO images
+        "12CO-narrow":dict(chanstart='-20km/s', chanwidth='0.635km/s',
+            nchan=63, linefreq='230.538GHz', linespw='6', 
+            robust=[2.0,0.5]),
 
         ### 12CO images
         "12CO":dict(chanstart='-50.0km/s', chanwidth='0.635km/s', # MvtH: 12CO does not extent to very high velocities
