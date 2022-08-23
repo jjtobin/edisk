@@ -654,7 +654,7 @@ if not skip_plots:
 
 ### Make the final image, will not run another self-calibration
 iteration=7
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
                combine='spw',parallel=parallel,finalimageonly=True)
 #IRAS04166+2706_SB-only_p7.image.tt0
@@ -675,67 +675,6 @@ for i in data_params.keys():
 with open(prefix+'.pickle', 'wb') as handle:
     pickle.dump(data_params, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-
-###############################################################
-############ SHIFT PHASE CENTERS TO CHECK SCALING #############
-###############################################################
-
-for i in data_params.keys():
-   print(i)
-   data_params[i]['vis_avg_shift_selfcal']=prefix+'_'+i+'_selfcal_cont_shift.ms'
-   os.system('rm -rf '+data_params[i]['vis_avg_shift_selfcal'])
-   fixvis(vis=data_params[i]['vis_avg_selfcal'], outputvis=data_params[i]['vis_avg_shift_selfcal'], 
-       field=data_params[i]['field'], 
-       phasecenter='J2000 '+data_params[i]['phasecenter'])
-   ### fix planets may throw an error, usually safe to ignore
-   fixplanets(vis=data_params[i]['vis_avg_shift_selfcal'], field=data_params[i]['field'], 
-           direction=data_params[i]['common_dir'])
-
-###############################################################
-############### PLOT UV DATA TO CHECK SCALING #################
-###############################################################
-
-### Assign rough emission geometry parameters; keep 0, 0
-PA, incl = 0, 0
-
-### Export MS contents into Numpy save files 
-export_vislist=[]
-for i in data_params.keys():
-   export_MS(data_params[i]['vis_avg_shift_selfcal'])
-   export_vislist.append(data_params[i]['vis_avg_shift_selfcal'].replace('.ms','.vis.npz'))
-
-if not skip_plots:
-    ### Plot deprojected visibility profiles for all data together """
-    plot_deprojected(export_vislist,
-                     fluxscale=[1.0]*len(export_vislist), PA=PA, incl=incl, 
-                     show_err=False,outfile='amp-vs-uv-distance-post-selfcal.png')
-
-#################### MANUALLY SET THIS ######################
-refdata='LB3'
-
-reference=prefix+'_'+refdata+'_selfcal_cont_shift.vis.npz'
-for i in data_params.keys():
-   print(i)
-   if i != refdata:
-      data_params[i]['gencal_scale_selfcal']=estimate_flux_scale(reference=reference, 
-                        comparison=prefix+'_'+i+'_selfcal_cont_shift.vis.npz', 
-                        incl=incl, PA=PA)
-   else:
-      data_params[i]['gencal_scale_selfcal']=1.0
-   print(' ')
-
-gencal_scale={}
-
-print('IF AND ONLY IF SCALING WAS NOT ALREADY SET IN SCRIPT')
-print('COPY AND PLACE WHERE DESIGNATED FOR SCALING TOWARD TOP OF SCRIPT')
-for i in data_params.keys():
-   gencal_scale[i]=data_params[i]['gencal_scale_selfcal']
-   print('data_params["{}"]["gencal_scale"]={:0.3f}'.format(i,data_params[i]['gencal_scale_selfcal']))
-
-#WRITE OUT PICKLE FILE FOR SCALING IF MISSED
-if not os.path.exists('gencal_scale.pickle'):
-   with open('gencal_scale.pickle', 'wb') as handle:
-      pickle.dump(gencal_scale, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 ###############################################################
 ############ SHIFT PHASE CENTERS TO CHECK SCALING #############
@@ -796,7 +735,6 @@ for i in data_params.keys():
 if not os.path.exists('gencal_scale.pickle'):
    with open('gencal_scale.pickle', 'wb') as handle:
       pickle.dump(gencal_scale, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
 ###############################################################
 ################# SPLIT OFF FINAL CONT DATA ###################

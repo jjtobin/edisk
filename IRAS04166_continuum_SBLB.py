@@ -1016,31 +1016,7 @@ if not skip_plots:
        input("Press Enter key to advance to next MS/Caltable...")
 
 
-iteration=4
-self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='int',
-               noisemasks=[common_mask,noise_annulus],
-               SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,LB_spwmap=LB_spwmap,parallel=parallel,smoothfactor=2.0,combine='spw')
-
-if not skip_plots:
-   for i in data_params.keys():
-       plotms(vis=data_params[i][selectedVis].replace('.ms','_LB+SB_p'+str(iteration)+'.g'),
-               xaxis='time', yaxis='phase',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,-180,180]) 
-       input("Press Enter key to advance to next MS/Caltable...")
-#IRAS04166+2706_LB+SB_p4.image.tt0
-#Beam 0.068 arcsec x 0.049 arcsec (29.22 deg)
-#Flux inside disk mask: 97.65 mJy
-#Peak intensity of source: 14.16 mJy/beam
-#rms: 1.55e-02 mJy/beam
-#peak SNR: 911.17
-
-#IRAS04166+2706_LB+SB_p4_post.image.tt0
-#Beam 0.068 arcsec x 0.049 arcsec (29.22 deg)
-#Flux inside disk mask: 98.84 mJy
-#Peak intensity of source: 14.29 mJy/beam
-#rms: 1.60e-02 mJy/beam
-#Peak SNR: 895.19
-
-iteration=5
+iteration=6
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',prevselfcalmode='p',nsigma=3.0,solint='600s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,
@@ -1051,7 +1027,7 @@ if not skip_plots:
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
 
-iteration=6
+iteration=7
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='300s',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,
@@ -1062,7 +1038,7 @@ if not skip_plots:
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
 
-iteration=7
+iteration=8
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,
@@ -1073,7 +1049,7 @@ if not skip_plots:
               yaxis='amp',gridrows=4,gridcols=1,iteraxis='antenna', xselfscale=True,plotrange=[0,0,0,2])
        input("Press Enter key to advance to next MS/Caltable...")
 
-iteration=8
+iteration=9
 self_calibrate(prefix,data_params,selectedVis,mode='LB+SB',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],
                SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,LB_contspws=LB_contspws,
