@@ -186,7 +186,7 @@ image_list = {
             robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### 12CO images
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
-            nchan=315, linefreq='230.538GHz', linespw=['5', '5', '6', '6'],
+            nchan=315, linefreq='230.538GHz', linespw='6',
             robust=[0.5],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### SO Images
         "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 

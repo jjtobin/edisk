@@ -824,7 +824,7 @@ if not skip_plots:
 
 ### Make the final image, will not run another self-calibration
 iteration=7
-self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='p',nsigma=3.0,solint='inf',
+self_calibrate(prefix,data_params,selectedVis,mode='SB-only',iteration=iteration,selfcalmode='ap',nsigma=3.0,solint='inf',
                noisemasks=[common_mask,noise_annulus],SB_contspws=SB_contspws,SB_spwmap=SB_spwmap,
                combine='spw',parallel=parallel,finalimageonly=True)
 #IRAS04166+2706_SB-only_p7.image.tt0
