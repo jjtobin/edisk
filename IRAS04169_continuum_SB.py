@@ -138,6 +138,10 @@ for i in data_params.keys():
                     versionname = 'starting_flags',
                     comment = 'Flag states at start of reduction')
 
+for i in data_params.keys():
+   if 'SB' in i:
+      flagdata(vis=data_params[i]['vis'],mode='manual',antenna='DA46&DV08')
+
 # ### Inspect data in each spw for each dataset
 # #### OPTIONAL #####
 # if not skip_plots:
@@ -476,11 +480,6 @@ selectedVis = 'vis_avg_rescaled'
 for i in data_params.keys():
     data_params[i]['refant'] = rank_refants(data_params[i][selectedVis])
 
-    # *Check the antenna positions of the visibility
-    plotants(vis = data_params[i][selectedVis],
-             antindex = True,
-             figfile = data_params[i][selectedVis] + '.plotants.pdf',
-             showgui = False)
 
     # plotms(vis = data_params[i][selectedVis],
     #        field = data_params[i]['field'],
