@@ -582,12 +582,10 @@ if os.path.exists('gencal_scale.pickle'):
         gencal_scale = pickle.load(handle)
     for i in data_params.keys():
         data_params[i]['gencal_scale'] = gencal_scale[i]
-
 data_params['LB1']['gencal_scale'] = 1.000
-data_params['LB2']['gencal_scale'] = 0.945
-data_params['LB3']['gencal_scale'] = 0.933
-data_params['LB4']['gencal_scale'] = 0.961
-
+data_params['LB2']['gencal_scale'] = 0.951
+data_params['LB3']['gencal_scale'] = 0.967
+data_params['LB4']['gencal_scale'] = 0.979
 ###############################################################
 ############### SCALE DATA RELATIVE TO ONE EB #################
 ###############################################################
