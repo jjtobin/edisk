@@ -1146,7 +1146,7 @@ imsize = 1600
 cellsize = '0.025arcsec'
 
 for robust in [-2.0, -1.0, -0.5, +0.0, +0.5, +1.0, +2.0]:
-    imagename = prefix + '_SBLB_continuum_robust_' + str(robust)
+    imagename = prefix + '_SB_continuum_robust_' + str(robust)
     os.system('rm -rf ' + imagename + '*')
 
     sigma = get_sensitivity(data_params,

@@ -4,10 +4,19 @@ This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
-SB1: 
+SB1: 2019.A.00034.S
+vis=uid___A002_Xfa2f45_X14241.ms
+ 
+LB1: 2019.1.00261.L 
+vis=uid___A002_Xef9a9d_Xea6.ms (2021/8/24)
+     
+LB2: 2019.1.00261.L 
+vis=uid___A002_Xf160b6_X528a.ms (2021/10/4)
 
-LB1: 
+LB3: 2019.1.00261.L 
+vis=uid___A002_Xf160b6_Xaf76.ms (2021/10/5)
 
+reducer:Miyu Kido  
 reducer: 
 """
 

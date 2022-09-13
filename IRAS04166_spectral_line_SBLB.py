@@ -5,8 +5,10 @@ This script was written for CASA 6.1.1/6.2
 Originally derived from DSHARP reduction scripts
 
 Datasets calibrated (in order of date observed):
+SB1: 03/07/2022
+SB2: 03/07/2022
 LB1: 24/10/2021
-LB2: 18/10/2021
+LB2: 18/10/2021 -QA0 semi-pass
 LB3: 01/10/2021 -QA0 semi-pass
 LB4: 30/09/2021 -QA0 semi-pass
 reducer: Nguyen Thi Phuong 
@@ -38,7 +40,7 @@ skip_plots = True
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
 field   = 'IRAS04166+2706'
-prefix  = 'IRAS04166+2706' 
+prefix  = 'IRAS04166' 
 
 ### always include trailing slashes!!
 WD_path = '/lustre/cv/projects/edisk/IRAS04166/'
@@ -183,7 +185,7 @@ image_list = {
         ### 12CO images
         "12CO":dict(chanstart='-100.0km/s', chanwidth='0.635km/s', 
             nchan=315, linefreq='230.538GHz', linespw='6',
-            robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
+            robust=[0.5,2.0],imsize=5000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### SO Images
         "SO":dict(chanstart='-5.5km/s', chanwidth='0.167km/s', 
             nchan=120, linefreq='219.94944200GHz', linespw='2',
@@ -217,7 +219,7 @@ image_list = {
             linefreq='218.44006300GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda']),
         ### SiO Images
         "SiO":dict(chanstart='-100km/s', chanwidth='1.34km/s', nchan=150, 
-            linefreq='217.10498000GHz', linespw='4', robust=[0.5,2.0],imsize=4000,cellsize='0.01arcsec',uvtaper=['2000klambda'])
+            linefreq='217.10498000GHz', linespw='4', robust=[0.5,2.0],imsize=5000,cellsize='0.01arcsec',uvtaper=['2000klambda'])
         }
 
 for line in image_list:

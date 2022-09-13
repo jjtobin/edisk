@@ -42,7 +42,7 @@ skip_plots = True
 ### filenameing (can be different but try to keep same)
 ### Only make different if, for example, the field name has a space
 field   = {'SB':'IRAS04166+2706', 'LB':'IRAS04166+2706'}
-prefix  = 'IRAS04166+2706' 
+prefix  = 'IRAS04166' 
 
 ### always include trailing slashes!!
 WD_path = '/lustre/cv/projects/edisk/IRAS04166/'
@@ -493,10 +493,13 @@ for i in data_params.keys():
 #   for i in data_params.keys():
 #      data_params[i]['gencal_scale']=gencal_scale[i]
 
-#data_params["LB1"]["gencal_scale"]=1.000
-#data_params["LB2"]["gencal_scale"]=0.977
-#data_params["LB3"]["gencal_scale"]=0.923
-#data_params["LB4"]["gencal_scale"]=0.932
+
+data_params["SB1"]["gencal_scale"]=0.962
+data_params["SB2"]["gencal_scale"]=0.972
+data_params["LB1"]["gencal_scale"]=1.000
+data_params["LB2"]["gencal_scale"]=0.985
+data_params["LB3"]["gencal_scale"]=0.935
+data_params["LB4"]["gencal_scale"]=0.928
 
 ###############################################################
 ############### SCALE DATA RELATIVE TO ONE EB #################
