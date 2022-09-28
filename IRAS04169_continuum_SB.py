@@ -1190,12 +1190,12 @@ for robust in [-2.0, -1.0, -0.5, +0.0, +0.5, +1.0, +2.0]:
     #                nterms = 1,
     #                phasecenter = data_params['LB1']['common_dir'])
 
-    pblist = glob.glob('*continuum*.pb.tt0') 
-    os.system('mkdir orig_pbimages')
-    for pbimage in pblist:
-        os.system('mv ' + pbimage + ' orig_pbimages')
-        os.system('cp -r temporary.pbfix.pb.tt0 ' + pbimage)
-    os.system('rm -rf temporary.pbfix.*')
+    # pblist = glob.glob('*continuum*.pb.tt0') 
+    # os.system('mkdir orig_pbimages')
+    # for pbimage in pblist:
+    #    os.system('mv ' + pbimage + ' orig_pbimages')
+    #    os.system('cp -r temporary.pbfix.pb.tt0 ' + pbimage)
+    # os.system('rm -rf temporary.pbfix.*')
 
 ###############################################################
 ########################### CLEANUP ###########################

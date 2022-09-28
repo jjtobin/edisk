@@ -1894,10 +1894,10 @@ for taper in ['1000klambda', '2000klambda', '3000klambda']:
     #                nterms = 1,
     #                phasecenter = data_params['LB1']['common_dir'])
 
-    pblist = glob.glob('*continuum*.pb.tt0') 
-    os.system('mkdir orig_pbimages')
-    for pbimage in pblist:
-        os.system('mv ' + pbimage + ' orig_pbimages')
+    #pblist = glob.glob('*continuum*.pb.tt0') 
+    #os.system('mkdir orig_pbimages')
+    #for pbimage in pblist:
+    #    os.system('mv ' + pbimage + ' orig_pbimages')
     #     os.system('cp -r temporary.pbfix.pb.tt0 ' + pbimage)
     # os.system('rm -rf temporary.pbfix.*')
 
