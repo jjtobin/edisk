@@ -26,7 +26,15 @@ import sys
 import pickle
 execfile('../reduction_utils3.py', globals())
 
+vislist_sb=glob.glob('SB/*.ms.tar.gz')
+vislist_lb=glob.glob('LB/*.ms.tar.gz')
+vislist=vislist_sb+vislist_lb
 
+for vis in vislist:
+   destdir=vis.split('/')[0]
+   msfile=vis.split('/')[1].replace('.tar.gz','')
+   if not os.path.exists(destdir+'/'+msfile):
+      os.system('cd '+destdir+'; tar xvf '+vis.split('/')[1])
 ###############################################################
 ################ SETUP/METADATA SPECIFICATION #################
 ################ USERS NEED TO SET STUFF HERE #################
@@ -62,8 +70,12 @@ pl_data_params={'SB1': {'vis': SB_path+'uid___A002_Xf38bf9_X50b.ms',
                         'spws': '25,31,29,27,33,35,37', # MvtH: using DDT spw list
                         'field': field['SB'],
                         'column': 'corrected'},
-		'SB2': {'vis': SB_path+'uid___A002_Xf4073d_Xc890.ms',
+		          'SB2': {'vis': SB_path+'uid___A002_Xf4073d_Xc890.ms',
                         'spws': '25,31,29,27,33,35,37', # MvtH: using DDT spw list
+                        'field': field['SB'],
+                        'column': 'corrected'},
+                'SB3': {'vis': SB_path+'uid___A002_Xfafcc0_X5e7e.ms',
+                        'spws': '25,31,29,27,33,35,37',
                         'field': field['SB'],
                         'column': 'corrected'},
                 'LB1': {'vis': LB_path+'uid___A002_Xf1aa15_X7b5a.ms',
@@ -118,6 +130,24 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'cont_avg_width':  np.array([480,480,480,480,60,60,60]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
                        'timerange': '2021/12/16/03:15:00~2021/12/16/04:45:00',
+                       'contdotdat' : 'SB/cont-L1527IRS.dat' # MvtH: changed to cont-L1527IRS.dat
+                      }, 
+		'SB3': {'vis' : WD_path+prefix+'_SB3.ms',
+                       'name' : 'SB3',
+                       'field': field['SB'],
+                       'line_spws': np.array([0,3,2,1,4,6,4,4,4,4,4]), # line SPWs, get from listobs - MvtH: swapped 1 and 3 for DDT
+                       'line_freqs': np.array([218.76006600e9,220.39868420e9,219.94944200e9,219.56035410e9,
+                                               217.82215e9,230.538e9,217.94005e9,218.16044e9,217.2386e9,
+                                               218.22219200e9,218.47563200e9]), #restfreqs
+                       'line_names': ['H2CO','13CO','SO','C18O','c-C3H2','12CO','c-C3H2','c-C3H2','DCN','H2CO','H2CO'], #restfreqs
+                       'flagrange': np.array([[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],
+                                              [-5.5,14.5],[-5.5,14.5],[-5.5,14.5],[-5.5,14.5],
+                                              [-5.5,14.5],[-5.5,14.5],[-5.5,14.5]]),
+                       'orig_spw_map': {25:0, 27:3, 29:2, 31:1, 33:4, 35:5, 37:6},  # mapping of old spws to new spws (needed for cont.dat to work)
+                       'cont_spws':  np.array([0,1,2,3,4,5,6]),  #spws to use for continuum
+                       'cont_avg_width':  np.array([480,480,480,480,60,60,60]), #n channels to average; approximately aiming for 30 MHz channels
+                       'phasecenter': '',
+                       'timerange': '2022/07/03/11:40:00~2022/07/03/13:00:00',
                        'contdotdat' : 'SB/cont-L1527IRS.dat' # MvtH: changed to cont-L1527IRS.dat
                       }, 
                'LB1': {'vis' : WD_path+prefix+'_LB1.ms',

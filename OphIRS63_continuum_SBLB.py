@@ -30,6 +30,15 @@ import numpy as np
 import sys
 import pickle
 execfile('../reduction_utils3.py', globals())
+vislist_sb=glob.glob('SB/*.tar.gz')
+vislist_lb=glob.glob('LB/*.tar.gz')
+vislist=vislist_sb+vislist_lb
+
+for vis in vislist:
+   destdir=vis.split('/')[0]
+   msfile=vis.split('/')[1].replace('.tar.gz','')
+   if not os.path.exists(destdir+'/'+msfile):
+      os.system('cd '+destdir+'; tar xvf '+vis.split('/')[1])
 
 
 ###############################################################
@@ -136,7 +145,7 @@ data_params = {'SB1': {'vis' : WD_path+prefix+'_SB1.ms',
                        'cont_spws':  np.array([0,1,2,3]),  #spws to use for continuum
                        'cont_avg_width':  np.array([8,8,8,8]), #n channels to average; approximately aiming for 30 MHz channels
                        'phasecenter': '',
-                       'timerange': '2015/11/07/18:54:29~2015/11/01/20:26:13',
+                       'timerange': '2015/11/01/18:54:29~2015/11/01/20:26:13',
                        #'contdotdat' : 'LB/cont.dat'
                       }, 
                'LB2': {'vis' : WD_path+prefix+'_LB2.ms',

@@ -31,6 +31,15 @@ import numpy as np
 import sys
 import pickle
 execfile('../reduction_utils3.py', globals())
+vislist_sb=glob.glob('SB/*.ms.tar.gz')
+vislist_lb=glob.glob('LB/*.ms.tar.gz')
+vislist=vislist_sb+vislist_lb
+
+for vis in vislist:
+   destdir=vis.split('/')[0]
+   msfile=vis.split('/')[1].replace('.tar.gz','')
+   if not os.path.exists(destdir+'/'+msfile):
+      os.system('cd '+destdir+'; tar xvf '+vis.split('/')[1])
 
 
 ###############################################################

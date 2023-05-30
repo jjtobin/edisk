@@ -27,6 +27,15 @@ import sys
 import pickle
 execfile('../reduction_utils3.py', globals())
 
+vislist_sb=glob.glob('SB/*.ms.tar.gz')
+vislist_lb=glob.glob('LB/*.ms.tar.gz')
+vislist=vislist_sb+vislist_lb
+
+for vis in vislist:
+   destdir=vis.split('/')[0]
+   msfile=vis.split('/')[1].replace('.tar.gz','')
+   if not os.path.exists(destdir+'/'+msfile):
+      os.system('cd '+destdir+'; tar xvf '+vis.split('/')[1])
 
 ###############################################################
 ################ SETUP/METADATA SPECIFICATION #################
@@ -48,7 +57,7 @@ field   = {'SB':'IRAS04302+2247', 'LB':'IRAS04302+2247'}
 prefix  = 'IRAS04302' 
 
 ### always include trailing slashes!!
-WD_path = '/lustre/cv/projects/edisk/IRAS04302-validation/'
+WD_path = '/lustre/cv/projects/edisk/IRAS04302/'
 SB_path = WD_path+'SB/'
 LB_path = WD_path+'LB/'
 
